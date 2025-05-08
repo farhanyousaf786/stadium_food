@@ -1,0 +1,2 @@
+/Users/kami/StudioProjects/stadium_food/android/app/.cxx/Debug/o71ju6rx/x86/CMakeFiles/edit_cache.dir
+/Users/kami/StudioProjects/stadium_food/android/app/.cxx/Debug/o71ju6rx/x86/CMakeFiles/rebuild_cache.dir

@@ -30,14 +30,17 @@ class OnboardingSecondScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 60),
-              PrimaryButton(
-                text: "Next",
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    "/register",
-                  );
-                },
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: PrimaryButton(
+                  text: "Next",
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      "/register",
+                    );
+                  },
+                ),
               ),
               const SizedBox(height: 60),
             ],

@@ -49,14 +49,17 @@ class _OnboardingFirstScreenState extends State<OnboardingFirstScreen> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 60),
-              PrimaryButton(
-                text: "Next",
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    "/onboarding/second",
-                  );
-                },
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: PrimaryButton(
+                  text: "Next",
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      "/onboarding/second",
+                    );
+                  },
+                ),
               ),
               const SizedBox(height: 60),
             ],

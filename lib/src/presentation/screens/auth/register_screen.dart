@@ -54,181 +54,163 @@ class _RegisterScreenState extends State<RegisterScreen> {
             );
           }
         },
-        child: Stack(
-          children: [
-            Align(
-              alignment: Alignment.topCenter,
-              child: ShaderMask(
-                shaderCallback: (bounds) => const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.black, Colors.transparent],
-                ).createShader(bounds),
-                blendMode: BlendMode.dstIn,
-                child: SvgPicture.asset(
-                  "assets/svg/pattern-big.svg",
-                ),
-              ),
-            ),
-            SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            height: MediaQuery.of(context).padding.top + 50,
-                          ),
-                          Image.asset(
-                            "assets/png/logo.png",
-                            width: 200,
-                          ),
-                          const SizedBox(height: 60),
-                          Text(
-                            'Sign Up For Free',
-                            style: CustomTextStyle.size20Weight600Text(),
-                          ),
-                          const SizedBox(height: 40),
-                          Form(
-                            child: Column(
-                              children: [
-                                Container(
-                                  height: AppStyles.defaultTextFieldHeight,
-                                  decoration: BoxDecoration(
-                                    boxShadow: [AppStyles.boxShadow7],
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).padding.top + 50,
+                      ),
+                      Image.asset(
+                        "assets/png/logo.png",
+                        width: 200,
+                      ),
+                      const SizedBox(height: 60),
+                      Text(
+                        'Sign Up For Free',
+                        style: CustomTextStyle.size20Weight600Text(),
+                      ),
+                      const SizedBox(height: 40),
+                      Form(
+                        child: Column(
+                          children: [
+                            Container(
+                              height: AppStyles.defaultTextFieldHeight,
+                              decoration: BoxDecoration(
+                                boxShadow: [AppStyles.boxShadow7],
+                              ),
+                              child: TextFormField(
+                                controller: _emailController,
+                                decoration: InputDecoration(
+                                  fillColor: AppColors().cardColor,
+                                  filled: true,
+                                  hintText: "Email",
+                                  hintStyle:
+                                      CustomTextStyle.size14Weight400Text(
+                                    AppColors().secondaryTextColor,
                                   ),
-                                  child: TextFormField(
-                                    controller: _emailController,
-                                    decoration: InputDecoration(
-                                      fillColor: AppColors().cardColor,
-                                      filled: true,
-                                      hintText: "Email",
-                                      hintStyle:
-                                          CustomTextStyle.size14Weight400Text(
-                                        AppColors().secondaryTextColor,
-                                      ),
-                                      enabledBorder:
-                                          AppStyles().defaultEnabledBorder,
-                                      focusedBorder:
-                                          AppStyles.defaultFocusedBorder(),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                Container(
-                                  height: AppStyles.defaultTextFieldHeight,
-                                  decoration: BoxDecoration(
-                                    boxShadow: [AppStyles.boxShadow7],
-                                  ),
-                                  child: TextFormField(
-                                    controller: _passwordController,
-                                    obscureText: hidePassword,
-                                    decoration: InputDecoration(
-                                      fillColor: AppColors().cardColor,
-                                      filled: true,
-                                      hintText: "Password",
-                                      hintStyle:
-                                          CustomTextStyle.size14Weight400Text(
-                                        AppColors().secondaryTextColor,
-                                      ),
-                                      enabledBorder:
-                                          AppStyles().defaultEnabledBorder,
-                                      focusedBorder:
-                                          AppStyles.defaultFocusedBorder(),
-                                      suffixIcon: GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            hidePassword = !hidePassword;
-                                          });
-                                        },
-                                        child: Icon(
-                                          hidePassword
-                                              ? Icons.visibility
-                                              : Icons.visibility_off,
-                                          color: AppColors.primaryColor,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pushNamed(
-                                context,
-                                "/login",
-                              );
-                            },
-                            child: ShaderMask(
-                              shaderCallback: (bounds) => LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: AppColors.primaryGradient,
-                              ).createShader(bounds),
-                              blendMode: BlendMode.srcIn,
-                              child: Text(
-                                "Already have an account?",
-                                style: CustomTextStyle.size14Weight400Text()
-                                    .copyWith(
-                                  decoration: TextDecoration.underline,
+                                  enabledBorder:
+                                      AppStyles().defaultEnabledBorder,
+                                  focusedBorder:
+                                      AppStyles.defaultFocusedBorder(),
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 20),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 60),
-                            child: PrimaryButton(
-                              text: "Create Account",
-                              onTap: () {
-                                // print email and password
-                                debugPrint(_emailController.text.trim());
-                                debugPrint(_passwordController.text);
-
-                                // Validate
-                                if (_emailController.text.trim().isEmpty) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      backgroundColor: AppColors.errorColor,
-                                      content: Text("Email is required"),
-                                    ),
-                                  );
-                                  return;
-                                }
-                                if (_passwordController.text.isEmpty) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      backgroundColor: AppColors.errorColor,
-                                      content: Text("Password is required"),
-                                    ),
-                                  );
-                                  return;
-                                }
-
-                                // Submit
-                                BlocProvider.of<RegisterBloc>(context).add(
-                                  RegisterSubmitted(
-                                    email: _emailController.text.trim(),
-                                    password: _passwordController.text,
+                            const SizedBox(height: 20),
+                            Container(
+                              height: AppStyles.defaultTextFieldHeight,
+                              decoration: BoxDecoration(
+                                boxShadow: [AppStyles.boxShadow7],
+                              ),
+                              child: TextFormField(
+                                controller: _passwordController,
+                                obscureText: hidePassword,
+                                decoration: InputDecoration(
+                                  fillColor: AppColors().cardColor,
+                                  filled: true,
+                                  hintText: "Password",
+                                  hintStyle:
+                                      CustomTextStyle.size14Weight400Text(
+                                    AppColors().secondaryTextColor,
                                   ),
-                                );
-                              },
+                                  enabledBorder:
+                                      AppStyles().defaultEnabledBorder,
+                                  focusedBorder:
+                                      AppStyles.defaultFocusedBorder(),
+                                  suffixIcon: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        hidePassword = !hidePassword;
+                                      });
+                                    },
+                                    child: Icon(
+                                      hidePassword
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                      color: AppColors.primaryColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(
+                            context,
+                            "/login",
+                          );
+                        },
+                        child: ShaderMask(
+                          shaderCallback: (bounds) => LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: AppColors.primaryGradient,
+                          ).createShader(bounds),
+                          blendMode: BlendMode.srcIn,
+                          child: Text(
+                            "Already have an account?",
+                            style: CustomTextStyle.size14Weight400Text()
+                                .copyWith(
+                              decoration: TextDecoration.underline,
                             ),
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 60),
+                        child: PrimaryButton(
+                          text: "Create Account",
+                          onTap: () {
+                            // print email and password
+                            debugPrint(_emailController.text.trim());
+                            debugPrint(_passwordController.text);
+
+                            // Validate
+                            if (_emailController.text.trim().isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  backgroundColor: AppColors.errorColor,
+                                  content: Text("Email is required"),
+                                ),
+                              );
+                              return;
+                            }
+                            if (_passwordController.text.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  backgroundColor: AppColors.errorColor,
+                                  content: Text("Password is required"),
+                                ),
+                              );
+                              return;
+                            }
+
+                            // Submit
+                            BlocProvider.of<RegisterBloc>(context).add(
+                              RegisterSubmitted(
+                                email: _emailController.text.trim(),
+                                password: _passwordController.text,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

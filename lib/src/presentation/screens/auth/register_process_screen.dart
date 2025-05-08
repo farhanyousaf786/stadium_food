@@ -41,16 +41,11 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-          Align(
-            alignment: Alignment.topRight,
-            child: SvgPicture.asset(
-              "assets/svg/pattern-small.svg",
-            ),
-          ),
+
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 60),
+              padding: const EdgeInsets.only(bottom: 60,left: 25,right: 25),
               child: PrimaryButton(
                 text: "Next",
                 onTap: () {

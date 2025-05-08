@@ -3,7 +3,7 @@ import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class AppStyles {
-  static final defaultBorderRadius = BorderRadius.circular(15);
+  static final defaultBorderRadius = BorderRadius.circular(5);
   static final largeBorderRadius = BorderRadius.circular(22);
   static const defaultTextFieldHeight = 55.0;
 

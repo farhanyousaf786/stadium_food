@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
         if (state is ThemeChanged) {
           themeData = state.themeData;
         }
-
+        
         return MaterialApp(
           title: "Food Ninja",
           theme: themeData,

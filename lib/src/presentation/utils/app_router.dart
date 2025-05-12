@@ -27,6 +27,7 @@ import 'package:stadium_food/src/presentation/screens/order/order_details_screen
 import 'package:stadium_food/src/presentation/screens/order/order_list_screen.dart';
 import 'package:stadium_food/src/presentation/screens/order/review_screen.dart';
 import 'package:stadium_food/src/presentation/screens/splash_screen.dart';
+import 'package:stadium_food/src/presentation/screens/stadium/stadium_screen.dart';
 
 import '../screens/chat/chat_list_screen.dart';
 
@@ -79,6 +80,12 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => const ForgotPasswordScreen(),
         );
+
+      case '/stadium':
+        return MaterialPageRoute(
+          builder: (_) => const StadiumScreen(),
+        );
+
 
       case '/home':
         return MaterialPageRoute(

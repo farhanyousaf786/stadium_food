@@ -18,6 +18,8 @@ import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 
+import '../stadium/stadium_screen.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -167,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
         body: _selectedIndex == 0
-            ? _buildHomeBody(context)
+            ? StadiumScreen()
             : _selectedIndex == 1
                 ? const ChatListScreen()
                 : _selectedIndex == 2

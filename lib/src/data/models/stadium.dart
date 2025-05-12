@@ -7,8 +7,8 @@ class Stadium {
   final String location;
   final int capacity;
   final String imageUrl;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final String createdAt;
+  final String updatedAt;
 
   Stadium({
     required this.id,
@@ -29,8 +29,8 @@ class Stadium {
       location: map['location'] ?? '',
       capacity: map['capacity'] ?? 0,
       imageUrl: map['imageUrl'] ?? '',
-      createdAt: (map['createdAt'] as Timestamp).toDate(),
-      updatedAt: (map['updatedAt'] as Timestamp).toDate(),
+      createdAt: map['createdAt'] ??'',
+      updatedAt: map['updatedAt']??'',
     );
   }
 }

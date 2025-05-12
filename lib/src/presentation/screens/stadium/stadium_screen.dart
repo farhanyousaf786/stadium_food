@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../bloc/stadium/stadium_bloc.dart';
 import '../../../data/models/stadium.dart';
 import '../../utils/app_colors.dart';
+import 'stadium_detail_screen.dart';
 
 class StadiumScreen extends StatefulWidget {
   const StadiumScreen({super.key});
@@ -202,7 +203,12 @@ class _StadiumCard extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: InkWell(
           onTap: () {
-            // TODO: Navigate to stadium detail page
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => StadiumDetailScreen(stadium: stadium),
+              ),
+            );
           },
           borderRadius: BorderRadius.circular(16),
           child: Column(

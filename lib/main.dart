@@ -15,6 +15,7 @@ import 'package:stadium_food/src/bloc/settings/settings_bloc.dart';
 import 'package:stadium_food/src/bloc/testimonial/testimonial_bloc.dart';
 import 'package:stadium_food/src/bloc/theme/theme_bloc.dart';
 import 'package:stadium_food/src/bloc/stadium/stadium_bloc.dart';
+import 'package:stadium_food/src/bloc/shop/shop_bloc.dart';
 import 'package:stadium_food/src/data/repositories/order_repository.dart';
 import 'package:stadium_food/src/data/services/hive_adapters.dart';
 
@@ -71,6 +72,9 @@ Future<void> main() async {
         ),
         BlocProvider(
           create: (context) => StadiumBloc(),
+        ),
+        BlocProvider(
+          create: (context) => ShopBloc(),
         ),
       ],
       child: const MyApp(),

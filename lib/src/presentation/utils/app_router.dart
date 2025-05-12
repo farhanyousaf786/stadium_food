@@ -8,8 +8,7 @@ import 'package:stadium_food/src/presentation/screens/auth/login_screen.dart';
 import 'package:stadium_food/src/presentation/screens/auth/register_process_screen.dart';
 import 'package:stadium_food/src/presentation/screens/auth/register_screen.dart';
 import 'package:stadium_food/src/presentation/screens/auth/register_success_screen.dart';
-import 'package:stadium_food/src/presentation/screens/auth/set_location_screen.dart';
-import 'package:stadium_food/src/presentation/screens/auth/set_payment_screen.dart';
+
 import 'package:stadium_food/src/presentation/screens/auth/upload_photo_screen.dart';
 import 'package:stadium_food/src/presentation/screens/chat/chat_details_screen.dart';
 import 'package:stadium_food/src/presentation/screens/explore/food_details_screen.dart';
@@ -59,20 +58,12 @@ class AppRouter {
           builder: (_) => const RegisterProcessScreen(),
         );
 
-      case '/register/set-payment':
-        return MaterialPageRoute(
-          builder: (_) => const SetPaymentScreen(),
-        );
 
       case '/register/upload-photo':
         return MaterialPageRoute(
           builder: (_) => const UploadPhotoScreen(),
         );
 
-      case '/register/set-location':
-        return MaterialPageRoute(
-          builder: (_) => const SetLocationScreen(),
-        );
 
       case '/register/success':
         return MaterialPageRoute(

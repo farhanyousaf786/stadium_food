@@ -60,10 +60,18 @@ class FirestoreDatabase {
     return await query.get();
   }
 
-  Future<void> addDocument(
+  Future<void> addUserDocument(
     String collectionName,
+    String docId,
     Map<String, dynamic> data,
   ) async {
+    await _firebaseFirestore.collection(collectionName).doc(docId).set(data);
+  }
+
+  Future<void> addDocument(
+      String collectionName,
+      Map<String, dynamic> data,
+      ) async {
     await _firebaseFirestore.collection(collectionName).add(data);
   }
 

@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:stadium_food/src/data/services/firebase_auth.dart';
 import 'package:hive/hive.dart';
 
+import '../../data/services/firestore_db.dart';
+
 part 'register_event.dart';
 part 'register_state.dart';
 
@@ -22,9 +24,13 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
           password: event.password,
         );
 
+        String userUid=firebaseAuth.currentUser!.uid;
+
+        await FirestoreDatabase().addUserDocument('users', userUid,{
+          'email':event.email
+        });
         var box = Hive.box('myBox');
         box.put('email', event.email);
-
         emit(RegisterSuccess());
       } catch (e, s) {
         debugPrint(e.toString());

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 
 class CustomTextStyle {
   static TextStyle size30Weight600Text([Color? color]) {
     return TextStyle(
       fontSize: 30,
+      fontFamily: 'Lato',
       fontWeight: FontWeight.w600,
       color: color ?? AppColors().textColor,
     );
@@ -13,6 +15,7 @@ class CustomTextStyle {
   static TextStyle size27Weight600Text([Color? color]) {
     return TextStyle(
       fontSize: 27,
+      fontFamily: 'Lato',
       fontWeight: FontWeight.w600,
       color: color ?? AppColors().textColor,
     );
@@ -21,6 +24,7 @@ class CustomTextStyle {
   static TextStyle size25Weight600Text([Color? color]) {
     return TextStyle(
       fontSize: 25,
+      fontFamily: 'Lato',
       fontWeight: FontWeight.w600,
       color: color ?? AppColors().textColor,
       height: 1.5,
@@ -31,6 +35,7 @@ class CustomTextStyle {
   static TextStyle size22Weight600Text([Color? color]) {
     return TextStyle(
       fontSize: 22,
+      fontFamily: 'Lato',
       fontWeight: FontWeight.w600,
       color: color ?? AppColors().textColor,
     );
@@ -39,6 +44,7 @@ class CustomTextStyle {
   static TextStyle size20Weight600Text([Color? color]) {
     return TextStyle(
       fontSize: 20,
+      fontFamily: 'Lato',
       fontWeight: FontWeight.w600,
       color: color ?? AppColors().textColor,
     );
@@ -47,6 +53,7 @@ class CustomTextStyle {
   static TextStyle size18Weight600Text([Color? color]) {
     return TextStyle(
       fontSize: 18,
+      fontFamily: 'Lato',
       fontWeight: FontWeight.w600,
       color: color ?? AppColors().textColor,
     );
@@ -55,6 +62,7 @@ class CustomTextStyle {
   static TextStyle size16Weight600Text([Color? color]) {
     return TextStyle(
       fontSize: 16,
+      fontFamily: 'Lato',
       fontWeight: FontWeight.w600,
       color: color ?? AppColors().textColor,
     );
@@ -63,6 +71,7 @@ class CustomTextStyle {
   static TextStyle size16Weight500Text([Color? color]) {
     return TextStyle(
       fontSize: 16,
+      fontFamily: 'Lato',
       fontWeight: FontWeight.w500,
       color: color ?? AppColors().textColor,
     );
@@ -71,6 +80,7 @@ class CustomTextStyle {
   static TextStyle size16Weight400Text([Color? color]) {
     return TextStyle(
       fontSize: 16,
+      fontFamily: 'Lato',
       fontWeight: FontWeight.w400,
       color: color ?? AppColors().textColor,
       height: 1.5,
@@ -81,6 +91,7 @@ class CustomTextStyle {
   static TextStyle size14Weight600Text([Color? color]) {
     return TextStyle(
       fontSize: 14,
+      fontFamily: 'Lato',
       fontWeight: FontWeight.w600,
       color: color ?? AppColors().textColor,
     );
@@ -89,6 +100,7 @@ class CustomTextStyle {
   static TextStyle size14Weight400Text([Color? color]) {
     return TextStyle(
       fontSize: 14,
+      fontFamily: 'Lato',
       fontWeight: FontWeight.w400,
       color: color ?? AppColors().textColor,
     );

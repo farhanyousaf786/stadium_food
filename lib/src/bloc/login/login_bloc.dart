@@ -27,8 +27,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           "users",
           "email",
           event.email,
-        ))
-            .docs[0];
+        )).docs[0];
 
         // save user data to Hive
         model.User user = model.User.fromMap(

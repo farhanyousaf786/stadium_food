@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
-import 'package:stadium_food/src/presentation/screens/set_location_map_screen.dart';
+
 import 'package:stadium_food/src/presentation/widgets/buttons/back_button.dart';
 import 'package:stadium_food/src/presentation/widgets/loading_indicator.dart';
 import 'package:stadium_food/src/presentation/widgets/price_info_widget.dart';
@@ -113,20 +113,20 @@ class OrderConfirmScreen extends StatelessWidget {
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.of(context)
-                                        .push(
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                const SetLocationMapScreen(),
-                                          ),
-                                        )
-                                        .then(
-                                          (value) => BlocProvider.of<OrderBloc>(
-                                                  context)
-                                              .add(
-                                            UpdateUI(),
-                                          ),
-                                        );
+                                    // Navigator.of(context)
+                                    //     .push(
+                                    //       MaterialPageRoute(
+                                    //         builder: (context) =>
+                                    //             const SetLocationMapScreen(),
+                                    //       ),
+                                    //     )
+                                    //     .then(
+                                    //       (value) => BlocProvider.of<OrderBloc>(
+                                    //               context)
+                                    //           .add(
+                                    //         UpdateUI(),
+                                    //       ),
+                                    //     );
                                   },
                                   child: Text(
                                     "Edit",

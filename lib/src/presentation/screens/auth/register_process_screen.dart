@@ -60,7 +60,7 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
                   box.put('lastName', _lastNameController.text.trim());
                   box.put('phone', _phoneController.text.trim());
                   // navigate to next page
-                  Navigator.pushNamed(context, '/register/set-payment');
+                  Navigator.pushNamed(context, '/register/upload-photo');
                 },
               ),
             ),

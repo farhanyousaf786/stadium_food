@@ -7,26 +7,20 @@ import 'package:hive/hive.dart';
 class User extends Equatable {
   final String email;
   final String phone;
-  final String location;
   final String firstName;
   final String lastName;
   final String? image;
   final List<DocumentReference>? favoriteFoods;
   final List<DocumentReference>? favoriteRestaurants;
-  final PaymentMethod paymentMethod;
   final DateTime createdAt;
-
-  // id is the document id
   String? id;
 
   User({
     required this.email,
     required this.phone,
-    required this.location,
     required this.firstName,
     required this.lastName,
     required this.createdAt,
-    required this.paymentMethod,
     this.image,
     this.favoriteFoods,
     this.favoriteRestaurants,
@@ -36,7 +30,6 @@ class User extends Equatable {
     return User(
       email: map['email'],
       phone: map['phone'],
-      location: map['location'],
       firstName: map['firstName'],
       lastName: map['lastName'],
       image: map['image'],
@@ -54,9 +47,7 @@ class User extends Equatable {
               ),
             )
           : null,
-      paymentMethod: map['paymentMethod'] == 'visa'
-          ? PaymentMethod.visa
-          : PaymentMethod.paypal,
+
       createdAt: map['createdAt'].toDate(),
     );
   }
@@ -66,13 +57,12 @@ class User extends Equatable {
       'id': id,
       'email': email,
       'phone': phone,
-      'location': location,
+
       'firstName': firstName,
       'lastName': lastName,
       'image': image,
       'favoriteFoods': favoriteFoods,
       'favoriteRestaurant': favoriteRestaurants,
-      'paymentMethod': paymentMethod.name,
       'createdAt': createdAt,
     };
   }
@@ -82,7 +72,6 @@ class User extends Equatable {
     return User(
       email: box.get('email', defaultValue: ''),
       phone: box.get('phone', defaultValue: ''),
-      location: box.get('location', defaultValue: ''),
       firstName: box.get('firstName', defaultValue: ''),
       lastName: box.get('lastName', defaultValue: ''),
       image: box.get('image', defaultValue: null),
@@ -96,9 +85,7 @@ class User extends Equatable {
               box.get('favoriteRestaurants'),
             )
           : null,
-      paymentMethod: box.get('paymentMethod', defaultValue: 'visa') == 'visa'
-          ? PaymentMethod.visa
-          : PaymentMethod.paypal,
+
       createdAt: box.get('createdAt', defaultValue: DateTime.now()),
     );
   }
@@ -109,13 +96,12 @@ class User extends Equatable {
     box.put('id', id);
     box.put('email', email);
     box.put('phone', phone);
-    box.put('location', location);
     box.put('firstName', firstName);
     box.put('lastName', lastName);
     box.put('image', image);
     box.put('favoriteFoods', favoriteFoods);
     box.put('favoriteRestaurants', favoriteRestaurants);
-    box.put('paymentMethod', paymentMethod.name);
+
     box.put('createdAt', createdAt);
   }
 
@@ -126,13 +112,13 @@ class User extends Equatable {
   List<Object?> get props => [
         email,
         phone,
-        location,
+
         firstName,
         lastName,
         image,
         favoriteFoods,
         favoriteRestaurants,
-        paymentMethod,
+
         createdAt,
       ];
 }

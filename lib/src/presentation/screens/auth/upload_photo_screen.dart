@@ -97,7 +97,7 @@ class _UploadPhotoScreenState extends State<UploadPhotoScreen> {
                   // navigate to next page
                   if (mounted) {
                     Navigator.pop(context);
-                    Navigator.pushNamed(context, '/register/set-location');
+                    Navigator.pushNamed(context, '/register/success');
                   }
                 },
               ),

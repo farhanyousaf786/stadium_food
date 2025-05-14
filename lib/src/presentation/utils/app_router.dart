@@ -114,10 +114,10 @@ class AppRouter {
           ),
         );
 
-      case '/foods':
-        return MaterialPageRoute(
-          builder: (_) => const FoodListScreen(),
-        );
+      // case '/foods':
+      //   return MaterialPageRoute(
+      //     builder: (_) => const FoodListScreen(),
+      //   );
 
       case '/foods/detail':
         return MaterialPageRoute(

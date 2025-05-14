@@ -40,19 +40,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    BlocProvider.of<RestaurantBloc>(context).add(
-      LoadRestaurants(
-        limit: _restaurantLimit,
-        lastDocument: null,
-      ),
-    );
-
-    BlocProvider.of<FoodBloc>(context).add(
-      LoadFoods(
-        limit: _foodLimit,
-        lastDocument: null,
-      ),
-    );
+    // BlocProvider.of<RestaurantBloc>(context).add(
+    //   LoadRestaurants(
+    //     limit: _restaurantLimit,
+    //     lastDocument: null,
+    //   ),
+    // );
+    //
+    // BlocProvider.of<FoodBloc>(context).add(
+    //   LoadFoods(
+    //     limit: _foodLimit,
+    //     lastDocument: null,
+    //   ),
+    // );
 
     super.initState();
   }
@@ -169,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
         body: _selectedIndex == 0
-            ? StadiumScreen()
+            ? const StadiumScreen()
             : _selectedIndex == 1
                 ? const ChatListScreen()
                 : _selectedIndex == 2

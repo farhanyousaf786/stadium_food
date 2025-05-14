@@ -5,10 +5,14 @@ abstract class FoodEvent {}
 
 class LoadFoods extends FoodEvent {
   // limit, lastDocument
+  final String stadiumId;
+  final String shopId;
   final int limit;
   final DocumentSnapshot? lastDocument;
 
-  LoadFoods({
+  LoadFoods( {
+    required this.stadiumId,
+    required this.shopId,
     required this.limit,
     required this.lastDocument,
   });
@@ -16,10 +20,14 @@ class LoadFoods extends FoodEvent {
 
 class FetchMoreFoods extends FoodEvent {
   // limit, lastDocument
+  final String stadiumId;
+  final String shopId;
   final int limit;
   final DocumentSnapshot? lastDocument;
 
   FetchMoreFoods({
+    required this.stadiumId,
+    required this.shopId,
     required this.limit,
     required this.lastDocument,
   });

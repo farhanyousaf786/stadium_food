@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:stadium_food/src/presentation/screens/explore/food_details_screen.dart';
+import 'package:stadium_food/src/presentation/screens/explore/food_list_screen.dart';
 import '../../../bloc/shop/shop_bloc.dart';
 import '../../../data/models/stadium.dart';
 import '../../../data/models/shop.dart';
@@ -160,7 +162,7 @@ class _StadiumDetailScreenState extends State<StadiumDetailScreen> {
                   padding: const EdgeInsets.all(16),
                   sliver: SliverList(
                     delegate: SliverChildBuilderDelegate(
-                      (context, index) => _ShopCard(shop: state.shops[index]),
+                      (context, index) => _ShopCard(shop: state.shops[index],stadium: widget.stadium,),
                       childCount: state.shops.length,
                     ),
                   ),
@@ -180,8 +182,9 @@ class _StadiumDetailScreenState extends State<StadiumDetailScreen> {
 
 class _ShopCard extends StatelessWidget {
   final Shop shop;
+  final Stadium stadium;
 
-  const _ShopCard({required this.shop});
+  const _ShopCard({required this.shop, required this.stadium});
 
   @override
   Widget build(BuildContext context) {
@@ -190,7 +193,12 @@ class _ShopCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () {
-          // TODO: Navigate to shop detail page
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => FoodListScreen(stadium: stadium, shop: shop,),
+            ),
+          );
         },
         borderRadius: BorderRadius.circular(12),
         child: Padding(

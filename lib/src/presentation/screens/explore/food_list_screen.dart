@@ -9,8 +9,15 @@ import 'package:stadium_food/src/presentation/widgets/items/food_item.dart';
 import 'package:stadium_food/src/presentation/widgets/search_filter_widget.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 
+import '../../../data/models/shop.dart';
+import '../../../data/models/stadium.dart';
+
 class FoodListScreen extends StatefulWidget {
-  const FoodListScreen({super.key});
+
+  final Stadium stadium;
+  final Shop shop;
+
+  const FoodListScreen({super.key, required this.stadium, required this.shop});
 
   @override
   State<FoodListScreen> createState() => _FoodListScreenState();
@@ -31,6 +38,8 @@ class _FoodListScreenState extends State<FoodListScreen> {
   void initState() {
     BlocProvider.of<FoodBloc>(context).add(
       LoadFoods(
+        stadiumId: widget.stadium.id,
+        shopId: widget.shop.id,
         limit: 20,
         lastDocument: _lastDocument,
       ),
@@ -41,6 +50,8 @@ class _FoodListScreenState extends State<FoodListScreen> {
           _scrollController.position.maxScrollExtent - 200) {
         BlocProvider.of<FoodBloc>(context).add(
           FetchMoreFoods(
+            stadiumId: widget.stadium.id,
+            shopId: widget.shop.id,
             limit: _foodLimit,
             lastDocument: _lastDocument,
           ),

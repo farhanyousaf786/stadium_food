@@ -283,25 +283,12 @@ class _ReviewScreenState extends State<ReviewScreen> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(100),
                           child: (isRestaurant
-                                      ? _restaurant.image
-                                      : widget.order.cart[cartIndex].image) !=
-                                  null
+                                      ? _restaurant.image != null
+                                      : widget.order.cart[cartIndex].images.isNotEmpty)
                               ? Image.network(
                                   isRestaurant
                                       ? _restaurant.image!
-                                      : widget.order.cart[cartIndex].image!,
-                                  fit: BoxFit.cover,
-                                  width: 200,
-                                  height: 200,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      ImagePlaceholder(
-                                    iconData: isRestaurant
-                                        ? Icons.restaurant
-                                        : Icons.fastfood,
-                                    height: 200,
-                                    width: 200,
-                                    iconSize: 80,
-                                  ),
+                                      : widget.order.cart[cartIndex].images.first,
                                 )
                               : ImagePlaceholder(
                                   iconData: isRestaurant

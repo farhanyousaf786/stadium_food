@@ -37,7 +37,7 @@ class RestaurantRepository {
 
     List<Food> foods = snapshot.docs
         .map(
-          (e) => Food.fromMap(e.data() as Map<String, dynamic>)..id = e.id,
+          (e) => Food.fromMap(e.id, e.data() as Map<String, dynamic>),
         )
         .toList();
 

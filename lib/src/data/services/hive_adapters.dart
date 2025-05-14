@@ -24,30 +24,50 @@ class FoodAdapter extends TypeAdapter<Food> {
 
   @override
   Food read(BinaryReader reader) {
+    final fields = reader.read();
     return Food(
-      name: reader.read(),
-      description: reader.read(),
-      price: reader.read(),
-      image: reader.read(),
-      category: reader.read(),
-      restaurant: reader.read(),
-      createdAt: reader.read(),
-      ingredients: reader.read(),
-      quantity: reader.read(),
+      name: fields[0] as String,
+      price: fields[1] as double,
+      description: fields[2] as String? ?? '',
+      category: fields[3] as String,
+      createdAt: DateTime.now(),
+      images: fields[4] as List<String>,
+      id: fields[5] as String,
+      allergens: fields[6] as List<String>,
+      customization: fields[7] as Map<String, dynamic>,
+      extras: fields[8] as List<Map<String, dynamic>>,
+      isAvailable: fields[9] as bool,
+      nutritionalInfo: fields[10] as Map<String, dynamic>,
+      preparationTime: fields[11] as int,
+      sauces: fields[12] as List<Map<String, dynamic>>,
+      shopId: fields[13] as String,
+      sizes: fields[14] as List<Map<String, dynamic>>,
+      toppings: fields[15] as List<Map<String, dynamic>>,
+      updatedAt: fields[16] as DateTime,
     );
   }
 
   @override
   void write(BinaryWriter writer, Food obj) {
-    writer.write(obj.name);
-    writer.write(obj.description);
-    writer.write(obj.price);
-    writer.write(obj.image);
-    writer.write(obj.category);
-    writer.write(obj.restaurant);
-    writer.write(obj.createdAt);
-    writer.write(obj.ingredients);
-    writer.write(obj.quantity);
+    writer.write([
+      obj.name,
+      obj.price,
+      obj.description,
+      obj.category,
+      obj.images,
+      obj.id,
+      obj.allergens,
+      obj.customization,
+      obj.extras,
+      obj.isAvailable,
+      obj.nutritionalInfo,
+      obj.preparationTime,
+      obj.sauces,
+      obj.shopId,
+      obj.sizes,
+      obj.toppings,
+      obj.updatedAt,
+    ]);
   }
 }
 

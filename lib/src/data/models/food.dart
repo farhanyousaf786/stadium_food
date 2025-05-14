@@ -5,46 +5,85 @@ import 'package:hive/hive.dart';
 
 // ignore: must_be_immutable
 class Food extends Equatable {
-  final DocumentReference category;
-  final DocumentReference restaurant;
-  final String name;
-  final double price;
-  final List<String> ingredients;
+  final String id;
+  final List<String> allergens;
+  final String category;
   final DateTime createdAt;
-  final String? image;
-  final String? description;
-  final double? discount;
+  final Map<String, dynamic> customization;
+  final String description;
+  final List<Map<String, dynamic>> extras;
+  final List<String> images;
+  final bool isAvailable;
+  final String name;
+  final Map<String, dynamic> nutritionalInfo;
+  final int preparationTime;
+  final double price;
+  final List<Map<String, dynamic>> sauces;
+  final String shopId;
+  final List<Map<String, dynamic>> sizes;
+  final List<Map<String, dynamic>> toppings;
+  final DateTime updatedAt;
+  final DocumentReference? restaurant;
 
   // for cart
   int quantity = 0;
 
-  // id is the document id
-  String? id;
-
   Food({
+    required this.id,
+    required this.allergens,
     required this.category,
-    required this.restaurant,
-    required this.name,
-    required this.price,
-    required this.ingredients,
     required this.createdAt,
-    this.image,
-    this.discount,
-    this.description,
-    required this.quantity,
+    required this.customization,
+    required this.description,
+    required this.extras,
+    required this.images,
+    required this.isAvailable,
+    required this.name,
+    required this.nutritionalInfo,
+    required this.preparationTime,
+    required this.price,
+    required this.sauces,
+    required this.shopId,
+    required this.sizes,
+    required this.toppings,
+    required this.updatedAt,
+    this.restaurant,
+    this.quantity = 0,
   });
 
-  factory Food.fromMap(Map<String, dynamic> map) {
+  factory Food.fromMap(String id, Map<String, dynamic> map) {
     return Food(
-      image: map['image'],
-      category: map['category'],
-      restaurant: map['restaurant'],
-      name: map['name'],
-      price: map['price'] * 1.0,
-      ingredients: List<String>.from(map['ingredients'] ?? const []),
-      createdAt: map['createdAt'].toDate(),
-      discount: map['discount'] * 1.0 ?? 0.0,
-      description: map['description'],
+      id: id,
+      allergens: List<String>.from(map['allergens'] ?? []),
+      category: map['category'] ?? '',
+      createdAt: (map['createdAt'] as Timestamp).toDate(),
+      customization: Map<String, dynamic>.from(map['customization'] ?? {}),
+      description: map['description'] ?? '',
+      extras: List<Map<String, dynamic>>.from(map['extras']?.map(
+            (x) => Map<String, dynamic>.from(x),
+          ) ??
+          []),
+      images: List<String>.from(map['images'] ?? []),
+      isAvailable: map['isAvailable'] ?? true,
+      name: map['name'] ?? '',
+      nutritionalInfo: Map<String, dynamic>.from(map['nutritionalInfo'] ?? {}),
+      preparationTime: map['preparationTime'] ?? 15,
+      price: (map['price'] ?? 0).toDouble(),
+      sauces: List<Map<String, dynamic>>.from(map['sauces']?.map(
+            (x) => Map<String, dynamic>.from(x),
+          ) ??
+          []),
+      shopId: map['shopId'] ?? '',
+      sizes: List<Map<String, dynamic>>.from(map['sizes']?.map(
+            (x) => Map<String, dynamic>.from(x),
+          ) ??
+          []),
+      toppings: List<Map<String, dynamic>>.from(map['toppings']?.map(
+            (x) => Map<String, dynamic>.from(x),
+          ) ??
+          []),
+      updatedAt: (map['updatedAt'] as Timestamp).toDate(),
+      restaurant: map['restaurant'] as DocumentReference?,
       quantity: map['quantity'] ?? 0,
     );
   }
@@ -52,15 +91,23 @@ class Food extends Equatable {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'image': image,
+      'allergens': allergens,
       'category': category,
-      'restaurant': restaurant,
-      'name': name,
-      'price': price,
-      'ingredients': ingredients,
       'createdAt': createdAt,
-      'discount': discount ?? 0.0,
-      'description': description ?? '',
+      'customization': customization,
+      'description': description,
+      'extras': extras,
+      'images': images,
+      'isAvailable': isAvailable,
+      'name': name,
+      'nutritionalInfo': nutritionalInfo,
+      'preparationTime': preparationTime,
+      'price': price,
+      'sauces': sauces,
+      'shopId': shopId,
+      'sizes': sizes,
+      'toppings': toppings,
+      'updatedAt': updatedAt,
     };
   }
 

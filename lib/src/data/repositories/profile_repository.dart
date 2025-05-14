@@ -19,8 +19,9 @@ class ProfileRepository {
       DocumentSnapshot foodSnapshot = await foodReference.get();
       favoriteFoods.add(
         Food.fromMap(
+          foodSnapshot.id,
           foodSnapshot.data() as Map<String, dynamic>,
-        )..id = foodSnapshot.id,
+        ),
       );
     }
     return favoriteFoods;

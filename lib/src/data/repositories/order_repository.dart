@@ -3,6 +3,7 @@ import 'package:stadium_food/src/data/models/order_status.dart';
 import 'package:stadium_food/src/data/models/payment_method.dart';
 import 'package:stadium_food/src/data/services/firestore_db.dart';
 import 'package:hive/hive.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/food.dart';
 
@@ -89,7 +90,7 @@ class OrderRepository {
       createdAt: DateTime.now(),
       status: OrderStatus.delivered,
       userEmail: box.get('email'),
-      restaurant: cart[0].restaurant,
+      restaurant: cart[0].restaurant ?? FirebaseFirestore.instance.collection('restaurants').doc('default'),
       paymentMethod: box.get('paymentMethod', defaultValue: 'visa') == 'visa'
           ? PaymentMethod.visa
           : PaymentMethod.paypal,
@@ -116,9 +117,9 @@ class OrderRepository {
     );
     for (var item in data.docs) {
       model.Order order = model.Order.fromMap(
+        item.id,
         item.data() as Map<String, dynamic>,
       );
-      order.id = item.id;
       orders.add(order);
     }
 

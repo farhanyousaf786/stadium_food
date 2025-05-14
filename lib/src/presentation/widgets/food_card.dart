@@ -37,7 +37,7 @@ class FoodCard extends StatelessWidget {
                 topLeft: Radius.circular(10),
                 topRight: Radius.circular(10),
               ),
-              child: food.image == null
+              child: food.images.isEmpty
                   ? ImagePlaceholder(
                       width: double.infinity,
                       height: 100,
@@ -45,7 +45,7 @@ class FoodCard extends StatelessWidget {
                       iconSize: 50,
                     )
                   : Image.network(
-                      food.image!,
+                      food.images.first,
                       fit: BoxFit.cover,
                       width: double.infinity,
                       height: 100,

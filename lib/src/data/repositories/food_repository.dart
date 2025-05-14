@@ -18,8 +18,9 @@ class FoodRepository {
     List<Food> foods = foodsCollection.docs
         .map(
           (snapshot) => Food.fromMap(
+            snapshot.id,
             snapshot.data() as Map<String, dynamic>,
-          )..id = snapshot.id,
+          ),
         )
         .toList();
 

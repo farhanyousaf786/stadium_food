@@ -157,14 +157,13 @@ class OrderDetailsScreen extends StatelessWidget {
                             children: [
                               ClipRRect(
                                 borderRadius: AppStyles.defaultBorderRadius,
-                                child: item.image != null
+                                child: item.images.isNotEmpty
                                     ? Image.network(
-                                        item.image!,
+                                        item.images.first,
                                         fit: BoxFit.cover,
                                         width: 64,
                                         height: 64,
-                                        errorBuilder:
-                                            (context, error, stackTrace) {
+                                        errorBuilder: (context, error, stackTrace) {
                                           return ImagePlaceholder(
                                             iconData: Icons.fastfood,
                                             iconSize: 30,
@@ -172,13 +171,9 @@ class OrderDetailsScreen extends StatelessWidget {
                                             height: 64,
                                           );
                                         },
-                                      )
-                                    : ImagePlaceholder(
-                                        iconData: Icons.fastfood,
-                                        iconSize: 30,
+                                      ): SizedBox(
                                         width: 64,
-                                        height: 64,
-                                      ),
+                                        )
                               ),
                               const SizedBox(width: 16),
                               Column(
@@ -186,8 +181,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                 children: [
                                   Text(
                                     item.name,
-                                    style:
-                                        CustomTextStyle.size16Weight500Text(),
+                                    style: CustomTextStyle.size16Weight500Text(),
                                   ),
                                   const SizedBox(height: 5),
                                   ShaderMask(

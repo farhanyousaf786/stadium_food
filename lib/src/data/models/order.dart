@@ -33,9 +33,10 @@ class Order extends Equatable {
     required this.paymentMethod,
   });
 
-  factory Order.fromMap(Map<String, dynamic> map) {
-    return Order(
-      cart: List<Food>.from(map['cart']?.map((x) => Food.fromMap(x)) ?? []),
+  factory Order.fromMap(String id, Map<String, dynamic> map) {
+    // Set the id field
+    var order = Order(
+      cart: List<Food>.from(map['cart']?.map((x) => Food.fromMap(x['id'] as String, x as Map<String, dynamic>)) ?? []),
       subtotal: map['subtotal'] * 1.0,
       deliveryFee: map['deliveryFee'] * 1.0,
       discount: map['discount'] * 1.0,
@@ -46,6 +47,8 @@ class Order extends Equatable {
       createdAt: map['createdAt'].toDate(),
       paymentMethod: PaymentMethod.values[map['paymentMethod']],
     );
+    order.id = id;
+    return order;
   }
 
   Map<String, dynamic> toMap() {

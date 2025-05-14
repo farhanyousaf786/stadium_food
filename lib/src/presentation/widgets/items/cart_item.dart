@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:stadium_food/src/data/models/food.dart';
 import 'package:stadium_food/src/data/services/firestore_db.dart';
@@ -23,7 +24,9 @@ class _CartItemState extends State<CartItem> {
   @override
   void initState() {
     super.initState();
-    _db.getDocumentFromReference(widget.food.category).then((value) {
+    _db.getDocumentFromReference(
+      FirebaseFirestore.instance.collection('categories').doc(widget.food.category)
+    ).then((value) {
       if (mounted) {
         setState(() {
           var map = value.data() as Map<String, dynamic>;
@@ -53,13 +56,13 @@ class _CartItemState extends State<CartItem> {
             ),
             child: ClipRRect(
               borderRadius: AppStyles.defaultBorderRadius,
-              child: widget.food.image == null
+              child: widget.food.images.isEmpty
                   ? ImagePlaceholder(
                       iconData: Icons.fastfood,
                       iconSize: 30,
                     )
                   : Image.network(
-                      widget.food.image!,
+                      widget.food.images.first,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return ImagePlaceholder(

@@ -32,7 +32,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
   void initState() {
     super.initState();
     BlocProvider.of<FoodBloc>(context).add(
-      FetchOrderCount(foodId: widget.food.id!),
+      FetchOrderCount(foodId: widget.food.id),
     );
 
     DocumentReference foodRef =
@@ -50,13 +50,19 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
     return BlocListener<TestimonialBloc, TestimonialState>(
       listener: (context, state) {
         if (state is TestimonialsFetched) {
-          testimonials = state.testimonials;
-          try {
-            rating = testimonials.map((e) => e.rating).reduce((a, b) => a + b) /
-                testimonials.length;
-          } catch (e) {
-            rating = 0;
-          }
+          setState(() {
+            testimonials = state.testimonials;
+            try {
+              rating = testimonials.map((e) => e.rating).reduce((a, b) => a + b) /
+                  testimonials.length;
+            } catch (e) {
+              rating = 0;
+            }
+          });
+        } else if (state is TestimonialFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to load testimonials')),
+          );
         }
       },
       child: Scaffold(
@@ -86,9 +92,9 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
               flexibleSpace: Stack(
                 children: [
                   FlexibleSpaceBar(
-                    background: widget.food.image != null
+                    background: widget.food.images.isNotEmpty
                         ? Image.network(
-                            widget.food.image!,
+                            widget.food.images.first,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) =>
                                 ImagePlaceholder(
@@ -181,7 +187,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                                 isLiked: widget.food.isFavorite,
                                 onTap: () {
                                   BlocProvider.of<ProfileBloc>(context).add(
-                                    ToggleFavoriteFood(foodId: widget.food.id!),
+                                    ToggleFavoriteFood(foodId: widget.food.id),
                                   );
                                 },
                               );
@@ -236,9 +242,18 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                         const SizedBox(width: 10),
                         BlocBuilder<FoodBloc, FoodState>(
                           builder: (context, state) {
-                            if (state is OrderCountFetched) {
+                            if (state is OrderCountFetching) {
+                              return const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: AppColors.primaryColor,
+                                ),
+                              );
+                            } else if (state is OrderCountFetched) {
                               return Text(
-                                "${state.count} ${state.count == 1 ? "Order" : "Orders"}",
+                                "${state.count} ${state.count == 1 ? 'Order' : 'Orders'}",
                                 style: CustomTextStyle.size14Weight400Text(
                                   AppColors().secondaryTextColor,
                                 ),
@@ -257,10 +272,9 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                     const SizedBox(height: 24),
 
                     // description
-                    widget.food.description != null &&
-                            widget.food.description!.isNotEmpty
+                    widget.food.description != null
                         ? Text(
-                            widget.food.description!,
+                            widget.food.description,
                             style: CustomTextStyle.size14Weight400Text(),
                           )
                         : Center(
@@ -273,17 +287,17 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                           ),
                     const SizedBox(height: 20),
 
-                    // ingredients
+                    // allergens
                     Text(
-                      "Ingredients",
+                      "Allergens",
                       style: CustomTextStyle.size18Weight600Text(),
                     ),
                     const SizedBox(height: 10),
-                    widget.food.ingredients.isNotEmpty
+                    widget.food.allergens.isNotEmpty
                         ? ListView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
-                            itemCount: widget.food.ingredients.length,
+                            itemCount: widget.food.allergens.length,
                             padding: const EdgeInsets.all(0),
                             itemBuilder: (context, index) {
                               return Row(
@@ -292,7 +306,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                                   const BulletPoint(),
                                   const SizedBox(width: 10),
                                   Text(
-                                    widget.food.ingredients[index],
+                                    widget.food.allergens[index],
                                     style:
                                         CustomTextStyle.size14Weight400Text(),
                                   ),
@@ -318,6 +332,12 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                     const SizedBox(height: 20),
                     BlocBuilder<TestimonialBloc, TestimonialState>(
                       builder: (context, state) {
+                        if (state is TestimonialLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator(color: AppColors.primaryColor),
+                          );
+                        }
+                        
                         if (testimonials.isEmpty) {
                           return Center(
                             child: Text(

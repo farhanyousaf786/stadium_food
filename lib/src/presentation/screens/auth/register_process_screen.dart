@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:stadium_food/src/bloc/user_profile/user_profile_bloc.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/back_button.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
+import 'package:stadium_food/src/presentation/widgets/loading_indicator.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
@@ -26,20 +29,57 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
+  late final UserProfileBloc _userProfileBloc;
+
   @override
   void initState() {
+    super.initState();
+    _userProfileBloc = UserProfileBloc();
     // set data to form fields
     _firstNameController.text = box.get('firstName', defaultValue: '');
     _lastNameController.text = box.get('lastName', defaultValue: '');
     _phoneController.text = box.get('phone', defaultValue: '');
-    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _userProfileBloc.close();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _phoneController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Stack(
+    return BlocProvider<UserProfileBloc>(
+      create: (context) => _userProfileBloc,
+      child: BlocListener<UserProfileBloc, UserProfileState>(
+        listener: (context, state) {
+          if (state is UserProfileSuccess) {
+            Navigator.pushNamed(context, '/register/upload-photo');
+          }
+
+          if (state is UserProfileError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: AppColors.errorColor,
+                content: Text(state.error),
+              ),
+            );
+          }
+
+          if (state is UserProfileLoading) {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => const LoadingIndicator(),
+            );
+          }
+        },
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: Stack(
         children: [
 
           Align(
@@ -59,8 +99,13 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
                   box.put('firstName', _firstNameController.text.trim());
                   box.put('lastName', _lastNameController.text.trim());
                   box.put('phone', _phoneController.text.trim());
-                  // navigate to next page
-                  Navigator.pushNamed(context, '/register/upload-photo');
+
+                  // update user profile in Firebase
+                  _userProfileBloc.add(UpdateUserProfile(
+                    firstName: _firstNameController.text.trim(),
+                    lastName: _lastNameController.text.trim(),
+                    phone: _phoneController.text.trim(),
+                  ));
                 },
               ),
             ),
@@ -197,6 +242,9 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
           ),
         ],
       ),
+    ),
+  )
+  
     );
   }
 }

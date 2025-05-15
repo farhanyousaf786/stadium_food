@@ -86,10 +86,18 @@ class FirestoreDatabase {
 
   Future<void> addUserDocument(
     String collectionName,
-    String docId,
+    String documentId,
     Map<String, dynamic> data,
   ) async {
-    await _firebaseFirestore.collection(collectionName).doc(docId).set(data);
+    await _firebaseFirestore.collection(collectionName).doc(documentId).set(data);
+  }
+
+  Future<void> updateUserDocument(
+    String collectionName,
+    String documentId,
+    Map<String, dynamic> data,
+  ) async {
+    await _firebaseFirestore.collection(collectionName).doc(documentId).update(data);
   }
 
   Future<void> addDocument(

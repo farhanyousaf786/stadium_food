@@ -86,6 +86,28 @@ class FoodItem extends StatelessWidget {
                 ],
               ),
             ),
+            // Warning stripe
+            Container(
+              height: 20,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.yellow[700]!,
+                    Colors.yellow[600]!,
+                  ],
+                ),
+              ),
+              child: const Center(
+                child: Text(
+                  'OUT TEXT OVERFLOWED BY 11 PIXELS',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),

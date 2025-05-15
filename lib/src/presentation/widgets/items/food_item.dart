@@ -1,113 +1,92 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stadium_food/src/data/models/food.dart';
-import 'package:stadium_food/src/data/services/firestore_db.dart';
-import 'package:stadium_food/src/presentation/widgets/image_placeholder.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
-import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:shimmer/shimmer.dart';
 
-class FoodItem extends StatefulWidget {
+class FoodItem extends StatelessWidget {
   final Food food;
-  const FoodItem({super.key, required this.food});
-
-  @override
-  State<FoodItem> createState() => _FoodItemState();
-}
-
-class _FoodItemState extends State<FoodItem> {
-  final FirestoreDatabase _db = FirestoreDatabase();
-  String category = "";
-  @override
-  void initState() {
-    super.initState();
-    _db.getDocumentFromReference(
-      FirebaseFirestore.instance.collection('categories').doc(widget.food.category)
-    ).then((value) {
-      if (mounted) {
-        setState(() {
-          var map = value.data() as Map<String, dynamic>;
-          category = map["name"];
-        });
-      }
-    });
-  }
+  final VoidCallback? onTap;
+  const FoodItem({super.key, required this.food, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Ink(
-      decoration: BoxDecoration(
-        borderRadius: AppStyles.largeBorderRadius,
-        boxShadow: [AppStyles.boxShadow7],
-        color: AppColors().cardColor,
+    return Card(
+      elevation: 5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
       ),
       child: InkWell(
-        borderRadius: AppStyles.largeBorderRadius,
-        onTap: () {
-          Navigator.pushNamed(
-            context,
-            "/foods/detail",
-            arguments: widget.food,
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 10, 20, 10),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 64,
-                width: 64,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [AppStyles().largeBoxShadow],
-                ),
-                child: ClipRRect(
-                  borderRadius: AppStyles.defaultBorderRadius,
-                  child: widget.food.images.isEmpty
-                      ? ImagePlaceholder(
-                          iconData: Icons.fastfood,
-                          iconSize: 30,
-                        )
-                      : Image.network(
-                          widget.food.images.first,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Center(
-                              child: Icon(Icons.error),
-                            );
-                          },
+        onTap: onTap,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image section
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+              child: AspectRatio(
+                aspectRatio: 1.2,
+                child: food.images.isEmpty
+                    ? Container(
+                        color: Colors.grey[200],
+                        child: const Icon(
+                          Icons.fastfood,
+                          size: 40,
+                          color: Colors.grey,
                         ),
-                ),
-              ),
-              const SizedBox(width: 20),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.food.name,
-                      style: CustomTextStyle.size16Weight400Text(),
-                    ),
-                    Text(
-                      category,
-                      style: CustomTextStyle.size14Weight400Text(
-                        AppColors().secondaryTextColor,
+                      )
+                    : Image.network(
+                        food.images.first,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: Colors.grey[200],
+                            child: const Icon(
+                              Icons.error,
+                              size: 40,
+                              color: Colors.grey,
+                            ),
+                          );
+                        },
                       ),
+              ),
+            ),
+            // Content section
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    food.name,
+                    style: CustomTextStyle.size16Weight600Text(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    food.description != '' ? food.description : 'No description available',
+                    style: CustomTextStyle.size14Weight400Text(
+                      AppColors().secondaryTextColor,
                     ),
-                  ],
-                ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Text(
+                        '\$${food.price.toStringAsFixed(2)}',
+                        style: CustomTextStyle.size18Weight600Text(
+                          AppColors.primaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              const SizedBox(width: 10),
-              Text(
-                "\$${widget.food.price}",
-                style: CustomTextStyle.size22Weight600Text(
-                  AppColors.secondaryDarkColor,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -119,85 +98,74 @@ class FoodItemShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Ink(
-      decoration: BoxDecoration(
-        borderRadius: AppStyles.largeBorderRadius,
-        boxShadow: [AppStyles.boxShadow7],
-        color: AppColors().cardColor,
+    return Card(
+      elevation: 5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
       ),
-      child: InkWell(
-        borderRadius: AppStyles.largeBorderRadius,
-        onTap: () {},
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 10, 20, 10),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Shimmer.fromColors(
-                baseColor: AppColors.shimmerBaseColor,
-                highlightColor: AppColors.shimmerHighlightColor,
-                child: Container(
-                  height: 64,
-                  width: 64,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [AppStyles().largeBoxShadow],
-                    color: AppColors.shimmerBaseColor,
-                  ),
-                ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Image shimmer
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+            child: AspectRatio(
+              aspectRatio: 1.2,
+              child: Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Container(color: Colors.white),
               ),
-              const SizedBox(width: 20),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Shimmer.fromColors(
-                      baseColor: AppColors.shimmerBaseColor,
-                      highlightColor: AppColors.shimmerHighlightColor,
-                      child: Container(
-                        height: 16,
-                        width: 100,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [AppStyles().largeBoxShadow],
-                          color: AppColors.shimmerBaseColor,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Shimmer.fromColors(
-                      baseColor: AppColors.shimmerBaseColor,
-                      highlightColor: AppColors.shimmerHighlightColor,
-                      child: Container(
-                        height: 16,
-                        width: 100,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [AppStyles().largeBoxShadow],
-                          color: AppColors.shimmerBaseColor,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 10),
-              Shimmer.fromColors(
-                baseColor: AppColors.shimmerBaseColor,
-                highlightColor: AppColors.shimmerHighlightColor,
-                child: Container(
-                  height: 32,
-                  width: 32,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [AppStyles().largeBoxShadow],
-                    color: AppColors.shimmerBaseColor,
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          // Content shimmer
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    height: 20,
+                    width: 150,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    height: 16,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    height: 24,
+                    width: 80,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

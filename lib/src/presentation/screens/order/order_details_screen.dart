@@ -184,6 +184,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                     style: CustomTextStyle.size16Weight500Text(),
                                   ),
                                   const SizedBox(height: 5),
+                                  
                                   ShaderMask(
                                     shaderCallback: (rect) {
                                       return LinearGradient(

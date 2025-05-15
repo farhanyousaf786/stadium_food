@@ -7,7 +7,6 @@ import '../../../data/models/shop.dart';
 import '../../../data/models/stadium.dart';
 import '../../widgets/buttons/back_button.dart';
 import '../../widgets/items/food_item.dart';
-import '../../widgets/search_filter_widget.dart';
 import '../../utils/custom_text_style.dart';
 import '../../utils/app_colors.dart';
 
@@ -27,7 +26,6 @@ class _FoodListScreenState extends State<FoodListScreen> {
   final List<Food> _foods = [];
   List<Food> _filteredFoods = [];
   final TextEditingController _searchController = TextEditingController();
-  String? _selectedCategory;
 
   @override
   void initState() {
@@ -54,41 +52,13 @@ class _FoodListScreenState extends State<FoodListScreen> {
     }
   }
 
-  Widget _buildCategoryChips() {
-    final categories = _foods.map((food) => food.category).toSet().toList();
-    categories.sort();
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ChoiceChip(
-              label: const Text('All'),
-              selected: _selectedCategory == null,
-              onSelected: (selected) {
-                if (selected) {
-                  setState(() => _selectedCategory = null);
-                }
-              },
-            ),
-          ),
-          ...categories.map((category) => Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ChoiceChip(
-              label: Text(category),
-              selected: category == _selectedCategory,
-              onSelected: (selected) {
-                setState(() {
-                  _selectedCategory = selected ? category : null;
-                });
-              },
-            ),
-          )).toList(),
-        ],
-      ),
-    );
+  void _filterFoods(String query) {
+    setState(() {
+      _filteredFoods = _foods.where((food) =>
+          food.name.toLowerCase().contains(query.toLowerCase()) ||
+          food.description.toLowerCase().contains(query.toLowerCase())
+      ).toList();
+    });
   }
 
   @override
@@ -149,21 +119,34 @@ class _FoodListScreenState extends State<FoodListScreen> {
                         style: TextStyle(color: Colors.grey[600]),
                       ),
                       const SizedBox(height: 20),
-                      SearchFilterWidget(
-                        searchController: _searchController,
-                        onChanged: (value) {
-                          setState(() {
-                            _filteredFoods = _foods.where((food) =>
-                                food.name.toLowerCase().contains(value.toLowerCase()) ||
-                                food.description.toLowerCase().contains(value.toLowerCase())
-                            ).toList();
-                          });
-                        },
-                        onTap: () {},
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: TextField(
+                          controller: _searchController,
+                          onChanged: _filterFoods,
+                          decoration: InputDecoration(
+                            hintText: 'Search for food...',
+                            prefixIcon: const Icon(Icons.search, color: AppColors.primaryColor),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: BorderSide.none,
+                            ),
+                            filled: true,
+                            fillColor: Colors.white,
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 20),
-                      _buildCategoryChips(),
-                      const SizedBox(height: 16),
                       Expanded(
                         child: BlocBuilder<FoodBloc, FoodState>(
                           builder: (context, state) {
@@ -172,12 +155,8 @@ class _FoodListScreenState extends State<FoodListScreen> {
                                 child: CircularProgressIndicator(color: AppColors.primaryColor),
                               );
                             }
-                            
-                            final displayedFoods = _selectedCategory != null
-                                ? _filteredFoods.where((food) => food.category == _selectedCategory).toList()
-                                : _filteredFoods;
 
-                            if (displayedFoods.isEmpty) {
+                            if (_filteredFoods.isEmpty) {
                               return Center(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -193,14 +172,26 @@ class _FoodListScreenState extends State<FoodListScreen> {
                               );
                             }
 
-                            return ListView.builder(
+                            return GridView.builder(
                               controller: _scrollController,
-                              padding: EdgeInsets.zero,
-                              itemCount: displayedFoods.length,
+                              padding: const EdgeInsets.symmetric(horizontal: 5),
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                childAspectRatio: 0.75,
+                                crossAxisSpacing: 15,
+                                mainAxisSpacing: 15,
+                              ),
+                              itemCount: _filteredFoods.length,
                               itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 16),
-                                  child: FoodItem(food: displayedFoods[index]),
+                                return FoodItem(
+                                  food: _filteredFoods[index],
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                      context,
+                                      '/food-details',
+                                      arguments: _filteredFoods[index],
+                                    );
+                                  },
                                 );
                               },
                             );
@@ -209,9 +200,8 @@ class _FoodListScreenState extends State<FoodListScreen> {
                       ),
                     ],
                   ),
-                  ),
                 ),
-              
+              ),
             ],
           ),
         ),

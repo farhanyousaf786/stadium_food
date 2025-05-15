@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hive/hive.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
@@ -64,6 +65,9 @@ class RegisterSuccessScreen extends StatelessWidget {
               child: PrimaryButton(
                 text: "Try Order",
                 onTap: () {
+
+                  var box = Hive.box('myBox');
+                  box.put('isRegistered', true);
                   Navigator.pushNamedAndRemoveUntil(
                     context,
                     "/home",

@@ -188,7 +188,7 @@ class _FoodListScreenState extends State<FoodListScreen> {
                                   onTap: () {
                                     Navigator.pushNamed(
                                       context,
-                                      '/food-details',
+                                      '/foods/detail',
                                       arguments: _filteredFoods[index],
                                     );
                                   },

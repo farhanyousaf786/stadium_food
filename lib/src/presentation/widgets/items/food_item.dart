@@ -87,27 +87,20 @@ class FoodItem extends StatelessWidget {
               ),
             ),
             // Warning stripe
-            Container(
+            SizedBox(
               height: 20,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: const AssetImage('assets/images/hazard_pattern.png'),
-                  repeat: ImageRepeat.repeat,
-                  colorFilter: ColorFilter.mode(
-                    Colors.yellow[600]!,
-                    BlendMode.srcIn,
-                  ),
-                ),
-              ),
-              child: Container(
-                color: Colors.yellow.withOpacity(0.9),
-                child: const Center(
-                  child: Text(
-                    'OUT TEXT OVERFLOWED BY 11 PIXELS',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
+              child: CustomPaint(
+                painter: HazardPainter(),
+                child: Container(
+                  color: Colors.yellow.withOpacity(0.7),
+                  child: const Center(
+                    child: Text(
+                      'OUT TEXT OVERFLOWED BY 11 PIXELS',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -118,6 +111,32 @@ class FoodItem extends StatelessWidget {
       ),
     );
   }
+}
+
+class HazardPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.fill;
+
+    final stripeWidth = size.height;
+    final stripeSpacing = size.height;
+    var x = -size.height;
+
+    while (x < size.width + size.height) {
+      final path = Path()
+        ..moveTo(x, 0)
+        ..lineTo(x + stripeWidth, 0)
+        ..lineTo(x, size.height)
+        ..close();
+      canvas.drawPath(path, paint);
+      x += stripeWidth + stripeSpacing;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class FoodItemShimmer extends StatelessWidget {

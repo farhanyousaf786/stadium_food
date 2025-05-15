@@ -12,7 +12,6 @@ part 'register_state.dart';
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   RegisterBloc() : super(RegisterInitial()) {
-    on<RegisterEvent>((event, emit) {});
     on<RegisterSubmitted>((event, emit) async {
       emit(RegisterLoading());
 
@@ -26,8 +25,12 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
 
         String userUid=firebaseAuth.currentUser!.uid;
 
-        await FirestoreDatabase().addUserDocument('customers', userUid,{
-          'email':event.email
+        await FirestoreDatabase().addUserDocument('customers', userUid, {
+          'email': event.email,
+          'createdAt': DateTime.now().toIso8601String(),
+          'updatedAt': DateTime.now().toIso8601String(),
+          'isActive': true,
+          'type': 'customer'
         });
         var box = Hive.box('myBox');
         box.put('email', event.email);

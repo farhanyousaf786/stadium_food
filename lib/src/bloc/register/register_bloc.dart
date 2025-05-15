@@ -1,11 +1,12 @@
 import 'package:bloc/bloc.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide User;
 import 'package:flutter/foundation.dart';
 
 import 'package:stadium_food/src/data/services/firebase_auth.dart';
 import 'package:hive/hive.dart';
 
 import '../../data/services/firestore_db.dart';
+import '../../data/models/user.dart';
 
 part 'register_event.dart';
 part 'register_state.dart';
@@ -25,13 +26,15 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
 
         String userUid=firebaseAuth.currentUser!.uid;
 
-        await FirestoreDatabase().addUserDocument('customers', userUid, {
-          'email': event.email,
-          'createdAt': DateTime.now().toIso8601String(),
-          'updatedAt': DateTime.now().toIso8601String(),
-          'isActive': true,
-          'type': 'customer'
-        });
+        final user = User(
+          email: event.email,
+          phone: '',
+          firstName: '',
+          lastName: '',
+          createdAt: DateTime.now(),
+        );
+        
+        await FirestoreDatabase().addUserDocument('customers', userUid, user.toMap());
         var box = Hive.box('myBox');
         box.put('email', event.email);
         emit(RegisterSuccess());

@@ -57,13 +57,15 @@ class User extends Equatable {
       'id': id,
       'email': email,
       'phone': phone,
-
       'firstName': firstName,
       'lastName': lastName,
       'image': image,
       'favoriteFoods': favoriteFoods,
-      'favoriteRestaurant': favoriteRestaurants,
-      'createdAt': createdAt,
+      'favoriteRestaurants': favoriteRestaurants,
+      'createdAt': Timestamp.fromDate(createdAt),
+      'updatedAt': Timestamp.fromDate(DateTime.now()),
+      'isActive': true,
+      'type': 'customer'
     };
   }
 

@@ -53,198 +53,205 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<UserProfileBloc>(
-      create: (context) => _userProfileBloc,
-      child: BlocListener<UserProfileBloc, UserProfileState>(
-        listener: (context, state) {
-          if (state is UserProfileSuccess) {
-            Navigator.pushNamed(context, '/register/upload-photo');
-          }
+        create: (context) => _userProfileBloc,
+        child: BlocListener<UserProfileBloc, UserProfileState>(
+          listener: (context, state) {
+            if (state is UserProfileSuccess) {
+              Navigator.pushNamed(context, '/register/upload-photo');
+            }
 
-          if (state is UserProfileError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                backgroundColor: AppColors.errorColor,
-                content: Text(state.error),
-              ),
-            );
-          }
+            if (state is UserProfileError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  backgroundColor: AppColors.errorColor,
+                  content: Text(state.error),
+                ),
+              );
+            }
 
-          if (state is UserProfileLoading) {
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => const LoadingIndicator(),
-            );
-          }
-        },
-        child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          body: Stack(
-        children: [
+            if (state is UserProfileLoading) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => const LoadingIndicator(),
+              );
+            }
+          },
+          child: Scaffold(
+            resizeToAvoidBottomInset: false,
+            body: Stack(
+              children: [
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(bottom: 60, left: 25, right: 25),
+                    child: PrimaryButton(
+                      text: "Next",
+                      onTap: () {
+                        // validate form
+                        if (!_formKey.currentState!.validate()) {
+                          return;
+                        }
 
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 60,left: 25,right: 25),
-              child: PrimaryButton(
-                text: "Next",
-                onTap: () {
-                  // validate form
-                  if (!_formKey.currentState!.validate()) {
-                    return;
-                  }
+                        // save data to hive
+                        var box = Hive.box('myBox');
+                        box.put('firstName', _firstNameController.text.trim());
+                        box.put('lastName', _lastNameController.text.trim());
+                        box.put('phone', _phoneController.text.trim());
 
-                  // save data to hive
-                  var box = Hive.box('myBox');
-                  box.put('firstName', _firstNameController.text.trim());
-                  box.put('lastName', _lastNameController.text.trim());
-                  box.put('phone', _phoneController.text.trim());
-
-                  // update user profile in Firebase
-                  _userProfileBloc.add(UpdateUserProfile(
-                    firstName: _firstNameController.text.trim(),
-                    lastName: _lastNameController.text.trim(),
-                    phone: _phoneController.text.trim(),
-                  ));
-                },
-              ),
-            ),
-          ),
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: MediaQuery.of(context).padding.top + 40,
+                        // update user profile in Firebase
+                        _userProfileBloc.add(UpdateUserProfile(
+                          firstName: _firstNameController.text.trim(),
+                          lastName: _lastNameController.text.trim(),
+                          phone: _phoneController.text.trim(),
+                        ));
+                      },
+                    ),
                   ),
-                  // check if previous page exists
-                  if (ModalRoute.of(context)!.canPop) ...[
-                    const CustomBackButton(),
-                  ],
-                  const SizedBox(height: 20),
-                  Text(
-                    "Fill in your bio to get \nstarted",
-                    style: CustomTextStyle.size25Weight600Text(),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    "This data will be displayed in your account \nprofile for security",
-                    style: CustomTextStyle.size14Weight400Text(),
-                  ),
-                  const SizedBox(height: 20),
-                  // form fields, first name, last name, mobile number
-                  Form(
-                    key: _formKey,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                ),
+                SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            boxShadow: [AppStyles.boxShadow7],
-                          ),
-                          child: TextFormField(
-                            controller: _firstNameController,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return "First name is required";
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                              fillColor: AppColors().cardColor,
-                              filled: true,
-                              hintText: "First name",
-                              hintStyle: CustomTextStyle.size14Weight400Text(
-                                AppColors().secondaryTextColor,
-                              ),
-                              contentPadding: const EdgeInsets.only(
-                                left: 20,
-                              ),
-                              enabledBorder: AppStyles().defaultEnabledBorder,
-                              focusedBorder: AppStyles.defaultFocusedBorder(),
-                              errorBorder: AppStyles.defaultErrorBorder,
-                              focusedErrorBorder:
-                                  AppStyles.defaultFocusedErrorBorder,
-                            ),
-                          ),
+                        SizedBox(
+                          height: MediaQuery.of(context).padding.top + 40,
+                        ),
+                        // check if previous page exists
+                        if (ModalRoute.of(context)!.canPop) ...[
+                          const CustomBackButton(),
+                        ],
+                        const SizedBox(height: 20),
+                        Text(
+                          "Fill in your bio to get \nstarted",
+                          style: CustomTextStyle.size25Weight600Text(),
                         ),
                         const SizedBox(height: 20),
-                        Container(
-                          decoration: BoxDecoration(
-                            boxShadow: [AppStyles.boxShadow7],
-                          ),
-                          child: TextFormField(
-                            controller: _lastNameController,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return "Last name is required";
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                              fillColor: AppColors().cardColor,
-                              filled: true,
-                              hintText: "Last name",
-                              hintStyle: CustomTextStyle.size14Weight400Text(
-                                AppColors().secondaryTextColor,
-                              ),
-                              contentPadding: const EdgeInsets.only(
-                                left: 20,
-                              ),
-                              enabledBorder: AppStyles().defaultEnabledBorder,
-                              focusedBorder: AppStyles.defaultFocusedBorder(),
-                              errorBorder: AppStyles.defaultErrorBorder,
-                              focusedErrorBorder:
-                                  AppStyles.defaultFocusedErrorBorder,
-                            ),
-                          ),
+                        Text(
+                          "This data will be displayed in your account \nprofile for security",
+                          style: CustomTextStyle.size14Weight400Text(),
                         ),
                         const SizedBox(height: 20),
-                        Container(
-                          decoration: BoxDecoration(
-                            boxShadow: [AppStyles.boxShadow7],
-                          ),
-                          child: TextFormField(
-                            controller: _phoneController,
-                            validator: (value) {
-                              if (!validatePhoneNumber(value!)) {
-                                return "Invalid phone number";
-                              }
-                              return null;
-                            },
-                            keyboardType: TextInputType.phone,
-                            decoration: InputDecoration(
-                              fillColor: AppColors().cardColor,
-                              filled: true,
-                              hintText: "Mobile number",
-                              hintStyle: CustomTextStyle.size14Weight400Text(
-                                AppColors().secondaryTextColor,
+                        // form fields, first name, last name, mobile number
+                        Form(
+                          key: _formKey,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          child: Column(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  boxShadow: [AppStyles.boxShadow7],
+                                ),
+                                child: TextFormField(
+                                  controller: _firstNameController,
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return "First name is required";
+                                    }
+                                    return null;
+                                  },
+                                  decoration: InputDecoration(
+                                    fillColor: AppColors().cardColor,
+                                    filled: true,
+                                    hintText: "First name",
+                                    hintStyle:
+                                        CustomTextStyle.size14Weight400Text(
+                                      AppColors().secondaryTextColor,
+                                    ),
+                                    contentPadding: const EdgeInsets.only(
+                                      left: 20,
+                                    ),
+                                    enabledBorder:
+                                        AppStyles().defaultEnabledBorder,
+                                    focusedBorder:
+                                        AppStyles.defaultFocusedBorder(),
+                                    errorBorder: AppStyles.defaultErrorBorder,
+                                    focusedErrorBorder:
+                                        AppStyles.defaultFocusedErrorBorder,
+                                  ),
+                                ),
                               ),
-                              contentPadding: const EdgeInsets.only(
-                                left: 20,
+                              const SizedBox(height: 20),
+                              Container(
+                                decoration: BoxDecoration(
+                                  boxShadow: [AppStyles.boxShadow7],
+                                ),
+                                child: TextFormField(
+                                  controller: _lastNameController,
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return "Last name is required";
+                                    }
+                                    return null;
+                                  },
+                                  decoration: InputDecoration(
+                                    fillColor: AppColors().cardColor,
+                                    filled: true,
+                                    hintText: "Last name",
+                                    hintStyle:
+                                        CustomTextStyle.size14Weight400Text(
+                                      AppColors().secondaryTextColor,
+                                    ),
+                                    contentPadding: const EdgeInsets.only(
+                                      left: 20,
+                                    ),
+                                    enabledBorder:
+                                        AppStyles().defaultEnabledBorder,
+                                    focusedBorder:
+                                        AppStyles.defaultFocusedBorder(),
+                                    errorBorder: AppStyles.defaultErrorBorder,
+                                    focusedErrorBorder:
+                                        AppStyles.defaultFocusedErrorBorder,
+                                  ),
+                                ),
                               ),
-                              enabledBorder: AppStyles().defaultEnabledBorder,
-                              focusedBorder: AppStyles.defaultFocusedBorder(),
-                              errorBorder: AppStyles.defaultErrorBorder,
-                              focusedErrorBorder:
-                                  AppStyles.defaultFocusedErrorBorder,
-                            ),
+                              const SizedBox(height: 20),
+                              Container(
+                                decoration: BoxDecoration(
+                                  boxShadow: [AppStyles.boxShadow7],
+                                ),
+                                child: TextFormField(
+                                  controller: _phoneController,
+                                  validator: (value) {
+                                    if (!validatePhoneNumber(value!)) {
+                                      return "Invalid phone number";
+                                    }
+                                    return null;
+                                  },
+                                  keyboardType: TextInputType.phone,
+                                  decoration: InputDecoration(
+                                    fillColor: AppColors().cardColor,
+                                    filled: true,
+                                    hintText: "Mobile number",
+                                    hintStyle:
+                                        CustomTextStyle.size14Weight400Text(
+                                      AppColors().secondaryTextColor,
+                                    ),
+                                    contentPadding: const EdgeInsets.only(
+                                      left: 20,
+                                    ),
+                                    enabledBorder:
+                                        AppStyles().defaultEnabledBorder,
+                                    focusedBorder:
+                                        AppStyles.defaultFocusedBorder(),
+                                    errorBorder: AppStyles.defaultErrorBorder,
+                                    focusedErrorBorder:
+                                        AppStyles.defaultFocusedErrorBorder,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
-    ),
-  )
-  
-    );
+        ));
   }
 }

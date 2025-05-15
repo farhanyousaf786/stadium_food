@@ -5,7 +5,10 @@ class ShopRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<List<Shop>> fetchShopsByStadium(String stadiumId) async {
-    final querySnapshot = await _firestore.collection('stadiums').doc(stadiumId).collection('shops')
+    final querySnapshot = await _firestore
+        .collection('stadiums')
+        .doc(stadiumId)
+        .collection('shops')
         .where('stadiumId', isEqualTo: stadiumId)
         .get();
     return querySnapshot.docs

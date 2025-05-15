@@ -14,12 +14,14 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       emit(FoodFetching());
       try {
         Map<String, dynamic> map = await foodRepository.fetchFoods(
+          event.stadiumId,
+          event.shopId,
           event.limit,
           event.lastDocument,
         );
         emit(
           FoodFetched(
-            foods: map["foods"] as List<Food>,
+            foods: map["menuItems"] as List<Food>,
             lastDocument: map["lastDocument"] as DocumentSnapshot?,
           ),
         );
@@ -33,12 +35,14 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       emit(FoodMoreFetching());
       try {
         Map<String, dynamic> map = await foodRepository.fetchFoods(
+          event.stadiumId,
+          event.shopId,
           event.limit,
           event.lastDocument,
         );
         emit(
           FoodMoreFetched(
-            foods: map["foods"] as List<Food>,
+            foods: map["menuItems"] as List<Food>,
             lastDocument: map["lastDocument"] as DocumentSnapshot?,
           ),
         );

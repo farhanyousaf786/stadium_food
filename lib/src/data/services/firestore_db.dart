@@ -26,6 +26,30 @@ class FirestoreDatabase {
     }
   }
 
+  Future<QuerySnapshot> getMenuWithPagination(
+
+      String stadiumId,
+      String shopId,
+      String collectionName,
+      int limit,
+      DocumentSnapshot? documentSnapshot,
+      ) async {
+    if (documentSnapshot == null) {
+      return await _firebaseFirestore
+           .collection('stadiums').doc(stadiumId).collection('shops').doc(shopId)
+          .collection(collectionName)
+          .limit(limit)
+          .get();
+    } else {
+      return await _firebaseFirestore
+          .collection('stadiums').doc(stadiumId).collection('shops').doc(shopId)
+          .collection(collectionName)
+          .limit(limit)
+          .startAfterDocument(documentSnapshot)
+          .get();
+    }
+  }
+
   Future<DocumentSnapshot> getDocument(
     String collectionName,
     String documentId,

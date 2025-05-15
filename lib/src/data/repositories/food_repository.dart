@@ -6,10 +6,12 @@ import '../services/firestore_db.dart';
 class FoodRepository {
   final FirestoreDatabase _db = FirestoreDatabase();
 
-  Future<Map<String, Object?>> fetchFoods(int limit, var lastDocument) async {
+  Future<Map<String, Object?>> fetchFoods(String stadiumId, String shopId,int limit, var lastDocument) async {
     QuerySnapshot<Object?> foodsCollection =
-        await _db.getCollectionWithPagination(
-      "foods",
+        await _db.getMenuWithPagination(
+          stadiumId,
+          shopId,
+      "menuItems",
       limit,
       lastDocument,
     );
@@ -30,12 +32,12 @@ class FoodRepository {
     // check if there are more foods to fetch
     if (foodsCollection.docs.length == limit) {
       return {
-        "foods": foods,
+        "menuItems": foods,
         "lastDocument": foodsCollection.docs.last,
       };
     } else {
       return {
-        "foods": foods,
+        "menuItems": foods,
         "lastDocument": null,
       };
     }

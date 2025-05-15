@@ -90,20 +90,25 @@ class FoodItem extends StatelessWidget {
             Container(
               height: 20,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.yellow[700]!,
+                image: DecorationImage(
+                  image: const AssetImage('assets/images/hazard_pattern.png'),
+                  repeat: ImageRepeat.repeat,
+                  colorFilter: ColorFilter.mode(
                     Colors.yellow[600]!,
-                  ],
+                    BlendMode.srcIn,
+                  ),
                 ),
               ),
-              child: const Center(
-                child: Text(
-                  'OUT TEXT OVERFLOWED BY 11 PIXELS',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
+              child: Container(
+                color: Colors.yellow.withOpacity(0.9),
+                child: const Center(
+                  child: Text(
+                    'OUT TEXT OVERFLOWED BY 11 PIXELS',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),

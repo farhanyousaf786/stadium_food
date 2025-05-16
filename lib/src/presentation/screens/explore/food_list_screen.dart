@@ -177,7 +177,7 @@ class _FoodListScreenState extends State<FoodListScreen> {
                               padding: const EdgeInsets.symmetric(horizontal: 5),
                               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2,
-                                childAspectRatio: 0.75,
+                                childAspectRatio: 0.7,
                                 crossAxisSpacing: 15,
                                 mainAxisSpacing: 15,
                               ),

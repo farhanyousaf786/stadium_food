@@ -24,7 +24,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         );
 
         var userDocument = (await FirestoreDatabase().getDocumentsWithQuery(
-          "users",
+          "customers",
           "email",
           event.email,
         )).docs[0];

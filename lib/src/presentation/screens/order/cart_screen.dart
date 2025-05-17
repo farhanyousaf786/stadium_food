@@ -34,81 +34,71 @@ class CartScreen extends StatelessWidget {
           );
         },
       ),
-      body: Stack(
-        children: [
-          Align(
-            alignment: Alignment.topRight,
-            child: SvgPicture.asset(
-              "assets/svg/pattern-small.svg",
-            ),
-          ),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const CustomBackButton(),
-                    const SizedBox(height: 20),
-                    Text(
-                      "Cart",
-                      style: CustomTextStyle.size25Weight600Text(),
-                    ),
-                    const SizedBox(height: 20),
-                    if (OrderRepository.cart.isEmpty)
-                      Container(
-                        alignment: Alignment.center,
-                        height: MediaQuery.of(context).size.height * 0.4,
-                        child: Text(
-                          "Cart is empty",
-                          style: CustomTextStyle.size16Weight400Text(),
-                        ),
-                      ),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: OrderRepository.cart.length,
-                      itemBuilder: (context, index) {
-                        return Column(
-                          children: [
-                            Dismissible(
-                              key: Key(OrderRepository.cart[index].name),
-                              onDismissed: (direction) {
-                                BlocProvider.of<OrderBloc>(context).add(
-                                  RemoveCompletelyFromCart(
-                                    OrderRepository.cart[index],
-                                  ),
-                                );
-                              },
-                              background: Container(
-                                alignment: Alignment.centerRight,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: AppStyles.largeBorderRadius,
-                                  color: AppColors.secondaryColor,
-                                ),
-                                child: SvgPicture.asset(
-                                  "assets/svg/trash.svg",
-                                ),
-                              ),
-                              child: CartItem(
-                                food: OrderRepository.cart[index],
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                          ],
-                        );
-                      },
-                    ),
-                  ],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const CustomBackButton(),
+                const SizedBox(height: 20),
+                Text(
+                  "Cart",
+                  style: CustomTextStyle.size25Weight600Text(),
                 ),
-              ),
+                const SizedBox(height: 20),
+                if (OrderRepository.cart.isEmpty)
+                  Container(
+                    alignment: Alignment.center,
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    child: Text(
+                      "Cart is empty",
+                      style: CustomTextStyle.size16Weight400Text(),
+                    ),
+                  ),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: OrderRepository.cart.length,
+                  itemBuilder: (context, index) {
+                    return Column(
+                      children: [
+                        Dismissible(
+                          key: Key(OrderRepository.cart[index].name),
+                          onDismissed: (direction) {
+                            BlocProvider.of<OrderBloc>(context).add(
+                              RemoveCompletelyFromCart(
+                                OrderRepository.cart[index],
+                              ),
+                            );
+                          },
+                          background: Container(
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: AppStyles.largeBorderRadius,
+                              color: AppColors.secondaryColor,
+                            ),
+                            child: SvgPicture.asset(
+                              "assets/svg/trash.svg",
+                            ),
+                          ),
+                          child: CartItem(
+                            food: OrderRepository.cart[index],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                    );
+                  },
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

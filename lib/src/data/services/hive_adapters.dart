@@ -34,15 +34,17 @@ class FoodAdapter extends TypeAdapter<Food> {
       images: fields[4] as List<String>,
       id: fields[5] as String,
       allergens: fields[6] as List<String>,
-      customization: fields[7] as Map<String, dynamic>,
-      extras: fields[8] as List<Map<String, dynamic>>,
+      customization: Map<String, dynamic>.from(fields[7]),
+
+      extras: (fields[8] as List).map((e) => Map<String, dynamic>.from(e)).toList(),
+
       isAvailable: fields[9] as bool,
-      nutritionalInfo: fields[10] as Map<String, dynamic>,
+      nutritionalInfo: Map<String, dynamic>.from(fields[10]),
       preparationTime: fields[11] as int,
-      sauces: fields[12] as List<Map<String, dynamic>>,
+      sauces: (fields[12] as List).map((e) => Map<String, dynamic>.from(e)).toList(),
       shopId: fields[13] as String,
-      sizes: fields[14] as List<Map<String, dynamic>>,
-      toppings: fields[15] as List<Map<String, dynamic>>,
+      sizes: (fields[14] as List).map((e) => Map<String, dynamic>.from(e)).toList(),
+      toppings: (fields[15] as List).map((e) => Map<String, dynamic>.from(e)).toList(),
       updatedAt: fields[16] as DateTime,
     );
   }

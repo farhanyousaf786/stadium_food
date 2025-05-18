@@ -23,6 +23,13 @@ class OrderConfirmScreen extends StatefulWidget {
 }
 
 class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _roofNoController = TextEditingController();
+  final _rowController = TextEditingController();
+  final _seatNoController = TextEditingController();
+  final _sectionController = TextEditingController();
+  final _seatDetailsController = TextEditingController();
+
    Map<String, dynamic>? paymentIntent;
 
   @override
@@ -70,9 +77,24 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
           builder: (context, state) {
             return PriceInfoWidget(
               onTap: () {
-                BlocProvider.of<OrderBloc>(context).add(
-                  CreateOrder(),
-                );
+                if (_formKey.currentState!.validate()) {
+                  // Save seat info to order
+                  final seatInfo = {
+                    'roofNo': _roofNoController.text,
+                    'row': _rowController.text,
+                    'seatNo': _seatNoController.text,
+                    'section': _sectionController.text,
+                    'seatDetails': _seatDetailsController.text,
+                  };
+                  
+                  // Add to Hive box for persistence
+                  var box = Hive.box('myBox');
+                  box.put('seatInfo', seatInfo);
+
+                  BlocProvider.of<OrderBloc>(context).add(
+                    CreateOrder(),
+                  );
+                }
               },
             );
           },
@@ -165,8 +187,115 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-
-
+                  // Seat Information Form
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 15,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors().cardColor,
+                      borderRadius: AppStyles.largeBorderRadius,
+                      boxShadow: [AppStyles.boxShadow7],
+                    ),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Seat Information",
+                            style: CustomTextStyle.size18Weight600Text(),
+                          ),
+                          const SizedBox(height: 15),
+                          TextFormField(
+                            controller: _roofNoController,
+                            decoration: InputDecoration(
+                              hintText: "Roof No",
+                              hintStyle: CustomTextStyle.size14Weight400Text(
+                                AppColors().secondaryTextColor,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter roof number';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 15),
+                          TextFormField(
+                            controller: _rowController,
+                            decoration: InputDecoration(
+                              hintText: "Row",
+                              hintStyle: CustomTextStyle.size14Weight400Text(
+                                AppColors().secondaryTextColor,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter row number';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 15),
+                          TextFormField(
+                            controller: _seatNoController,
+                            decoration: InputDecoration(
+                              hintText: "Seat No",
+                              hintStyle: CustomTextStyle.size14Weight400Text(
+                                AppColors().secondaryTextColor,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter seat number';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 15),
+                          TextFormField(
+                            controller: _sectionController,
+                            decoration: InputDecoration(
+                              hintText: "Section",
+                              hintStyle: CustomTextStyle.size14Weight400Text(
+                                AppColors().secondaryTextColor,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 15),
+                          TextFormField(
+                            controller: _seatDetailsController,
+                            decoration: InputDecoration(
+                              hintText: "Additional Comments",
+                              hintStyle: CustomTextStyle.size14Weight400Text(
+                                AppColors().secondaryTextColor,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            maxLines: 3,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),

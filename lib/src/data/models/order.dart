@@ -16,6 +16,7 @@ class Order extends Equatable {
   final OrderStatus status;
   final DateTime createdAt;
   final PaymentMethod paymentMethod;
+  final Map<String, dynamic> seatInfo;
 
   // id is the document id
   String? id;
@@ -31,6 +32,7 @@ class Order extends Equatable {
     required this.status,
     required this.createdAt,
     required this.paymentMethod,
+    required this.seatInfo,
   });
 
   factory Order.fromMap(String id, Map<String, dynamic> map) {
@@ -46,6 +48,7 @@ class Order extends Equatable {
       status: OrderStatus.values[map['status']],
       createdAt: map['createdAt'].toDate(),
       paymentMethod: PaymentMethod.values[map['paymentMethod']],
+      seatInfo: map['seatInfo'] ?? {},
     );
     order.id = id;
     return order;
@@ -69,6 +72,7 @@ class Order extends Equatable {
       'status': status.index,
       'createdAt': createdAt,
       'paymentMethod': paymentMethod.index,
+      'seatInfo': seatInfo,
     };
   }
 

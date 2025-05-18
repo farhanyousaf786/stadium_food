@@ -78,7 +78,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
             return PriceInfoWidget(
               onTap: () {
                 if (_formKey.currentState!.validate()) {
-                  // Save seat info to order
+                  // Create seat info map
                   final seatInfo = {
                     'roofNo': _roofNoController.text,
                     'row': _rowController.text,
@@ -86,13 +86,9 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                     'section': _sectionController.text,
                     'seatDetails': _seatDetailsController.text,
                   };
-                  
-                  // Add to Hive box for persistence
-                  var box = Hive.box('myBox');
-                  box.put('seatInfo', seatInfo);
 
                   BlocProvider.of<OrderBloc>(context).add(
-                    CreateOrder(),
+                    CreateOrder(seatInfo: seatInfo),
                   );
                 }
               },

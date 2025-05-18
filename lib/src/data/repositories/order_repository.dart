@@ -80,7 +80,8 @@ class OrderRepository {
     return subtotal + deliveryFee - discount;
   }
 
-  Future<model.Order> createOrder() async {
+  Future<model.Order> createOrder(Map<String, dynamic> seatInfo) async {
+
     final model.Order order = model.Order(
       cart: [...cart],
       subtotal: subtotal,
@@ -94,6 +95,13 @@ class OrderRepository {
       paymentMethod: box.get('paymentMethod', defaultValue: 'visa') == 'visa'
           ? PaymentMethod.visa
           : PaymentMethod.paypal,
+      seatInfo: {
+        'roofNo': seatInfo['roofNo'] ?? '',
+        'row': seatInfo['row'] ?? '',
+        'seatNo': seatInfo['seatNo'] ?? '',
+        'section': seatInfo['section'] ?? '',
+        'seatDetails': seatInfo['seatDetails'] ?? '',
+      },
     );
 
     // firestore

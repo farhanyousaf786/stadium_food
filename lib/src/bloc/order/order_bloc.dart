@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
+import 'package:hive/hive.dart';
 import 'package:stadium_food/src/data/models/food.dart';
 import 'package:stadium_food/src/data/models/order.dart';
 import 'package:stadium_food/src/data/repositories/order_repository.dart';
@@ -32,8 +33,15 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     });
     on<CreateOrder>((event, emit) async {
       emit(OrderCreating());
+      
+      // Check if seat info exists
+      var box = Hive.box('myBox');
+      if (!box.containsKey('seatInfo')) {
+        emit(OrderCreatingError('Please enter seat information'));
+        return;
+      }
       try {
-        Order order = await orderRepository.createOrder();
+        Order order = await orderRepository.createOrder(event.seatInfo);
         emit(OrderCreated(order));
       } catch (e, s) {
         debugPrint(e.toString());

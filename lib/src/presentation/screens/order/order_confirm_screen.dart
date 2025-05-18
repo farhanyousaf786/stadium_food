@@ -166,77 +166,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  // payment method
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 15,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors().cardColor,
-                      borderRadius: AppStyles.largeBorderRadius,
-                      boxShadow: [AppStyles.boxShadow7],
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Payment Method",
-                              style: CustomTextStyle.size16Weight400Text(
-                                AppColors().secondaryTextColor,
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                buildDialog(context).then(
-                                  (value) =>
-                                      BlocProvider.of<OrderBloc>(context)
-                                          .add(
-                                    UpdateUI(),
-                                  ),
-                                );
-                              },
-                              child: Text(
-                                "Edit",
-                                style: CustomTextStyle.size16Weight600Text(
-                                  AppColors.primaryColor,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        BlocBuilder<OrderBloc, OrderState>(
-                          builder: (context, state) {
-                            return Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
-                              children: [
-                                SvgPicture.asset(
-                                  Hive.box("myBox").get("paymentMethod") ==
-                                          "paypal"
-                                      ? "assets/svg/paypal.svg"
-                                      : "assets/svg/visa.svg",
-                                ),
-                                const SizedBox(width: 14),
-                                BlocBuilder<OrderBloc, OrderState>(
-                                  builder: (context, state) {
-                                    return Text(
-                                      "2121 6352 8465 ****",
-                                      style: CustomTextStyle
-                                          .size16Weight400Text(),
-                                    );
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
+
                 ],
               ),
             ),

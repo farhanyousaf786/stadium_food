@@ -14,6 +14,8 @@ import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:hive/hive.dart';
 
+import '../../../data/repositories/order_repository.dart';
+
 class OrderConfirmScreen extends StatefulWidget {
 
    const OrderConfirmScreen({super.key});
@@ -46,11 +48,11 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
               backgroundColor: AppColors.primaryColor,
             ),
           );
-          Navigator.of(context).pushNamedAndRemoveUntil(
-            "/order/review",
-            arguments: state.order,
-            (route) => false,
-          );
+          // Navigator.of(context).pushNamedAndRemoveUntil(
+          //   "/order/review",
+          //   arguments: state.order,
+          //   (route) => false,
+          // );
         } else if (state is OrderCreatingError) {
           // remove loading
           Navigator.of(context).pop();
@@ -87,9 +89,10 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                     'seatDetails': _seatDetailsController.text,
                   };
 
-                  BlocProvider.of<OrderBloc>(context).add(
-                    CreateOrder(seatInfo: seatInfo),
-                  );
+                final total=  OrderRepository.total;
+                  makePayment(total,seatInfo);
+                 
+
                 }
               },
             );
@@ -110,79 +113,6 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  // delivery address
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 15,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors().cardColor,
-                      borderRadius: AppStyles.largeBorderRadius,
-                      boxShadow: [AppStyles.boxShadow7],
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Delivery Address",
-                              style: CustomTextStyle.size16Weight400Text(
-                                AppColors().secondaryTextColor,
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                // Navigator.of(context)
-                                //     .push(
-                                //       MaterialPageRoute(
-                                //         builder: (context) =>
-                                //             const SetLocationMapScreen(),
-                                //       ),
-                                //     )
-                                //     .then(
-                                //       (value) => BlocProvider.of<OrderBloc>(
-                                //               context)
-                                //           .add(
-                                //         UpdateUI(),
-                                //       ),
-                                //     );
-                              },
-                              child: Text(
-                                "Edit",
-                                style: CustomTextStyle.size16Weight600Text(
-                                  AppColors.primaryColor,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SvgPicture.asset(
-                              "assets/svg/map-pin.svg",
-                            ),
-                            const SizedBox(width: 14),
-                            BlocBuilder<OrderBloc, OrderState>(
-                              builder: (context, state) {
-                                return Expanded(
-                                  child: Text(
-                                    "New York",
-                                    style: CustomTextStyle
-                                        .size16Weight400Text(),
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
                   // Seat Information Form
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -301,10 +231,10 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     );
   }
 
-   Future<void> makePayment() async {
+   Future<void> makePayment(double total, Map<String, String> seatInfo) async {
      try {
        //STEP 1: Create Payment Intent
-       paymentIntent = await createPaymentIntent('100', 'USD');
+       paymentIntent = await createPaymentIntent(total.toString(), 'USD');
 
        //STEP 2: Initialize Payment Sheet
        await Stripe.instance
@@ -318,7 +248,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
            .then((value) {});
 
        //STEP 3: Display Payment sheet
-       displayPaymentSheet();
+       displayPaymentSheet(seatInfo);
      } catch (err) {
        throw Exception(err);
      }
@@ -335,7 +265,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
        var response = await http.post(
          Uri.parse('https://api.stripe.com/v1/payment_intents'),
          headers: {
-           'Authorization': 'Bearer STRIPE_SECRET',
+           'Authorization': 'Bearer sk_test_51QvCefKdX3OWUtfrEgTAjqz3l7IUOE1owMd1oiUkw4TIQPYwfPBfiKT1DxaUjN5VcU43hGlfHwpHJ1wCliZe7LC400S8CyD9us',
            'Content-Type': 'application/x-www-form-urlencoded'
          },
          body: body,
@@ -346,12 +276,17 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
      }
    }
    calculateAmount(String amount) {
-     final calculatedAmout = (int.parse(amount)) * 100;
-     return calculatedAmout.toString();
+     final doubleAmount = double.parse(amount);
+     final intAmount = (doubleAmount * 100).round(); // Rounds to nearest cent
+     return intAmount.toString();
    }
-   displayPaymentSheet() async {
+   displayPaymentSheet(Map<String, String> seatInfo) async {
      try {
        await Stripe.instance.presentPaymentSheet().then((value) {
+         BlocProvider.of<OrderBloc>(context).add(
+           CreateOrder(seatInfo: seatInfo),
+         );
+
          showDialog(
              context: context,
              builder: (_) => const AlertDialog(

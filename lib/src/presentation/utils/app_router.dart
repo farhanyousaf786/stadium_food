@@ -141,12 +141,12 @@ class AppRouter {
           builder: (_) => const OrderConfirmScreen(),
         );
 
-      case '/order/review':
-        return MaterialPageRoute(
-          builder: (_) => ReviewScreen(
-            order: settings.arguments as Order,
-          ),
-        );
+      // case '/order/review':
+      //   return MaterialPageRoute(
+      //     builder: (_) => ReviewScreen(
+      //       order: settings.arguments as Order,
+      //     ),
+      //   );
       case '/orders':
         return MaterialPageRoute(
           builder: (_) => const OrderListScreen(),

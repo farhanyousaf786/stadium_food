@@ -89,12 +89,8 @@ class OrderRepository {
       discount: discount,
       total: total,
       createdAt: DateTime.now(),
-      status: OrderStatus.delivered,
-      userEmail: box.get('email'),
-      restaurant: cart[0].restaurant ?? FirebaseFirestore.instance.collection('restaurants').doc('default'),
-      paymentMethod: box.get('paymentMethod', defaultValue: 'visa') == 'visa'
-          ? PaymentMethod.visa
-          : PaymentMethod.paypal,
+      status: OrderStatus.pending,
+
       seatInfo: {
         'roofNo': seatInfo['roofNo'] ?? '',
         'row': seatInfo['row'] ?? '',

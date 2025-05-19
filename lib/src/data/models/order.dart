@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:stadium_food/src/data/models/food.dart';
 import 'package:stadium_food/src/data/models/order_status.dart';
-import 'package:stadium_food/src/data/models/payment_method.dart';
 
 // ignore: must_be_immutable
 class Order extends Equatable {
@@ -11,14 +10,16 @@ class Order extends Equatable {
   final double deliveryFee;
   final double discount;
   final double total;
-  final DocumentReference restaurant;
   final String userEmail;
+  final String userName;
+  final String userId;
+  final String stadiumId;
+  final String shopId;
+  final String orderId;
   final OrderStatus status;
   final DateTime createdAt;
-  final PaymentMethod paymentMethod;
   final Map<String, dynamic> seatInfo;
 
-  // id is the document id
   String? id;
 
   Order({
@@ -27,27 +28,37 @@ class Order extends Equatable {
     required this.deliveryFee,
     required this.discount,
     required this.total,
-    required this.restaurant,
     required this.userEmail,
+    required this.userName,
+    required this.userId,
+    required this.stadiumId,
+    required this.shopId,
+    required this.orderId,
     required this.status,
     required this.createdAt,
-    required this.paymentMethod,
     required this.seatInfo,
   });
 
   factory Order.fromMap(String id, Map<String, dynamic> map) {
-    // Set the id field
     var order = Order(
-      cart: List<Food>.from(map['cart']?.map((x) => Food.fromMap(x['id'] as String, x as Map<String, dynamic>)) ?? []),
-      subtotal: map['subtotal'] * 1.0,
-      deliveryFee: map['deliveryFee'] * 1.0,
-      discount: map['discount'] * 1.0,
-      total: map['total'] * 1.0,
-      restaurant: map['restaurant'],
-      userEmail: map['userEmail'],
-      status: OrderStatus.values[map['status']],
-      createdAt: map['createdAt'].toDate(),
-      paymentMethod: PaymentMethod.values[map['paymentMethod']],
+      cart: List<Food>.from(
+        map['cart']?.map(
+              (x) => Food.fromMap(x['id'] as String, x as Map<String, dynamic>),
+        ) ??
+            [],
+      ),
+      subtotal: (map['subtotal'] ?? 0) * 1.0,
+      deliveryFee: (map['deliveryFee'] ?? 0) * 1.0,
+      discount: (map['discount'] ?? 0) * 1.0,
+      total: (map['total'] ?? 0) * 1.0,
+      userEmail: map['userEmail'] ?? '',
+      userName: map['userName'] ?? '',
+      userId: map['userId'] ?? '',
+      stadiumId: map['stadiumId'] ?? '',
+      shopId: map['shopId'] ?? '',
+      orderId: map['orderId'] ?? '',
+      status: OrderStatus.values[map['status'] ?? 0],
+      createdAt: (map['createdAt'] as Timestamp).toDate(),
       seatInfo: map['seatInfo'] ?? {},
     );
     order.id = id;
@@ -56,38 +67,43 @@ class Order extends Equatable {
 
   Map<String, dynamic> toMap() {
     return {
-      'cart': cart.map(
-        (x) {
-          var food = x.toMap();
-          food['quantity'] = x.quantity;
-          return food;
-        },
-      ).toList(),
+      'cart': cart.map((x) {
+        var food = x.toMap();
+        food['quantity'] = x.quantity;
+        return food;
+      }).toList(),
       'subtotal': subtotal,
       'deliveryFee': deliveryFee,
       'discount': discount,
       'total': total,
-      'restaurant': restaurant,
       'userEmail': userEmail,
+      'userName': userName,
+      'userId': userId,
+      'stadiumId': stadiumId,
+      'shopId': shopId,
+      'orderId': orderId,
       'status': status.index,
       'createdAt': createdAt,
-      'paymentMethod': paymentMethod.index,
       'seatInfo': seatInfo,
     };
   }
 
   @override
   List<Object?> get props => [
-        id,
-        cart,
-        subtotal,
-        deliveryFee,
-        discount,
-        total,
-        restaurant,
-        userEmail,
-        status,
-        createdAt,
-        paymentMethod,
-      ];
+    id,
+    cart,
+    subtotal,
+    deliveryFee,
+    discount,
+    total,
+    userEmail,
+    userName,
+    userId,
+    stadiumId,
+    shopId,
+    orderId,
+    status,
+    createdAt,
+    seatInfo,
+  ];
 }

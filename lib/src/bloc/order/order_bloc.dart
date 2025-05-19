@@ -34,12 +34,12 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     on<CreateOrder>((event, emit) async {
       emit(OrderCreating());
       
-      // Check if seat info exists
-      var box = Hive.box('myBox');
-      if (!box.containsKey('seatInfo')) {
-        emit(OrderCreatingError('Please enter seat information'));
-        return;
-      }
+      // // Check if seat info exists
+      // var box = Hive.box('myBox');
+      // if (!box.containsKey('seatInfo')) {
+      //   emit(OrderCreatingError('Please enter seat information'));
+      //   return;
+      // }
       try {
         Order order = await orderRepository.createOrder(event.seatInfo);
         emit(OrderCreated(order));

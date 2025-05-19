@@ -13,11 +13,12 @@ class User extends Equatable {
   final List<DocumentReference>? favoriteFoods;
   final List<DocumentReference>? favoriteRestaurants;
   final DateTime createdAt;
-  String? id;
+  String id;
 
   User({
     required this.email,
     required this.phone,
+    required this.id,
     required this.firstName,
     required this.lastName,
     required this.createdAt,
@@ -29,6 +30,7 @@ class User extends Equatable {
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
       email: map['email'],
+      id: map['id'],
       phone: map['phone'],
       firstName: map['firstName'],
       lastName: map['lastName'],
@@ -73,6 +75,7 @@ class User extends Equatable {
     var box = Hive.box('myBox');
     return User(
       email: box.get('email', defaultValue: ''),
+      id: box.get('id', defaultValue: ''),
       phone: box.get('phone', defaultValue: ''),
       firstName: box.get('firstName', defaultValue: ''),
       lastName: box.get('lastName', defaultValue: ''),

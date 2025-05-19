@@ -34,7 +34,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<ToggleFavoriteFood>((event, emit) async {
       try {
         emit(ProfileInitial());
-        await profileRepository.toggleFavoriteFood(event.foodId);
+        await profileRepository.toggleFavoriteFood(event.foodId,event.shopId,event.stadiumId);
         emit(FavoriteFoodToggled());
       } catch (e, s) {
         debugPrint(e.toString());

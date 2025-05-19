@@ -29,6 +29,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         final user = User(
           email: event.email,
           phone: '',
+          id:userUid,
           firstName: '',
           lastName: '',
           createdAt: DateTime.now(),

@@ -187,7 +187,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                                 isLiked: widget.food.isFavorite,
                                 onTap: () {
                                   BlocProvider.of<ProfileBloc>(context).add(
-                                    ToggleFavoriteFood(foodId: widget.food.id),
+                                    ToggleFavoriteFood(foodId: widget.food.id, shopId: widget.food.shopId, stadiumId: widget.food.stadiumId,),
                                   );
                                 },
                               );

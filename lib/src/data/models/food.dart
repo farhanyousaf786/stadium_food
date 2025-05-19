@@ -20,13 +20,13 @@ class Food extends Equatable {
   final double price;
   final List<Map<String, dynamic>> sauces;
   final String shopId;
+  final String stadiumId;
   final List<Map<String, dynamic>> sizes;
   final List<Map<String, dynamic>> toppings;
   final DateTime updatedAt;
-  final DocumentReference? restaurant;
 
   // for cart
-  int quantity = 0;
+  int quantity = 1;
 
   Food({
     required this.id,
@@ -44,11 +44,11 @@ class Food extends Equatable {
     required this.price,
     required this.sauces,
     required this.shopId,
+    required this.stadiumId,
     required this.sizes,
     required this.toppings,
     required this.updatedAt,
-    this.restaurant,
-    this.quantity = 0,
+    this.quantity = 1,
   });
 
   factory Food.fromMap(String id, Map<String, dynamic> map) {
@@ -74,6 +74,7 @@ class Food extends Equatable {
           ) ??
           []),
       shopId: map['shopId'] ?? '',
+      stadiumId: map['stadiumId'] ?? '',
       sizes: List<Map<String, dynamic>>.from(map['sizes']?.map(
             (x) => Map<String, dynamic>.from(x),
           ) ??
@@ -83,7 +84,7 @@ class Food extends Equatable {
           ) ??
           []),
       updatedAt: (map['updatedAt'] as Timestamp).toDate(),
-      restaurant: map['restaurant'] as DocumentReference?,
+
       quantity: map['quantity'] ?? 0,
     );
   }
@@ -105,6 +106,7 @@ class Food extends Equatable {
       'price': price,
       'sauces': sauces,
       'shopId': shopId,
+      'stadiumId': stadiumId,
       'sizes': sizes,
       'toppings': toppings,
       'updatedAt': updatedAt,
@@ -116,7 +118,7 @@ class Food extends Equatable {
     final box = Hive.box('myBox');
     final favorites = box.get('favoriteFoods') as List<dynamic>?;
     if (favorites == null || favorites.isEmpty) return false;
-    DocumentReference ref = FirebaseFirestore.instance.doc('/foods/$id');
+    DocumentReference ref = FirebaseFirestore.instance.doc('/stadiums/$stadiumId/shops/$shopId/menuItems/$id');
     return favorites.contains(ref);
   }
 

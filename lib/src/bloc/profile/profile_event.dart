@@ -6,9 +6,11 @@ abstract class ProfileEvent {}
 class FetchFavorites extends ProfileEvent {}
 
 class ToggleFavoriteFood extends ProfileEvent {
+  final String shopId;
+  final String stadiumId;
   final String foodId;
 
-  ToggleFavoriteFood({required this.foodId});
+  ToggleFavoriteFood( {required this.foodId,required this.shopId, required this.stadiumId,});
 }
 
 class ToggleFavoriteRestaurant extends ProfileEvent {

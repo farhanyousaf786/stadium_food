@@ -107,16 +107,16 @@ class OrderRepository {
       total: total,
       createdAt: DateTime.now(),
       status: OrderStatus.pending,
-      stadiumId: box.get('stadiumId') ?? '',
-      shopId: box.get('shopId') ?? '',
+      stadiumId: cart[0].stadiumId ?? '',
+      shopId: cart[0].shopId ?? '',
       orderId: DateTime.now().millisecondsSinceEpoch.toString(),
       userInfo: {
         'userEmail': box.get('email') ?? '',
-        'userName': box.get('name') ?? '',
+        'userName': box.get('firstName') ?? '',
         'userPhoneNo': box.get('phone') ?? '',
-        'userId': box.get('userId') ?? '',
+        'userId': box.get('id') ?? '',
       },
-      restaurant: cart[0].restaurant ?? FirebaseFirestore.instance.collection('restaurants').doc('default'),
+
       seatInfo: {
         'roofNo': seatInfo['roofNo'] ?? '',
         'row': seatInfo['row'] ?? '',

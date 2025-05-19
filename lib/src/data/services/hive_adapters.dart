@@ -35,17 +35,16 @@ class FoodAdapter extends TypeAdapter<Food> {
       id: fields[5] as String,
       allergens: fields[6] as List<String>,
       customization: Map<String, dynamic>.from(fields[7]),
-
       extras: (fields[8] as List).map((e) => Map<String, dynamic>.from(e)).toList(),
-
       isAvailable: fields[9] as bool,
       nutritionalInfo: Map<String, dynamic>.from(fields[10]),
       preparationTime: fields[11] as int,
       sauces: (fields[12] as List).map((e) => Map<String, dynamic>.from(e)).toList(),
       shopId: fields[13] as String,
-      sizes: (fields[14] as List).map((e) => Map<String, dynamic>.from(e)).toList(),
-      toppings: (fields[15] as List).map((e) => Map<String, dynamic>.from(e)).toList(),
-      updatedAt: fields[16] as DateTime,
+      stadiumId: fields[14] as String,
+      sizes: (fields[15] as List).map((e) => Map<String, dynamic>.from(e)).toList(),
+      toppings: (fields[16] as List).map((e) => Map<String, dynamic>.from(e)).toList(),
+      updatedAt: fields[17] as DateTime,
     );
   }
 
@@ -66,6 +65,7 @@ class FoodAdapter extends TypeAdapter<Food> {
       obj.preparationTime,
       obj.sauces,
       obj.shopId,
+      obj.stadiumId,
       obj.sizes,
       obj.toppings,
       obj.updatedAt,

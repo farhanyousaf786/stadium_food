@@ -44,11 +44,13 @@ class ProfileRepository {
   }
 
   // add/remove favorite food
-  Future<void> toggleFavoriteFood(String foodId) async {
+  Future<void> toggleFavoriteFood(String foodId,String shopId,String stadiumId) async {
     // get favorite foods from hive
-    List favoriteFoods = box.get('favoriteFoods', defaultValue: []);
+    List<dynamic> favoriteFoods = box.get('favoriteFoods') as List<dynamic>? ?? [];
+
+
     DocumentReference foodReference =
-        FirebaseFirestore.instance.doc('/foods/$foodId');
+        FirebaseFirestore.instance.doc('/stadiums/$stadiumId/shops/$shopId/menuItems/$foodId');
     // add/remove food id
     if (!favoriteFoods.contains(foodReference)) {
       favoriteFoods.add(foodReference);
@@ -58,7 +60,7 @@ class ProfileRepository {
 
     // update firestore
     await _db.updateDocument(
-      'users',
+      'customers',
       box.get("id"),
       {
         'favoriteFoods': favoriteFoods,

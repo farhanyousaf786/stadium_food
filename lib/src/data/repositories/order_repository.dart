@@ -29,26 +29,20 @@ class OrderRepository {
     box.put('cart', cart);
   }
 
-  // Returns true if added successfully, false if from different shop
-  bool addToCart(Food food) {
+  void addToCart(Food food) {
     // If cart is not empty, check if new item is from same shop
     if (cart.isNotEmpty) {
-      // Get shop IDs, handling null cases
-      String currentShopId = '';
-      String newShopId = '';
+      String currentShopId = cart[0].shopId;
+      String newShopId = food.shopId;
       
-
-
-        currentShopId = cart[0].shopId;
-
-      
-
-        newShopId = food.shopId;
-
-      
-      // If from different shop, don't add and return false
+      // If from different shop, clear cart and reset quantities
       if (currentShopId != newShopId) {
-        return false;
+        // Reset quantities of old items
+        for (var item in cart) {
+          item.quantity = 0;
+        }
+        // Clear cart
+        cart.clear();
       }
     }
 
@@ -60,7 +54,6 @@ class OrderRepository {
       food.quantity++;
     }
     updateHive();
-    return true;
   }
 
   void removeFromCart(Food food) {

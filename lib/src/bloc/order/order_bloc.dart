@@ -18,7 +18,11 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     });
     on<AddToCart>((event, emit) {
       emit(OrderInitial());
-      orderRepository.addToCart(event.food);
+      bool added = orderRepository.addToCart(event.food);
+      if (!added) {
+        emit(OrderCreatingError('Cannot add items from different shops'));
+        return;
+      }
       emit(CartUpdated(OrderRepository.cart));
     });
     on<RemoveFromCart>((event, emit) {

@@ -30,6 +30,34 @@ class OrderRepository {
   }
 
   void addToCart(Food food) {
+    // If cart is not empty, check if new item is from same shop
+    if (cart.isNotEmpty) {
+      // Get shop IDs, handling null cases
+      String currentShopId = '';
+      String newShopId = '';
+      
+      // Get shop IDs from restaurant references
+      var currentRestaurant = cart[0].restaurant;
+      var newRestaurant = food.restaurant;
+      
+      if (currentRestaurant?.parent != null) {
+        currentShopId = currentRestaurant!.parent.id;
+      }
+      
+      if (newRestaurant?.parent != null) {
+        newShopId = newRestaurant!.parent.id;
+      }
+      
+      // If from different shop, clear cart first
+      if (currentShopId != newShopId) {
+        cart.clear();
+        for (var item in cart) {
+          item.quantity = 0;
+        }
+      }
+    }
+
+    // Add new item
     if (cart.contains(food)) {
       cart[cart.indexOf(food)].quantity++;
     } else {

@@ -90,7 +90,16 @@ class OrderRepository {
       total: total,
       createdAt: DateTime.now(),
       status: OrderStatus.pending,
-
+      stadiumId: box.get('stadiumId') ?? '',
+      shopId: box.get('shopId') ?? '',
+      orderId: DateTime.now().millisecondsSinceEpoch.toString(),
+      userInfo: {
+        'userEmail': box.get('email') ?? '',
+        'userName': box.get('name') ?? '',
+        'userPhoneNo': box.get('phone') ?? '',
+        'userId': box.get('userId') ?? '',
+      },
+      restaurant: cart[0].restaurant ?? FirebaseFirestore.instance.collection('restaurants').doc('default'),
       seatInfo: {
         'roofNo': seatInfo['roofNo'] ?? '',
         'row': seatInfo['row'] ?? '',
@@ -116,8 +125,8 @@ class OrderRepository {
     final List<model.Order> orders = [];
     var data = await _db.getDocumentsWithQuery(
       'orders',
-      'userEmail',
-      box.get('email'),
+      'userInfo.userEmail',
+      box.get('email') ?? '',
     );
     for (var item in data.docs) {
       model.Order order = model.Order.fromMap(

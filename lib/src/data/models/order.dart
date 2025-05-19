@@ -10,9 +10,8 @@ class Order extends Equatable {
   final double deliveryFee;
   final double discount;
   final double total;
-  final String userEmail;
-  final String userName;
-  final String userId;
+  final Map<String, dynamic> userInfo;
+  final DocumentReference restaurant;
   final String stadiumId;
   final String shopId;
   final String orderId;
@@ -28,9 +27,8 @@ class Order extends Equatable {
     required this.deliveryFee,
     required this.discount,
     required this.total,
-    required this.userEmail,
-    required this.userName,
-    required this.userId,
+    required this.userInfo,
+    required this.restaurant,
     required this.stadiumId,
     required this.shopId,
     required this.orderId,
@@ -51,9 +49,8 @@ class Order extends Equatable {
       deliveryFee: (map['deliveryFee'] ?? 0) * 1.0,
       discount: (map['discount'] ?? 0) * 1.0,
       total: (map['total'] ?? 0) * 1.0,
-      userEmail: map['userEmail'] ?? '',
-      userName: map['userName'] ?? '',
-      userId: map['userId'] ?? '',
+      userInfo: map['userInfo'] ?? {},
+      restaurant: map['restaurant'],
       stadiumId: map['stadiumId'] ?? '',
       shopId: map['shopId'] ?? '',
       orderId: map['orderId'] ?? '',
@@ -76,9 +73,8 @@ class Order extends Equatable {
       'deliveryFee': deliveryFee,
       'discount': discount,
       'total': total,
-      'userEmail': userEmail,
-      'userName': userName,
-      'userId': userId,
+      'userInfo': userInfo,
+      'restaurant': restaurant,
       'stadiumId': stadiumId,
       'shopId': shopId,
       'orderId': orderId,
@@ -96,9 +92,8 @@ class Order extends Equatable {
     deliveryFee,
     discount,
     total,
-    userEmail,
-    userName,
-    userId,
+    userInfo,
+    restaurant,
     stadiumId,
     shopId,
     orderId,

@@ -37,17 +37,14 @@ class OrderRepository {
       String currentShopId = '';
       String newShopId = '';
       
-      // Get shop IDs from restaurant references
-      var currentRestaurant = cart[0].restaurant;
-      var newRestaurant = food.restaurant;
+
+
+        currentShopId = cart[0].shopId;
+
       
-      if (currentRestaurant?.parent != null) {
-        currentShopId = currentRestaurant!.parent.id;
-      }
-      
-      if (newRestaurant?.parent != null) {
-        newShopId = newRestaurant!.parent.id;
-      }
+
+        newShopId = food.shopId;
+
       
       // If from different shop, don't add and return false
       if (currentShopId != newShopId) {

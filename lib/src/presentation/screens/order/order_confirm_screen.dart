@@ -15,6 +15,7 @@ import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:hive/hive.dart';
 
 import '../../../data/repositories/order_repository.dart';
+import '../../utils/app_styles.dart';
 
 class OrderConfirmScreen extends StatefulWidget {
 
@@ -50,17 +51,23 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
         keyboardType: keyboardType,
         maxLines: maxLines ?? 1,
         decoration: InputDecoration(
-          labelText: label,
-          hintText: hint,
-          prefixIcon: Icon(icon, color: AppColors.primaryColor),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
-          ),
+          fillColor: AppColors().cardColor,
           filled: true,
-          fillColor: Colors.white,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          hintText: hint,
+          labelText: label,
+          labelStyle: const TextStyle(
+            color: AppColors.primaryColor
+          ),
+          hintStyle:
+          CustomTextStyle.size14Weight400Text(
+            AppColors().secondaryTextColor,
+          ),
+          enabledBorder:
+          AppStyles().defaultEnabledBorder,
+          focusedBorder:
+          AppStyles.defaultFocusedBorder(),
         ),
+
         validator: (value) {
           if (value == null || value.isEmpty) {
             if (controller == _seatDetailsController) return null; // Optional field

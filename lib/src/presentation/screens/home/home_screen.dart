@@ -77,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: NavigationBar(
                 backgroundColor: Colors.transparent,
                 labelBehavior:
-                    NavigationDestinationLabelBehavior.onlyShowSelected,
+                    NavigationDestinationLabelBehavior.alwaysShow,
                 onDestinationSelected: (int index) {
                   setState(() {
                     _selectedIndex = index;

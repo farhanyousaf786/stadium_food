@@ -316,6 +316,14 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
              ));
 
          paymentIntent = null;
+         Future.delayed(const Duration(seconds: 1), () {
+           Navigator.of(context, rootNavigator: true).pop(); // Close dialog
+           Navigator.pushNamedAndRemoveUntil(
+             context,
+             "/home",
+                 (route) => false,
+           ); // Go to home screen
+         });
        }).onError((error, stackTrace) {
          throw Exception(error);
        });

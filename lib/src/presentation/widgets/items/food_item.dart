@@ -25,75 +25,81 @@ class FoodItem extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             // Image section
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-              child: AspectRatio(
-                aspectRatio: 1.5,
-                child: food.images.isEmpty
-                    ? _placeholder()
-                    : Image.network(
-                        food.images.first,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => _placeholder(),
-                      ),
+            Expanded(
+              flex: 5,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                child: AspectRatio(
+                  aspectRatio: 1.5,
+                  child: food.images.isEmpty
+                      ? _placeholder()
+                      : Image.network(
+                          food.images.first,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => _placeholder(),
+                        ),
+                ),
               ),
             ),
 
             // Content section
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Name
-                  Text(
-                    food.name,
-                    style: CustomTextStyle.size16Weight600Text(),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 8),
-                  
-                  // Prep time and Rating
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.schedule,
-                        size: 16,
-                        color: AppColors().secondaryTextColor,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${food.preparationTime} min',
-                        style: CustomTextStyle.size14Weight400Text(
-                          AppColors().secondaryTextColor,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Icon(
-                        Icons.star,
-                        size: 16,
-                        color: Colors.amber,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '4.8',
-                        style: CustomTextStyle.size14Weight400Text(
-                          AppColors().secondaryTextColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  
-                  // Price
-                  Text(
-                    '${food.price.toStringAsFixed(2)} \$',
-                    style: CustomTextStyle.size18Weight600Text(
-                      AppColors.primaryColor,
+            Expanded(
+              flex: 4,
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Name
+                    Text(
+                      food.name,
+                      style: CustomTextStyle.size16Weight600Text(),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 8),
+
+                    // Prep time and Rating
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.schedule,
+                          size: 16,
+                          color: AppColors().secondaryTextColor,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${food.preparationTime} min',
+                          style: CustomTextStyle.size14Weight400Text(
+                            AppColors().secondaryTextColor,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Icon(
+                          Icons.star,
+                          size: 16,
+                          color: Colors.amber,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '4.8',
+                          style: CustomTextStyle.size14Weight400Text(
+                            AppColors().secondaryTextColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+
+                    // Price
+                    Text(
+                      '${food.price.toStringAsFixed(2)} \$',
+                      style: CustomTextStyle.size18Weight600Text(
+                        AppColors.primaryColor,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

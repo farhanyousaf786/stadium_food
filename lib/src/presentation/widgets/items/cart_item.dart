@@ -39,103 +39,148 @@ class _CartItemState extends State<CartItem> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(10, 10, 20, 10),
       decoration: BoxDecoration(
-        borderRadius: AppStyles.largeBorderRadius,
-        boxShadow: [AppStyles.boxShadow7],
-        color: AppColors().cardColor,
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          Container(
-            height: 64,
-            width: 64,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [AppStyles().largeBoxShadow],
-            ),
-            child: ClipRRect(
-              borderRadius: AppStyles.defaultBorderRadius,
-              child: widget.food.images.isEmpty
-                  ? ImagePlaceholder(
-                      iconData: Icons.fastfood,
-                      iconSize: 30,
-                    )
-                  : Image.network(
-                      widget.food.images.first,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return ImagePlaceholder(
-                          iconData: Icons.fastfood,
-                          iconSize: 30,
-                        );
-                      },
-                    ),
-            ),
-          ),
-          const SizedBox(width: 20),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.food.name,
-                  style: CustomTextStyle.size16Weight400Text(),
-                ),
-                Text(
-                  category,
-                  style: CustomTextStyle.size14Weight400Text(
-                    AppColors().secondaryTextColor,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.food.name,
+                    style: CustomTextStyle.size18Weight600Text(),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                const SizedBox(height: 6),
-                ShaderMask(
-                  shaderCallback: (bounds) => LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: AppColors.primaryGradient,
-                  ).createShader(bounds),
-                  blendMode: BlendMode.srcIn,
-                  child: Text(
-                    "\$${widget.food.price}",
-                    style: CustomTextStyle.size18Weight600Text(
-                      Colors.white,
+                  const SizedBox(height: 4),
+                  Text(
+                    category,
+                    style: CustomTextStyle.size14Weight400Text(
+                      AppColors().secondaryTextColor,
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          "\$${widget.food.price}",
+                          style: CustomTextStyle.size18Weight600Text(
+                            AppColors.primaryColor,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Row(
+                        children: [
+                          UpdateQuantityButton(
+                            backgroundColor: AppColors.primaryColor.withOpacity(0.1),
+                            iconColor: AppColors.primaryColor,
+                            icon: Icons.remove,
+                            onTap: () {
+                              if (widget.food.quantity == 1) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('Remove Item'),
+                                    content: Text('Remove ${widget.food.name} from cart?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          BlocProvider.of<OrderBloc>(context).add(
+                                            RemoveFromCart(widget.food),
+                                          );
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text(
+                                          'Remove',
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              } else {
+                                BlocProvider.of<OrderBloc>(context).add(
+                                  RemoveFromCart(widget.food),
+                                );
+                              }
+                            },
+                          ),
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 8),
+                            child: BlocBuilder<OrderBloc, OrderState>(
+                              builder: (context, state) {
+                                return Text(
+                                  widget.food.quantity.toString(),
+                                  style: CustomTextStyle.size16Weight600Text(),
+                                );
+                              },
+                            ),
+                          ),
+                          UpdateQuantityButton(
+                            backgroundColor: AppColors.primaryColor,
+                            iconColor: Colors.white,
+                            icon: Icons.add,
+                            onTap: () {
+                              BlocProvider.of<OrderBloc>(context).add(
+                                AddToCart(widget.food),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-          const SizedBox(width: 10),
-          UpdateQuantityButton(
-            backgroundColor: AppColors.primaryColor.withOpacity(0.1),
-            iconColor: AppColors.primaryColor,
-            icon: Icons.remove,
-            onTap: () {
-              BlocProvider.of<OrderBloc>(context).add(
-                RemoveFromCart(widget.food),
-              );
-            },
-          ),
-          const SizedBox(width: 16),
-          BlocBuilder<OrderBloc, OrderState>(
-            builder: (context, state) {
-              return Text(
-                widget.food.quantity.toString(),
-                style: CustomTextStyle.size16Weight400Text(),
-              );
-            },
-          ),
-          const SizedBox(width: 16),
-          UpdateQuantityButton(
-            backgroundColor: AppColors.primaryColor,
-            iconColor: Colors.white,
-            icon: Icons.add,
-            onTap: () {
-              BlocProvider.of<OrderBloc>(context).add(
-                AddToCart(widget.food),
-              );
-            },
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topRight: Radius.circular(16),
+              bottomRight: Radius.circular(16),
+            ),
+            child: SizedBox(
+              height: 120,
+              width: 120,
+              child: widget.food.images.isEmpty
+                ? ImagePlaceholder(
+                    iconData: Icons.fastfood,
+                    iconSize: 40,
+                  )
+                : Image.network(
+                    widget.food.images.first,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return ImagePlaceholder(
+                        iconData: Icons.fastfood,
+                        iconSize: 40,
+                      );
+                    },
+                  ),
+            ),
           ),
         ],
       ),

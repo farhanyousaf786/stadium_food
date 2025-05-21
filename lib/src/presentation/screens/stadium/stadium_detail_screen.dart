@@ -38,16 +38,14 @@ class _StadiumDetailScreenState extends State<StadiumDetailScreen> {
 
   Widget _buildSliverAppBar() {
     return SliverAppBar(
-      expandedHeight: 200,
+      expandedHeight: 300,
       pinned: true,
+      backgroundColor: Colors.transparent,
+      elevation: 0,
       flexibleSpace: FlexibleSpaceBar(
-        title: Text(
-          widget.stadium.name,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        titlePadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+        centerTitle: false,
+        
         background: Hero(
           tag: 'stadium_${widget.stadium.id}',
           child: Stack(
@@ -73,6 +71,17 @@ class _StadiumDetailScreenState extends State<StadiumDetailScreen> {
           ),
         ),
       ),
+      leading: Container(
+        margin: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.4),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
     );
   }
 
@@ -80,9 +89,49 @@ class _StadiumDetailScreenState extends State<StadiumDetailScreen> {
     return SliverToBoxAdapter(
       child: Container(
         padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 10,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Center(
+                child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    Colors.black.withOpacity(0.8),
+                    Colors.black.withOpacity(0.4),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                widget.stadium.name,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                ),
+                          ),
+                        ),
+              ),
+            ),
             Row(
               children: [
                 Container(
@@ -146,31 +195,115 @@ class _StadiumDetailScreenState extends State<StadiumDetailScreen> {
     return BlocBuilder<ShopBloc, ShopState>(
       builder: (context, state) {
         if (state is ShopsLoading) {
-          return const SliverFillRemaining(
-            child: Center(
-              child: CircularProgressIndicator(color: AppColors.primaryColor),
+          return SliverToBoxAdapter(
+            child: Container(
+              margin: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircularProgressIndicator(color: AppColors.primaryColor),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Loading shops...',
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                ],
+              ),
             ),
           );
         } else if (state is ShopsLoaded) {
           return state.shops.isEmpty
-              ? const SliverFillRemaining(
-                  child: Center(
-                    child: Text('No shops available'),
+              ? SliverToBoxAdapter(
+                  child: Container(
+                    margin: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.1),
+                          spreadRadius: 1,
+                          blurRadius: 10,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.store_outlined, size: 48, color: Colors.grey[400]),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No shops available',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 )
               : SliverPadding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   sliver: SliverList(
                     delegate: SliverChildBuilderDelegate(
-                      (context, index) => _ShopCard(shop: state.shops[index],stadium: widget.stadium,),
+                      (context, index) => Column(
+                        children: [
+                          if (index == 0)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 16, top: 8),
+                              child: Text(
+                                'Available Shops',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey[800],
+                                ),
+                              ),
+                            ),
+                          _ShopCard(shop: state.shops[index], stadium: widget.stadium),
+                        ],
+                      ),
                       childCount: state.shops.length,
                     ),
                   ),
                 );
         } else if (state is ShopError) {
-          return SliverFillRemaining(
-            child: Center(
-              child: Text(state.message),
+          return SliverToBoxAdapter(
+            child: Container(
+              margin: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 10,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.error_outline, size: 48, color: Colors.red[400]),
+                  const SizedBox(height: 16),
+                  Text(
+                    state.message,
+                    style: TextStyle(
+                      color: Colors.red[600],
+                      fontSize: 16,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
             ),
           );
         }
@@ -188,19 +321,32 @@ class _ShopCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => FoodListScreen(stadium: stadium, shop: shop,),
-            ),
-          );
-        },
-        borderRadius: BorderRadius.circular(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 10,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => FoodListScreen(stadium: stadium, shop: shop),
+              ),
+            );
+          },
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -255,6 +401,7 @@ class _ShopCard extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ));
   }
+  
 }

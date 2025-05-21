@@ -13,19 +13,20 @@ class FoodItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 2,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             // Image section
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
               child: AspectRatio(
-                aspectRatio: 1.2,
+                aspectRatio: 1.3,
                 child: food.images.isEmpty
                     ? _placeholder()
                     : Image.network(
@@ -38,51 +39,45 @@ class FoodItem extends StatelessWidget {
 
             // Content section
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(12),
               child: Column(
-                mainAxisSize: MainAxisSize.min, // avoid unnecessary height
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    food.name,
-                    style: CustomTextStyle.size16Weight600Text(),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    food.description.isNotEmpty
-                        ? food.description
-                        : 'No description available',
-                    style: CustomTextStyle.size14Weight400Text(
-                      AppColors().secondaryTextColor,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 8),
+                  // Name and Price
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      Expanded(
+                        child: Text(
+                          food.name,
+                          style: CustomTextStyle.size16Weight600Text(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                       Text(
-                        '\$${food.price.toStringAsFixed(2)}',
-                        style: CustomTextStyle.size18Weight600Text(
+                        '${food.price.toStringAsFixed(2)} USD',
+                        style: CustomTextStyle.size16Weight600Text(
                           AppColors.primaryColor,
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          'Add',
-                          style: TextStyle(
-                            color: AppColors.primaryColor,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                          ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  
+                  // Prep time
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.schedule,
+                        size: 16,
+                        color: AppColors().secondaryTextColor,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${food.preparationTime} min',
+                        style: CustomTextStyle.size14Weight400Text(
+                          AppColors().secondaryTextColor,
                         ),
                       ),
                     ],
@@ -100,7 +95,7 @@ class FoodItem extends StatelessWidget {
     return Container(
       color: Colors.grey[200],
       child: const Center(
-        child: Icon(Icons.fastfood, size: 40, color: Colors.grey),
+        child: Icon(Icons.fastfood, size: 32, color: Colors.grey),
       ),
     );
   }

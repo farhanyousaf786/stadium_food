@@ -4,6 +4,7 @@ import 'package:stadium_food/src/data/models/food.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 
+
 class FoodItem extends StatelessWidget {
   final Food food;
   final VoidCallback? onTap;
@@ -13,20 +14,21 @@ class FoodItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 2,
+      margin: const EdgeInsets.all(8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 1,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             // Image section
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
               child: AspectRatio(
-                aspectRatio: 1.3,
+                aspectRatio: 1.5,
                 child: food.images.isEmpty
                     ? _placeholder()
                     : Image.network(
@@ -43,29 +45,16 @@ class FoodItem extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Name and Price
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          food.name,
-                          style: CustomTextStyle.size16Weight600Text(),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Text(
-                        '${food.price.toStringAsFixed(2)} USD',
-                        style: CustomTextStyle.size16Weight600Text(
-                          AppColors.primaryColor,
-                        ),
-                      ),
-                    ],
+                  // Name
+                  Text(
+                    food.name,
+                    style: CustomTextStyle.size16Weight600Text(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 8),
                   
-                  // Prep time
+                  // Prep time and Rating
                   Row(
                     children: [
                       Icon(
@@ -80,7 +69,29 @@ class FoodItem extends StatelessWidget {
                           AppColors().secondaryTextColor,
                         ),
                       ),
+                      const SizedBox(width: 12),
+                      Icon(
+                        Icons.star,
+                        size: 16,
+                        color: Colors.amber,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '4.8',
+                        style: CustomTextStyle.size14Weight400Text(
+                          AppColors().secondaryTextColor,
+                        ),
+                      ),
                     ],
+                  ),
+                  const SizedBox(height: 8),
+                  
+                  // Price
+                  Text(
+                    '${food.price.toStringAsFixed(2)} USD',
+                    style: CustomTextStyle.size18Weight600Text(
+                      AppColors.primaryColor,
+                    ),
                   ),
                 ],
               ),

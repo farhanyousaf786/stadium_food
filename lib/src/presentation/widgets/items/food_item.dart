@@ -1,60 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:stadium_food/src/data/models/food.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
-import 'package:shimmer/shimmer.dart';
 
 class FoodItem extends StatelessWidget {
   final Food food;
   final VoidCallback? onTap;
+
   const FoodItem({super.key, required this.food, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 5,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 3,
       child: InkWell(
         onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Image section
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
               child: AspectRatio(
                 aspectRatio: 1.2,
                 child: food.images.isEmpty
-                    ? Container(
-                        color: Colors.grey[200],
-                        child: const Icon(
-                          Icons.fastfood,
-                          size: 40,
-                          color: Colors.grey,
-                        ),
-                      )
+                    ? _placeholder()
                     : Image.network(
                         food.images.first,
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: Colors.grey[200],
-                            child: const Icon(
-                              Icons.error,
-                              size: 40,
-                              color: Colors.grey,
-                            ),
-                          );
-                        },
+                        errorBuilder: (_, __, ___) => _placeholder(),
                       ),
               ),
             ),
+
             // Content section
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(8.0),
               child: Column(
+                mainAxisSize: MainAxisSize.min, // avoid unnecessary height
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -65,7 +51,9 @@ class FoodItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    food.description != '' ? food.description : 'No description available',
+                    food.description.isNotEmpty
+                        ? food.description
+                        : 'No description available',
                     style: CustomTextStyle.size14Weight400Text(
                       AppColors().secondaryTextColor,
                     ),
@@ -74,6 +62,7 @@ class FoodItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         '\$${food.price.toStringAsFixed(2)}',
@@ -81,44 +70,43 @@ class FoodItem extends StatelessWidget {
                           AppColors.primaryColor,
                         ),
                       ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          'Add',
+                          style: TextStyle(
+                            color: AppColors.primaryColor,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ],
               ),
             ),
-
           ],
         ),
       ),
     );
   }
-}
 
-class HazardPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.black
-      ..style = PaintingStyle.fill;
-
-    final stripeWidth = size.height;
-    final stripeSpacing = size.height;
-    var x = -size.height;
-
-    while (x < size.width + size.height) {
-      final path = Path()
-        ..moveTo(x, 0)
-        ..lineTo(x + stripeWidth, 0)
-        ..lineTo(x, size.height)
-        ..close();
-      canvas.drawPath(path, paint);
-      x += stripeWidth + stripeSpacing;
-    }
+  Widget _placeholder() {
+    return Container(
+      color: Colors.grey[200],
+      child: const Center(
+        child: Icon(Icons.fastfood, size: 40, color: Colors.grey),
+      ),
+    );
   }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
+
 
 class FoodItemShimmer extends StatelessWidget {
   const FoodItemShimmer({super.key});
@@ -126,16 +114,14 @@ class FoodItemShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 5,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 3,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Image shimmer
           ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
             child: AspectRatio(
               aspectRatio: 1.2,
               child: Shimmer.fromColors(
@@ -145,54 +131,45 @@ class FoodItemShimmer extends StatelessWidget {
               ),
             ),
           ),
+
           // Content shimmer
           Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(
-                    height: 20,
-                    width: 150,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(
-                    height: 16,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(
-                    height: 24,
-                    width: 80,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                ),
+                _shimmerLine(height: 18, width: 120),
+                const SizedBox(height: 6),
+                _shimmerLine(height: 14, width: double.infinity),
+                const SizedBox(height: 6),
+                _shimmerLine(height: 14, width: 100),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _shimmerLine(height: 18, width: 50),
+                    _shimmerLine(height: 24, width: 40),
+                  ],
+                )
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _shimmerLine({required double height, required double width}) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        height: height,
+        width: width,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(6),
+        ),
       ),
     );
   }

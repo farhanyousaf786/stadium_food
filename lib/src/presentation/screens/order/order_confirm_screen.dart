@@ -223,7 +223,6 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                           maxLines: 3,
                         ),
                       ],
-
                     ),
                   ),
                   const SizedBox(height: 20),

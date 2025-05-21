@@ -11,7 +11,6 @@ import '../../utils/custom_text_style.dart';
 import '../../utils/app_colors.dart';
 
 class FoodListScreen extends StatefulWidget {
-
   final Stadium stadium;
   final Shop shop;
 
@@ -31,33 +30,35 @@ class _FoodListScreenState extends State<FoodListScreen> {
   void initState() {
     super.initState();
     context.read<FoodBloc>().add(LoadFoods(
-      shopId: widget.shop.id,
-      stadiumId: widget.stadium.id,
-      limit: 20,
-      lastDocument: null,
-    ));
+          shopId: widget.shop.id,
+          stadiumId: widget.stadium.id,
+          limit: 20,
+          lastDocument: null,
+        ));
 
     _scrollController.addListener(_onScroll);
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
       // Load more foods if needed
       context.read<FoodBloc>().add(FetchMoreFoods(
-        shopId: widget.shop.id,
-        stadiumId: widget.stadium.id,
-        limit: 10,
-        lastDocument: null,
-      ));
+            shopId: widget.shop.id,
+            stadiumId: widget.stadium.id,
+            limit: 10,
+            lastDocument: null,
+          ));
     }
   }
 
   void _filterFoods(String query) {
     setState(() {
-      _filteredFoods = _foods.where((food) =>
-          food.name.toLowerCase().contains(query.toLowerCase()) ||
-          food.description.toLowerCase().contains(query.toLowerCase())
-      ).toList();
+      _filteredFoods = _foods
+          .where((food) =>
+              food.name.toLowerCase().contains(query.toLowerCase()) ||
+              food.description.toLowerCase().contains(query.toLowerCase()))
+          .toList();
     });
   }
 
@@ -136,7 +137,8 @@ class _FoodListScreenState extends State<FoodListScreen> {
                           onChanged: _filterFoods,
                           decoration: InputDecoration(
                             hintText: 'Search for food...',
-                            prefixIcon: const Icon(Icons.search, color: AppColors.primaryColor),
+                            prefixIcon: const Icon(Icons.search,
+                                color: AppColors.primaryColor),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(15),
                               borderSide: BorderSide.none,
@@ -150,9 +152,11 @@ class _FoodListScreenState extends State<FoodListScreen> {
                       Expanded(
                         child: BlocBuilder<FoodBloc, FoodState>(
                           builder: (context, state) {
-                            if (state is FoodFetching || state is FoodMoreFetching) {
+                            if (state is FoodFetching ||
+                                state is FoodMoreFetching) {
                               return const Center(
-                                child: CircularProgressIndicator(color: AppColors.primaryColor),
+                                child: CircularProgressIndicator(
+                                    color: AppColors.primaryColor),
                               );
                             }
 
@@ -161,11 +165,14 @@ class _FoodListScreenState extends State<FoodListScreen> {
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(Icons.fastfood_outlined, size: 64, color: Colors.grey[400]),
+                                    Icon(Icons.fastfood_outlined,
+                                        size: 64, color: Colors.grey[400]),
                                     const SizedBox(height: 16),
                                     Text(
                                       'No food items found',
-                                      style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                                      style: TextStyle(
+                                          color: Colors.grey[600],
+                                          fontSize: 16),
                                     ),
                                   ],
                                 ),
@@ -174,11 +181,14 @@ class _FoodListScreenState extends State<FoodListScreen> {
 
                             return GridView.builder(
                               controller: _scrollController,
-                              padding: const EdgeInsets.symmetric(horizontal: 5),
-                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5),
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
                                 mainAxisSpacing: 10,
                                 crossAxisSpacing: 10,
-                                childAspectRatio: 0.7, crossAxisCount: 2,
+                                childAspectRatio: 0.65,
+                                crossAxisCount: 2,
                               ),
                               itemCount: _filteredFoods.length,
                               itemBuilder: (context, index) {

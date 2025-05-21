@@ -88,10 +88,9 @@ class _StadiumScreenState extends State<StadiumScreen> with SingleTickerProvider
                       borderRadius: BorderRadius.circular(15),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
-                          spreadRadius: 2,
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
                         ),
                       ],
                     ),
@@ -108,7 +107,7 @@ class _StadiumScreenState extends State<StadiumScreen> with SingleTickerProvider
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
-                          borderSide: const BorderSide(color: AppColors.primaryColor, width: 2),
+                          borderSide: BorderSide.none,
                         ),
                         filled: true,
                         fillColor: Colors.white,

@@ -12,8 +12,8 @@ class LikeButton extends StatelessWidget {
       borderRadius: BorderRadius.circular(50),
       onTap: onTap,
       child: Container(
-        height: 34,
-        width: 34,
+        height: 50,
+        width: 50,
         decoration: BoxDecoration(
           color: AppColors.likeColor.withOpacity(0.1),
           borderRadius: BorderRadius.circular(50),
@@ -21,7 +21,7 @@ class LikeButton extends StatelessWidget {
         child: Icon(
           isLiked ? Icons.favorite : Icons.favorite_border,
           color: AppColors.likeColor,
-          size: 16,
+          size: 25,
         ),
       ),
     );

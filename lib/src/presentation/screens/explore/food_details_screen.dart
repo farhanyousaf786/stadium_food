@@ -17,6 +17,8 @@ import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 
+import '../../widgets/buttons/back_button.dart';
+
 class FoodDetailsScreen extends StatefulWidget {
   final Food food;
   const FoodDetailsScreen({super.key, required this.food});
@@ -66,28 +68,47 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
         }
       },
       child: Scaffold(
-        bottomNavigationBar: Container(
-          margin: const EdgeInsets.fromLTRB(25, 0, 25, 25),
-          child: PrimaryButton(
-            text: "Add to cart",
-            onTap: () {
-              BlocProvider.of<OrderBloc>(context).add(
-                AddToCart(widget.food),
-              );
-              Navigator.pushNamed(context, '/cart');
-            },
+        backgroundColor:   AppColors().backgroundColor,
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.fromLTRB(16,10,0,16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              BlocBuilder<ProfileBloc, ProfileState>(
+                builder: (context, state) {
+                  return LikeButton(
+                    isLiked: widget.food.isFavorite,
+                    onTap: () {
+                      BlocProvider.of<ProfileBloc>(context).add(
+                        ToggleFavoriteFood(foodId: widget.food.id, shopId: widget.food.shopId, stadiumId: widget.food.stadiumId,),
+                      );
+                    },
+                  );
+                },
+              ),
+
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                  child: PrimaryButton(
+                    text: "Add to cart",
+                    onTap: () {
+                      BlocProvider.of<OrderBloc>(context).add(
+                        AddToCart(widget.food),
+                      );
+                      Navigator.pushNamed(context, '/cart');
+                    },
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         body: CustomScrollView(
           slivers: [
             SliverAppBar(
-              leading: IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(
-                  Icons.arrow_back,
-                  color: AppColors.secondaryColor,
-                ),
-              ),
+              leading:     const CustomBackButton(),
+
               expandedHeight: MediaQuery.of(context).size.height * 0.4,
               flexibleSpace: Stack(
                 children: [
@@ -111,7 +132,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: Container(
-                      height: 40,
+                      height: 20,
                       decoration: BoxDecoration(
                         color: AppColors().backgroundColor,
                         borderRadius: const BorderRadius.only(
@@ -130,6 +151,8 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
             ),
             SliverToBoxAdapter(
               child: Container(
+                color: AppColors().backgroundColor,
+
                 padding: const EdgeInsets.fromLTRB(
                   20,
                   0,
@@ -139,63 +162,6 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
-                      height: 34,
-                      child: Row(
-                        children: [
-                          Container(
-                            alignment: Alignment.center,
-                            height: 34,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 15,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: AppStyles.largeBorderRadius,
-                              gradient: LinearGradient(
-                                colors: [
-                                  AppColors.primaryColor.withOpacity(0.1),
-                                  AppColors.primaryDarkColor.withOpacity(0.1),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                            ),
-                            child: ShaderMask(
-                              shaderCallback: (rect) {
-                                return LinearGradient(
-                                  colors: AppColors.primaryGradient,
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ).createShader(rect);
-                              },
-                              child: Text(
-                                'Popular',
-                                style: CustomTextStyle.size14Weight400Text(
-                                  Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const Spacer(),
-                          SvgPicture.asset(
-                            "assets/svg/location.svg",
-                          ),
-                          const SizedBox(width: 12),
-                          BlocBuilder<ProfileBloc, ProfileState>(
-                            builder: (context, state) {
-                              return LikeButton(
-                                isLiked: widget.food.isFavorite,
-                                onTap: () {
-                                  BlocProvider.of<ProfileBloc>(context).add(
-                                    ToggleFavoriteFood(foodId: widget.food.id, shopId: widget.food.shopId, stadiumId: widget.food.stadiumId,),
-                                  );
-                                },
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
 
                     const SizedBox(height: 20),
                     Row(
@@ -211,7 +177,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                         Text(
                           "\$${widget.food.price}",
                           style: CustomTextStyle.size22Weight600Text(
-                            AppColors.secondaryDarkColor,
+                            AppColors.primaryColor,
                           ),
                         ),
                       ],

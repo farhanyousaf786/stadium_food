@@ -94,124 +94,114 @@ class _FoodListScreenState extends State<FoodListScreen> {
           FocusScope.of(context).unfocus();
         },
         child: Scaffold(
-          body: Stack(
-            children: [
-              Align(
-                alignment: Alignment.topRight,
-                child: SvgPicture.asset(
-                  "assets/svg/pattern-small.svg",
-                ),
-              ),
-              SafeArea(
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const CustomBackButton(),
-                      const SizedBox(height: 20),
-                      Text(
-                        widget.shop.name,
-                        style: CustomTextStyle.size25Weight600Text(),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Gate ${widget.shop.gate} - ${widget.shop.location}',
-                        style: TextStyle(color: Colors.grey[600]),
-                      ),
-                      const SizedBox(height: 20),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
+          body: SafeArea(
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const CustomBackButton(),
+                  const SizedBox(height: 20),
+                  Text(
+                    widget.shop.name,
+                    style: CustomTextStyle.size25Weight600Text(),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Gate ${widget.shop.gate} - ${widget.shop.location}',
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: TextField(
+                      controller: _searchController,
+                      onChanged: _filterFoods,
+                      decoration: InputDecoration(
+                        hintText: 'Search for food...',
+                        prefixIcon: const Icon(Icons.search,
+                            color: AppColors.primaryColor),
+                        border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
+                          borderSide: BorderSide.none,
                         ),
-                        child: TextField(
-                          controller: _searchController,
-                          onChanged: _filterFoods,
-                          decoration: InputDecoration(
-                            hintText: 'Search for food...',
-                            prefixIcon: const Icon(Icons.search,
-                                color: AppColors.primaryColor),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide.none,
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                          ),
-                        ),
+                        filled: true,
+                        fillColor: Colors.white,
                       ),
-                      const SizedBox(height: 20),
-                      Expanded(
-                        child: BlocBuilder<FoodBloc, FoodState>(
-                          builder: (context, state) {
-                            if (state is FoodFetching ||
-                                state is FoodMoreFetching) {
-                              return const Center(
-                                child: CircularProgressIndicator(
-                                    color: AppColors.primaryColor),
-                              );
-                            }
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Expanded(
+                    child: BlocBuilder<FoodBloc, FoodState>(
+                      builder: (context, state) {
+                        if (state is FoodFetching ||
+                            state is FoodMoreFetching) {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                                color: AppColors.primaryColor),
+                          );
+                        }
 
-                            if (_filteredFoods.isEmpty) {
-                              return Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.fastfood_outlined,
-                                        size: 64, color: Colors.grey[400]),
-                                    const SizedBox(height: 16),
-                                    Text(
-                                      'No food items found',
-                                      style: TextStyle(
-                                          color: Colors.grey[600],
-                                          fontSize: 16),
-                                    ),
-                                  ],
+                        if (_filteredFoods.isEmpty) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.fastfood_outlined,
+                                    size: 64, color: Colors.grey[400]),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'No food items found',
+                                  style: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontSize: 16),
                                 ),
-                              );
-                            }
+                              ],
+                            ),
+                          );
+                        }
 
-                            return GridView.builder(
-                              controller: _scrollController,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 5),
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                mainAxisSpacing: 10,
-                                crossAxisSpacing: 10,
-                                childAspectRatio: 0.65,
-                                crossAxisCount: 2,
-                              ),
-                              itemCount: _filteredFoods.length,
-                              itemBuilder: (context, index) {
-                                return FoodItem(
-                                  food: _filteredFoods[index],
-                                  onTap: () {
-                                    Navigator.pushNamed(
-                                      context,
-                                      '/foods/detail',
-                                      arguments: _filteredFoods[index],
-                                    );
-                                  },
+                        return GridView.builder(
+                          controller: _scrollController,
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: 5),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            mainAxisSpacing: 8,
+                            crossAxisSpacing: 8,
+                            childAspectRatio: 0.65,
+                            crossAxisCount: 2,
+                          ),
+                          itemCount: _filteredFoods.length,
+                          itemBuilder: (context, index) {
+                            return FoodItem(
+                              food: _filteredFoods[index],
+                              onTap: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  '/foods/detail',
+                                  arguments: _filteredFoods[index],
                                 );
                               },
                             );
                           },
-                        ),
-                      ),
-                    ],
+                        );
+                      },
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:stadium_food/src/data/models/food.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
@@ -53,7 +54,7 @@ class FoodItem extends StatelessWidget {
                     // Name
                     Text(
                       food.name,
-                      style: CustomTextStyle.size16Weight600Text(),
+                      style: CustomTextStyle.size18Weight600Text(),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -64,8 +65,8 @@ class FoodItem extends StatelessWidget {
                       children: [
                         Icon(
                           Icons.schedule,
-                          size: 16,
-                          color: AppColors().secondaryTextColor,
+                          size: 20,
+                          color: AppColors.primaryColor,
                         ),
                         const SizedBox(width: 4),
                         Text(
@@ -75,10 +76,11 @@ class FoodItem extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        Icon(
-                          Icons.star,
-                          size: 16,
-                          color: Colors.amber,
+                        SvgPicture.asset(
+                          height: 16,
+                          width: 16,
+                          "assets/svg/star-gold.svg",
+
                         ),
                         const SizedBox(width: 4),
                         Text(

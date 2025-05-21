@@ -88,7 +88,7 @@ class FoodItem extends StatelessWidget {
                   
                   // Price
                   Text(
-                    '${food.price.toStringAsFixed(2)} USD',
+                    '${food.price.toStringAsFixed(2)} \$',
                     style: CustomTextStyle.size18Weight600Text(
                       AppColors.primaryColor,
                     ),

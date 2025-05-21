@@ -175,11 +175,11 @@ class _FoodListScreenState extends State<FoodListScreen> {
                             return GridView.builder(
                               controller: _scrollController,
                               padding: const EdgeInsets.symmetric(horizontal: 5),
-                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                childAspectRatio: 0.7,
-                                crossAxisSpacing: 15,
-                                mainAxisSpacing: 15,
+                              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                                maxCrossAxisExtent: 300, // Controls max item width
+                                mainAxisSpacing: 10,
+                                crossAxisSpacing: 10,
+                                childAspectRatio: 0.79, // You can fine-tune this
                               ),
                               itemCount: _filteredFoods.length,
                               itemBuilder: (context, index) {

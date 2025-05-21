@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
         }
         
         return MaterialApp(
-          title: "Food Ninja",
+          title: "Fans Food",
           theme: themeData,
           onGenerateRoute: AppRouter.onGenerateRoute,
         );

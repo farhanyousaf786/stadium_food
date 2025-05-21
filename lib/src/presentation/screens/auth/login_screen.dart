@@ -66,9 +66,24 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(
                         height: MediaQuery.of(context).padding.top + 50,
                       ),
-                      Image.asset(
-                        "assets/png/logo.png",
-                        width: 200,
+                      Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 20,
+                              spreadRadius: 5,
+                            ),
+                          ],
+                          image: DecorationImage(
+                            image: AssetImage("assets/png/logo-small.jpeg"),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 60),
                       Text(

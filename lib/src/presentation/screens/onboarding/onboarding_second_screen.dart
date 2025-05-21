@@ -20,7 +20,7 @@ class OnboardingSecondScreen extends StatelessWidget {
               ),
               const SizedBox(height: 40),
               Text(
-                "Food Ninja is Where Your Comfort \nFood Lives",
+                "Fans Food is Where Your Comfort \nFood Lives",
                 textAlign: TextAlign.center,
                 style: CustomTextStyle.size22Weight600Text(),
               ),

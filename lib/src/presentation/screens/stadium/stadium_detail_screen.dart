@@ -26,6 +26,7 @@ class _StadiumDetailScreenState extends State<StadiumDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.bgColor,
       body: CustomScrollView(
         slivers: [
           _buildSliverAppBar(),

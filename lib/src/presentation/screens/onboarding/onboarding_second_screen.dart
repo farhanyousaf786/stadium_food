@@ -3,12 +3,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 
+import '../../utils/app_colors.dart';
+
 class OnboardingSecondScreen extends StatelessWidget {
   const OnboardingSecondScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.bgColor,
       body: SingleChildScrollView(
         child: Align(
           child: Column(

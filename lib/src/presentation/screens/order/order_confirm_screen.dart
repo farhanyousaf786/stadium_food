@@ -128,6 +128,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
         }
       },
       child: Scaffold(
+        backgroundColor: AppColors.bgColor,
         bottomNavigationBar: BlocBuilder<OrderBloc, OrderState>(
           builder: (context, state) {
             return PriceInfoWidget(

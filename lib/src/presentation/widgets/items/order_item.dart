@@ -53,6 +53,7 @@ class OrderItem extends StatelessWidget {
                     "\$${order.total.toStringAsFixed(2)}",
                     style: const TextStyle(
                       fontSize: 18,
+                      color: AppColors.primaryColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -70,14 +71,22 @@ class OrderItem extends StatelessWidget {
                       color: Colors.grey,
                     ),
                   ),
-                  Text(
-                    order.status.toString(),
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: order.status.color,
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: order.status.color.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      order.status.toString(),
+                      style:  TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: order.status.color,
+                      ),
                     ),
                   ),
+
                 ],
               ),
             ],

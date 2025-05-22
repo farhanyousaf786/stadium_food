@@ -4,12 +4,14 @@ import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 
 class PrimaryButton extends StatelessWidget {
   final String text;
+  final IconData? iconData;
   final VoidCallback onTap;
 
   const PrimaryButton({
     super.key,
     required this.text,
     required this.onTap,
+    this.iconData,
   });
 
   @override
@@ -33,13 +35,31 @@ class PrimaryButton extends StatelessWidget {
             horizontal: 60,
             vertical: 16,
           ),
-          child: Text(
-            text,
-            textAlign: TextAlign.center,
-            style: CustomTextStyle.size16Weight400Text(
-              Colors.white,
-            ),
-          ),
+          child: iconData == null
+              ? Text(
+                  text,
+                  textAlign: TextAlign.center,
+                  style: CustomTextStyle.size16Weight600Text(
+                    Colors.white,
+                  ),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      iconData,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 10,),
+                    Text(
+                      text,
+                      textAlign: TextAlign.center,
+                      style: CustomTextStyle.size16Weight600Text(
+                        Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
         ),
       ),
     );

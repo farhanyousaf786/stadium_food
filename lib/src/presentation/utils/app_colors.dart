@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 class AppColors {
   // general colors
+  static const Color bgColor = Color(0xFFF5F5F5);
   static const Color primaryColor = Color(0xFF4C9E48);
   static const Color primaryDarkColor = Color(0xFF3B7B38); // 20% darker
   static const Color primaryLightColor = Color(0xFF5EBE5A); // 20% lighter
@@ -18,9 +19,10 @@ class AppColors {
   static const Color successColor = Color(0xFF388E3C);
   static const Color likeColor = Color(0xFFFF1D1D);
   static const Color starColor = Color(0xFFFEAD1D);
-  static Color starEmptyColor = starColor.withOpacity(0.3);
+  static Color starEmptyColor = grayColor.withOpacity(0.3);
   static const Color lightBorderColor = Color(0xFFF4F4F4);
   static const Color grayColor = Color(0xFF3B3B3B);
+  // static const Color grayColor = Color(0xFF888787);
   static const Color grayLightColor = Color(0xFFF6F6F6);
   // for order status
   // pending,

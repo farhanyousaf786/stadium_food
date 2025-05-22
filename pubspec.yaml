@@ -66,10 +66,10 @@ flutter:
     - assets/png/
     - assets/svg/
   fonts:
-    - family: Lato
+    - family: SF
       fonts:
-        - asset: assets/fonts/Lato-Regular.ttf
-        - asset: assets/fonts/Lato-Bold.ttf
+        - asset: assets/fonts/SF-Pro-Text-Regular.otf
+        - asset: assets/fonts/SF-Pro-Text-Bold.otf
           weight: 700
 
 flutter_launcher_icons:

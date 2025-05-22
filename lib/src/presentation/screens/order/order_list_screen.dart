@@ -9,6 +9,9 @@ import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 
+import '../../../data/models/order.dart';
+import '../../../data/models/order_status.dart';
+
 class OrderListScreen extends StatefulWidget {
   const OrderListScreen({super.key});
 
@@ -16,137 +19,82 @@ class OrderListScreen extends StatefulWidget {
   State<OrderListScreen> createState() => _OrderListScreenState();
 }
 
-class _OrderListScreenState extends State<OrderListScreen> {
+class _OrderListScreenState extends State<OrderListScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<OrderBloc>(context).add(
-      FetchOrders(),
-    );
+    BlocProvider.of<OrderBloc>(context).add(FetchOrders());
+    _tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  List<Order> filterOrders(List<Order> orders, String tabKey) {
+    switch (tabKey) {
+      case 'active':
+        return orders.where((o) =>
+        o.status == OrderStatus.pending ||
+            o.status == OrderStatus.preparing ||
+            o.status == OrderStatus.delivering).toList();
+      case 'completed':
+        return orders.where((o) => o.status == OrderStatus.delivered).toList();
+      case 'cancelled':
+        return orders.where((o) => o.status == OrderStatus.canceled).toList();
+      default:
+        return [];
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor:AppColors.bgColor,
       body: Stack(
         children: [
           Align(
             alignment: Alignment.topRight,
-            child: SvgPicture.asset(
-              "assets/svg/pattern-small.svg",
-            ),
+            child: SvgPicture.asset("assets/svg/pattern-small.svg"),
           ),
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 30, 20, 0),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Orders",
-                          style: CustomTextStyle.size25Weight600Text(),
-                        ),
-                        InkWell(
-                          onTap: () {
-                            Navigator.pushNamed(context, "/cart");
-                          },
-                          borderRadius: AppStyles.defaultBorderRadius,
-                          child: Container(
-                            width: 45,
-                            height: 45,
-                            decoration: BoxDecoration(
-                              color: AppColors.secondaryLightColor
-                                  .withOpacity(0.1),
-                              borderRadius: AppStyles.defaultBorderRadius,
-                              boxShadow: [AppStyles.boxShadow7],
-                            ),
-                            padding: const EdgeInsets.all(10),
-                            child: Badge(
-                              backgroundColor: AppColors.errorColor,
-                              isLabelVisible: OrderRepository.cart.isNotEmpty,
-                              label: Text(
-                                OrderRepository.cart.length.toString(),
-                                style: CustomTextStyle.size14Weight400Text(
-                                  Colors.white,
-                                ),
-                              ),
-                              offset: const Offset(10, -10),
-                              child: SvgPicture.asset(
-                                "assets/svg/cart.svg",
-                                colorFilter: const ColorFilter.mode(
-                                  AppColors.secondaryDarkColor,
-                                  BlendMode.srcIn,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    BlocBuilder<OrderBloc, OrderState>(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(context),
+                  const SizedBox(height: 20),
+                  TabBar(
+                    controller: _tabController,
+                    indicatorColor: AppColors.primaryColor,
+                    labelColor: AppColors.primaryColor,
+                    unselectedLabelColor: Colors.grey,
+                    tabs: const [
+                      Tab(text: 'Active'),
+                      Tab(text: 'Completed'),
+                      Tab(text: 'Cancelled'),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Expanded(
+                    child: BlocBuilder<OrderBloc, OrderState>(
                       builder: (context, state) {
                         if (state is OrdersFetching) {
-                          // return order item shimmers
-                          return Column(
-                            children: List.generate(
-                              3,
-                              (index) => const Column(
-                                children: [
-                                  OrderItemShimmer(),
-                                  SizedBox(height: 20),
-                                ],
-                              ),
-                            ),
-                          );
+                          return _buildShimmer();
                         } else if (state is OrdersFetched) {
-                          if (state.orders.isEmpty) {
-                            return SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.6,
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "No orders yet",
-                                      style:
-                                          CustomTextStyle.size16Weight400Text(),
-                                    ),
-                                    const SizedBox(height: 20),
-                                    // create order button
-                                    PrimaryButton(
-                                      text: "Create Order",
-                                      onTap: () {
-                                        Navigator.pushNamed(
-                                          context,
-                                          "/foods",
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }
-                          return ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: state.orders.length,
-                            itemBuilder: (context, index) {
-                              return Column(
-                                children: [
-                                  OrderItem(
-                                    order: state.orders[index],
-                                  ),
-                                  const SizedBox(height: 20),
-                                ],
-                              );
-                            },
+                          return TabBarView(
+                            controller: _tabController,
+                            children: [
+                              _buildOrderList(filterOrders(state.orders, 'active')),
+                              _buildOrderList(filterOrders(state.orders, 'completed')),
+                              _buildOrderList(filterOrders(state.orders, 'cancelled')),
+                            ],
                           );
                         } else if (state is OrderFetchingError) {
                           return Center(
@@ -162,8 +110,8 @@ class _OrderListScreenState extends State<OrderListScreen> {
                         }
                       },
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -171,4 +119,97 @@ class _OrderListScreenState extends State<OrderListScreen> {
       ),
     );
   }
+
+  Widget _buildHeader(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text("Orders", style: CustomTextStyle.size25Weight600Text()),
+        InkWell(
+          onTap: () => Navigator.pushNamed(context, "/cart"),
+          borderRadius: AppStyles.defaultBorderRadius,
+          child: Container(
+            width: 45,
+            height: 45,
+            decoration: BoxDecoration(
+              color: AppColors.primaryColor.withOpacity(0.1),
+              borderRadius: AppStyles.defaultBorderRadius,
+              boxShadow: [AppStyles.boxShadow7],
+            ),
+            padding: const EdgeInsets.all(10),
+            child: Badge(
+              backgroundColor: AppColors.errorColor,
+              isLabelVisible: OrderRepository.cart.isNotEmpty,
+              label: Text(
+                OrderRepository.cart.length.toString(),
+                style: CustomTextStyle.size14Weight400Text(Colors.white),
+              ),
+              offset: const Offset(10, -10),
+              child: SvgPicture.asset(
+                "assets/svg/cart.svg",
+                colorFilter: const ColorFilter.mode(
+                  AppColors.primaryColor,
+                  BlendMode.srcIn,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildShimmer() {
+    return Column(
+      children: List.generate(
+        3,
+            (index) => const Column(
+          children: [
+            OrderItemShimmer(),
+            SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOrderList(List<Order> orders) {
+    if (orders.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(
+              "assets/svg/order.svg",
+              color: AppColors.starEmptyColor,
+              height: 100,
+              width: 100,
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            Text("No orders found", style: CustomTextStyle.size22Weight600Text()),
+            const SizedBox(height: 20),
+            PrimaryButton(
+              iconData: Icons.shopping_bag,
+              text: "Continue Shopping",
+              onTap: () => Navigator.pushNamed(context, "/foods"),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.only(top: 10),
+      itemCount: orders.length,
+      itemBuilder: (context, index) => Column(
+        children: [
+          OrderItem(order: orders[index]),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
 }
+

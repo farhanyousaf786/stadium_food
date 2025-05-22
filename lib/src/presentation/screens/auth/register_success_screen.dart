@@ -11,6 +11,7 @@ class RegisterSuccessScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.bgColor,
       body: Stack(
         children: [
           Align(

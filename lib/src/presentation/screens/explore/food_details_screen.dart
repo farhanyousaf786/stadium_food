@@ -68,7 +68,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor:   AppColors().backgroundColor,
+        backgroundColor:   AppColors.bgColor,
         bottomNavigationBar: Padding(
           padding: const EdgeInsets.fromLTRB(16,10,0,16),
           child: Row(
@@ -91,7 +91,8 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
                   child: PrimaryButton(
-                    text: "Add to cart",
+                    iconData: Icons.add_shopping_cart,
+                    text: "Add to Cart",
                     onTap: () {
                       BlocProvider.of<OrderBloc>(context).add(
                         AddToCart(widget.food),
@@ -183,58 +184,65 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                       ],
                     ),
                     const SizedBox(height: 20),
-
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(
-                          "assets/svg/star.svg",
-                        ),
-                        const SizedBox(width: 10),
-                        BlocBuilder<TestimonialBloc, TestimonialState>(
-                          builder: (context, state) {
-                            return Text(
-                              "${rating.toStringAsFixed(2)} Rating",
-                              style: CustomTextStyle.size14Weight400Text(
-                                AppColors().secondaryTextColor,
-                              ),
-                            );
-                          },
-                        ),
-                        const SizedBox(width: 25),
-                        SvgPicture.asset(
-                          "assets/svg/shopping-bag.svg",
-                        ),
-                        const SizedBox(width: 10),
-                        BlocBuilder<FoodBloc, FoodState>(
-                          builder: (context, state) {
-                            if (state is OrderCountFetching) {
-                              return const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: AppColors.primaryColor,
-                                ),
-                              );
-                            } else if (state is OrderCountFetched) {
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset(
+                            "assets/svg/star.svg",
+                          ),
+                          const SizedBox(width: 10),
+                          BlocBuilder<TestimonialBloc, TestimonialState>(
+                            builder: (context, state) {
                               return Text(
-                                "${state.count} ${state.count == 1 ? 'Order' : 'Orders'}",
+                                "${rating.toStringAsFixed(2)} Rating",
                                 style: CustomTextStyle.size14Weight400Text(
                                   AppColors().secondaryTextColor,
                                 ),
                               );
-                            }
-                            return Text(
-                              "0 Orders",
-                              style: CustomTextStyle.size14Weight400Text(
-                                AppColors().secondaryTextColor,
-                              ),
-                            );
-                          },
-                        ),
-                      ],
+                            },
+                          ),
+                          const SizedBox(width: 25),
+                          SvgPicture.asset(
+                            "assets/svg/shopping-bag.svg",
+                          ),
+                          const SizedBox(width: 10),
+                          BlocBuilder<FoodBloc, FoodState>(
+                            builder: (context, state) {
+                              if (state is OrderCountFetching) {
+                                return const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: AppColors.primaryColor,
+                                  ),
+                                );
+                              } else if (state is OrderCountFetched) {
+                                return Text(
+                                  "${state.count} ${state.count == 1 ? 'Order' : 'Orders'}",
+                                  style: CustomTextStyle.size14Weight400Text(
+                                    AppColors().secondaryTextColor,
+                                  ),
+                                );
+                              }
+                              return Text(
+                                "0 Orders",
+                                style: CustomTextStyle.size14Weight400Text(
+                                  AppColors().secondaryTextColor,
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
+
                     const SizedBox(height: 24),
 
                     // description

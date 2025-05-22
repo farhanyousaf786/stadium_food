@@ -78,6 +78,7 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
             }
           },
           child: Scaffold(
+            backgroundColor: AppColors.bgColor,
             resizeToAvoidBottomInset: false,
             body: Stack(
               children: [

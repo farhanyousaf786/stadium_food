@@ -89,11 +89,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     icon: Opacity(
                       opacity: 0.5,
                       child: SvgPicture.asset(
-                        "assets/svg/home.svg",
+                        "assets/svg/home_new.svg",
                       ),
                     ),
                     selectedIcon: SvgPicture.asset(
-                      "assets/svg/home.svg",
+                      "assets/svg/home_new.svg",
                     ),
                     label: "Home",
                   ),
@@ -125,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Opacity(
                             opacity: 0.5,
                             child: SvgPicture.asset(
-                              "assets/svg/cart.svg",
+                              "assets/svg/order.svg",
                             ),
                           ),
                         );
@@ -144,12 +144,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           offset: const Offset(10, -10),
                           child: SvgPicture.asset(
-                            "assets/svg/cart.svg",
+                            "assets/svg/order.svg",
                           ),
                         );
                       },
                     ),
-                    label: "Cart",
+                    label: "Orders",
                   ),
                   NavigationDestination(
                     icon: Opacity(

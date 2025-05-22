@@ -58,6 +58,7 @@ class _UploadPhotoScreenState extends State<UploadPhotoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.bgColor,
       body: Stack(
         children: [
           Align(

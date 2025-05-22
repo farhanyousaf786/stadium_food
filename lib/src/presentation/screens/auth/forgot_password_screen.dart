@@ -50,6 +50,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         }
       },
       child: Scaffold(
+        backgroundColor: AppColors.bgColor,
         bottomNavigationBar: Padding(
           padding: const EdgeInsets.only(
             bottom: 60,

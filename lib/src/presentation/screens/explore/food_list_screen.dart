@@ -94,6 +94,7 @@ class _FoodListScreenState extends State<FoodListScreen> {
           FocusScope.of(context).unfocus();
         },
         child: Scaffold(
+          backgroundColor: AppColors.bgColor,
           body: SafeArea(
             child: Container(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),

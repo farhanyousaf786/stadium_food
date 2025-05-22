@@ -4,6 +4,8 @@ import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dar
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:hive/hive.dart';
 
+import '../../utils/app_colors.dart';
+
 class OnboardingFirstScreen extends StatefulWidget {
   const OnboardingFirstScreen({super.key});
 
@@ -27,6 +29,7 @@ class _OnboardingFirstScreenState extends State<OnboardingFirstScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.bgColor,
       body: SingleChildScrollView(
         child: Center(
           child: Column(

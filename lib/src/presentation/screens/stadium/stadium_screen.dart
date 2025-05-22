@@ -52,11 +52,11 @@ class _StadiumScreenState extends State<StadiumScreen> with SingleTickerProvider
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: AppColors.bgColor,
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Stadiums',
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.primaryColor,
             fontSize: 24,
             fontWeight: FontWeight.bold,

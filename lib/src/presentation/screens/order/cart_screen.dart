@@ -16,6 +16,7 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.bgColor,
       bottomNavigationBar: BlocBuilder<OrderBloc, OrderState>(
         builder: (context, state) {
           return PriceInfoWidget(
@@ -52,9 +53,24 @@ class CartScreen extends StatelessWidget {
                   Container(
                     alignment: Alignment.center,
                     height: MediaQuery.of(context).size.height * 0.4,
-                    child: Text(
-                      "Cart is empty",
-                      style: CustomTextStyle.size16Weight400Text(),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(
+                          "assets/svg/cart.svg",
+                           color: AppColors.starEmptyColor,
+                          height: 100,
+                          width: 100,
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        Text(
+                          "Cart is empty",
+
+                          style: CustomTextStyle.size22Weight600Text(),
+                        ),
+                      ],
                     ),
                   ),
                 ListView.builder(

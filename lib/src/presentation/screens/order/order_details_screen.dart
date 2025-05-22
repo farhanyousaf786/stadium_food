@@ -14,6 +14,7 @@ class OrderDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.bgColor,
       bottomNavigationBar: Container(
         height: 163,
         margin: const EdgeInsets.all(20),

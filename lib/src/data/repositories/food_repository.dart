@@ -17,14 +17,19 @@ class FoodRepository {
     );
 
     // id is the document id
-    List<Food> foods = foodsCollection.docs
-        .map(
-          (snapshot) => Food.fromMap(
-            snapshot.id,
-            snapshot.data() as Map<String, dynamic>,
-          ),
-        )
-        .toList();
+    List<Food> foods = [];
+    for (var snapshot in foodsCollection.docs) {
+      try {
+        print('Processing document: ${snapshot.id}');
+        var data = snapshot.data() as Map<String, dynamic>;
+        print('Document data: $data');
+        foods.add(Food.fromMap(snapshot.id, data));
+      } catch (e, stackTrace) {
+        print('Error processing document ${snapshot.id}: $e');
+        print('Stack trace: $stackTrace');
+        rethrow;
+      }
+    }
 
     // sort by date
     foods.sort((a, b) => b.createdAt.compareTo(a.createdAt));

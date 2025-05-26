@@ -24,6 +24,7 @@ class Food extends Equatable {
   final List<Map<String, dynamic>> sizes;
   final List<Map<String, dynamic>> toppings;
   final DateTime updatedAt;
+  final String foodType; // Non-Halal, Non-Kosher, Non-Vegan
 
   // for cart
   int quantity = 1;
@@ -48,43 +49,32 @@ class Food extends Equatable {
     required this.sizes,
     required this.toppings,
     required this.updatedAt,
+    required this.foodType,
     this.quantity = 1,
   });
 
   factory Food.fromMap(String id, Map<String, dynamic> map) {
     return Food(
       id: id,
-      allergens: List<String>.from(map['allergens'] ?? []),
+      allergens: (map['allergens'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
       category: map['category'] ?? '',
       createdAt: (map['createdAt'] as Timestamp).toDate(),
-      customization: Map<String, dynamic>.from(map['customization'] ?? {}),
+      customization: (map['customization'] as Map<String, dynamic>?) ?? {},
       description: map['description'] ?? '',
-      extras: List<Map<String, dynamic>>.from(map['extras']?.map(
-            (x) => Map<String, dynamic>.from(x),
-          ) ??
-          []),
-      images: List<String>.from(map['images'] ?? []),
+      extras: (map['extras'] as List<dynamic>?)?.map((x) => Map<String, dynamic>.from(x)).toList() ?? [],
+      images: (map['images'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
       isAvailable: map['isAvailable'] ?? true,
       name: map['name'] ?? '',
-      nutritionalInfo: Map<String, dynamic>.from(map['nutritionalInfo'] ?? {}),
+      nutritionalInfo: (map['nutritionalInfo'] as Map<String, dynamic>?) ?? {},
       preparationTime: map['preparationTime'] ?? 15,
       price: (map['price'] ?? 0).toDouble(),
-      sauces: List<Map<String, dynamic>>.from(map['sauces']?.map(
-            (x) => Map<String, dynamic>.from(x),
-          ) ??
-          []),
+      sauces: (map['sauces'] as List<dynamic>?)?.map((x) => Map<String, dynamic>.from(x)).toList() ?? [],
       shopId: map['shopId'] ?? '',
       stadiumId: map['stadiumId'] ?? '',
-      sizes: List<Map<String, dynamic>>.from(map['sizes']?.map(
-            (x) => Map<String, dynamic>.from(x),
-          ) ??
-          []),
-      toppings: List<Map<String, dynamic>>.from(map['toppings']?.map(
-            (x) => Map<String, dynamic>.from(x),
-          ) ??
-          []),
+      sizes: (map['sizes'] as List<dynamic>?)?.map((x) => Map<String, dynamic>.from(x)).toList() ?? [],
+      toppings: (map['toppings'] as List<dynamic>?)?.map((x) => Map<String, dynamic>.from(x)).toList() ?? [],
       updatedAt: (map['updatedAt'] as Timestamp).toDate(),
-
+      foodType: map['foodType'] ?? 'Non-Halal',
       quantity: map['quantity'] ?? 0,
     );
   }
@@ -110,6 +100,7 @@ class Food extends Equatable {
       'sizes': sizes,
       'toppings': toppings,
       'updatedAt': updatedAt,
+      'foodType': foodType,
     };
   }
 

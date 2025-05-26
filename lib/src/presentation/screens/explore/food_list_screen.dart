@@ -26,6 +26,14 @@ class _FoodListScreenState extends State<FoodListScreen> {
   List<Food> _filteredFoods = [];
   final TextEditingController _searchController = TextEditingController();
 
+  // Food type filter
+  final List<String> _foodTypes = ['Non-Halal', 'Non-Kosher', 'Non-Vegan'];
+  final Map<String, bool> _selectedFilters = {
+    'Non-Halal': false,
+    'Non-Kosher': false,
+    'Non-Vegan': false,
+  };
+
   @override
   void initState() {
     super.initState();
@@ -54,11 +62,19 @@ class _FoodListScreenState extends State<FoodListScreen> {
 
   void _filterFoods(String query) {
     setState(() {
-      _filteredFoods = _foods
-          .where((food) =>
-              food.name.toLowerCase().contains(query.toLowerCase()) ||
-              food.description.toLowerCase().contains(query.toLowerCase()))
-          .toList();
+      // First filter by search query
+      var queryFiltered = _foods.where((food) =>
+          food.name.toLowerCase().contains(query.toLowerCase()) ||
+          food.description.toLowerCase().contains(query.toLowerCase()));
+
+      // Then apply food type filters if any are selected
+      bool hasSelectedFilters = _selectedFilters.values.any((isSelected) => isSelected);
+      if (hasSelectedFilters) {
+        queryFiltered = queryFiltered.where((food) =>
+            _selectedFilters[food.foodType] == true);
+      }
+
+      _filteredFoods = queryFiltered.toList();
     });
   }
 
@@ -111,6 +127,33 @@ class _FoodListScreenState extends State<FoodListScreen> {
                   Text(
                     'Gate ${widget.shop.gate} - ${widget.shop.location}',
                     style: TextStyle(color: Colors.grey[600]),
+                  ),
+                  const SizedBox(height: 20),
+                  // Filter chips for food types
+                  SizedBox(
+                    height: 50,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _foodTypes.length,
+                      itemBuilder: (context, index) {
+                        final type = _foodTypes[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: FilterChip(
+                            selected: _selectedFilters[type] ?? false,
+                            label: Text(type),
+                            onSelected: (bool selected) {
+                              setState(() {
+                                _selectedFilters[type] = selected;
+                                _filterFoods(_searchController.text);
+                              });
+                            },
+                            selectedColor: AppColors.primaryColor.withOpacity(0.2),
+                            checkmarkColor: AppColors.primaryColor,
+                          ),
+                        );
+                      },
+                    ),
                   ),
                   const SizedBox(height: 20),
                   Container(

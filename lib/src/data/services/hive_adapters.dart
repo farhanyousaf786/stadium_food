@@ -45,7 +45,7 @@ class FoodAdapter extends TypeAdapter<Food> {
       sizes: (fields[15] as List).map((e) => Map<String, dynamic>.from(e)).toList(),
       toppings: (fields[16] as List).map((e) => Map<String, dynamic>.from(e)).toList(),
       updatedAt: fields[17] as DateTime,
-      foodType: fields[18] as String? ?? 'Non-Halal',
+      foodType: (fields[18] as Map).cast<String, bool>(),
     );
   }
 

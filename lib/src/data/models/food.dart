@@ -24,7 +24,7 @@ class Food extends Equatable {
   final List<Map<String, dynamic>> sizes;
   final List<Map<String, dynamic>> toppings;
   final DateTime updatedAt;
-  final String foodType; // Non-Halal, Non-Kosher, Non-Vegan
+  final Map<String, bool> foodType; // Non-Halal, Non-Kosher, Non-Vegan
 
   // for cart
   int quantity = 1;
@@ -74,7 +74,13 @@ class Food extends Equatable {
       sizes: (map['sizes'] as List<dynamic>?)?.map((x) => Map<String, dynamic>.from(x)).toList() ?? [],
       toppings: (map['toppings'] as List<dynamic>?)?.map((x) => Map<String, dynamic>.from(x)).toList() ?? [],
       updatedAt: (map['updatedAt'] as Timestamp).toDate(),
-      foodType: map['foodType'] ?? 'Non-Halal',
+      foodType: (map['foodType'] as Map<String, dynamic>?)?.map(
+        (key, value) => MapEntry(key, value as bool),
+      ) ?? {
+        'halal': false,
+        'kosher': false,
+        'vegan': false,
+      },
       quantity: map['quantity'] ?? 0,
     );
   }

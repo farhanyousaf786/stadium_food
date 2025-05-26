@@ -27,11 +27,11 @@ class _FoodListScreenState extends State<FoodListScreen> {
   final TextEditingController _searchController = TextEditingController();
 
   // Food type filter
-  final List<String> _foodTypes = ['Non-Halal', 'Non-Kosher', 'Non-Vegan'];
+  final List<String> _foodTypes = ['halal', 'kosher', 'vegan'];
   final Map<String, bool> _selectedFilters = {
-    'Non-Halal': false,
-    'Non-Kosher': false,
-    'Non-Vegan': false,
+    'halal': false,
+    'kosher': false,
+    'vegan': false,
   };
 
   @override
@@ -70,8 +70,15 @@ class _FoodListScreenState extends State<FoodListScreen> {
       // Then apply food type filters if any are selected
       bool hasSelectedFilters = _selectedFilters.values.any((isSelected) => isSelected);
       if (hasSelectedFilters) {
-        queryFiltered = queryFiltered.where((food) =>
-            _selectedFilters[food.foodType] == true);
+        queryFiltered = queryFiltered.where((food) {
+          // Check if any selected filter matches the food's type
+          for (var type in _selectedFilters.keys) {
+            if (_selectedFilters[type]! && !food.foodType[type]!) {
+              return false;
+            }
+          }
+          return true;
+        });
       }
 
       _filteredFoods = queryFiltered.toList();
@@ -141,7 +148,7 @@ class _FoodListScreenState extends State<FoodListScreen> {
                           padding: const EdgeInsets.only(right: 8.0),
                           child: FilterChip(
                             selected: _selectedFilters[type] ?? false,
-                            label: Text(type),
+                            label: Text(type.toUpperCase()),
                             onSelected: (bool selected) {
                               setState(() {
                                 _selectedFilters[type] = selected;

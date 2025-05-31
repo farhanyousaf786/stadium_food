@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:stadium_food/src/bloc/login/login_bloc.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
 import 'package:stadium_food/src/presentation/widgets/loading_indicator.dart';
@@ -19,6 +20,18 @@ class _LoginScreenState extends State<LoginScreen> {
   bool hidePassword = true;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  String _fcmToken = '';
+
+  @override
+  void initState() {
+    super.initState();
+    // Get FCM token
+    FirebaseMessaging.instance.getToken().then((token) {
+      if (token != null) {
+        _fcmToken = token;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -211,6 +224,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               LoginSubmitted(
                                 email: _emailController.text.trim(),
                                 password: _passwordController.text,
+                                fcmToken: _fcmToken,
                               ),
                             );
                           },

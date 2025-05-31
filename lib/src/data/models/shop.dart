@@ -7,6 +7,7 @@ class Shop {
   final String location;
   final String floor;
   final String gate;
+  final String shopUserFcmToken;
   final String stadiumId;
   final List<String> admins;
   final DateTime createdAt;
@@ -20,6 +21,7 @@ class Shop {
     required this.floor,
     required this.gate,
     required this.stadiumId,
+    required this.shopUserFcmToken,
     required this.admins,
     required this.createdAt,
     required this.updatedAt,
@@ -34,6 +36,7 @@ class Shop {
       floor: map['floor'] ?? '',
       gate: map['gate'] ?? '',
       stadiumId: map['stadiumId'] ?? '',
+      shopUserFcmToken: map['shopUserFcmToken'] ?? '',
       admins: List<String>.from(map['admins'] ?? []),
       createdAt: (map['createdAt'] as Timestamp).toDate(),
       updatedAt: (map['updatedAt'] as Timestamp).toDate(),

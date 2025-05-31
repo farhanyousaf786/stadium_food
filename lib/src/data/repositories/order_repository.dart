@@ -1,9 +1,12 @@
 import 'package:stadium_food/src/data/models/order.dart' as model;
 import 'package:stadium_food/src/data/models/order_status.dart';
 import 'package:stadium_food/src/data/models/payment_method.dart';
+import 'package:stadium_food/src/data/models/user.dart';
+import 'package:stadium_food/src/data/repositories/shop_repository.dart';
 import 'package:stadium_food/src/data/services/firestore_db.dart';
 import 'package:hive/hive.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:stadium_food/src/services/notification_class.dart';
 
 import '../models/food.dart';
 
@@ -34,7 +37,7 @@ class OrderRepository {
     if (cart.isNotEmpty) {
       String currentShopId = cart[0].shopId;
       String newShopId = food.shopId;
-      
+
       // If from different shop, clear cart and reset quantities
       if (currentShopId != newShopId) {
         // Reset quantities of old items
@@ -98,7 +101,6 @@ class OrderRepository {
   }
 
   Future<model.Order> createOrder(Map<String, dynamic> seatInfo) async {
-
     final model.Order order = model.Order(
       cart: [...cart],
       subtotal: subtotal,
@@ -116,7 +118,6 @@ class OrderRepository {
         'userPhoneNo': box.get('phone') ?? '',
         'userId': box.get('id') ?? '',
       },
-
       seatInfo: {
         'roofNo': seatInfo['roofNo'] ?? '',
         'row': seatInfo['row'] ?? '',
@@ -131,6 +132,18 @@ class OrderRepository {
       'orders',
       order.toMap(),
     );
+
+    try{
+      final User user = User.fromHive();
+      var shopInfo =
+      await ShopRepository().fetchShop(cart[0].stadiumId, cart[0].shopId);
+      NotificationServiceClass().sendNotification(shopInfo.shopUserFcmToken,
+          'Order Received', 'You received a new order from${user.fullName}');
+
+    }catch (e) {
+      print("Error occurred: $e");
+    }
+
 
     cart.clear();
     updateHive();

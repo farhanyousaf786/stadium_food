@@ -23,11 +23,17 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           password: event.password,
         );
 
-        var userDocument = (await FirestoreDatabase().getDocumentsWithQuery(
+        var userDocument = (await FirestoreDatabase().getDocument(
           "customers",
-          "email",
-          event.email,
-        )).docs[0];
+          firebaseAuth.currentUser!.uid
+        ));
+
+        // Update FCM token
+        await FirestoreDatabase().updateUserDocument(
+          'customers',
+          userDocument.id,
+          {'fcmToken': event.fcmToken},
+        );
 
         // save user data to Hive
         model.User user = model.User.fromMap(

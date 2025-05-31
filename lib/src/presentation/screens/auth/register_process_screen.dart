@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:stadium_food/src/bloc/user_profile/user_profile_bloc.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/back_button.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
@@ -30,6 +31,7 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
   final TextEditingController _phoneController = TextEditingController();
 
   late final UserProfileBloc _userProfileBloc;
+  String _fcmToken='';
 
   @override
   void initState() {
@@ -39,6 +41,13 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
     _firstNameController.text = box.get('firstName', defaultValue: '');
     _lastNameController.text = box.get('lastName', defaultValue: '');
     _phoneController.text = box.get('phone', defaultValue: '');
+    
+    // Get FCM token
+    FirebaseMessaging.instance.getToken().then((token) {
+      if (token != null) {
+        _fcmToken = token;
+      }
+    });
   }
 
   @override
@@ -100,9 +109,11 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
                         box.put('firstName', _firstNameController.text.trim());
                         box.put('lastName', _lastNameController.text.trim());
                         box.put('phone', _phoneController.text.trim());
+                        box.put('fcmToken', _fcmToken);
 
                         // update user profile in Firebase
                         _userProfileBloc.add(UpdateUserProfile(
+                          fcmToken: _fcmToken,
                           firstName: _firstNameController.text.trim(),
                           lastName: _lastNameController.text.trim(),
                           phone: _phoneController.text.trim(),

@@ -15,4 +15,16 @@ class ShopRepository {
         .map((doc) => Shop.fromMap(doc.id, doc.data()))
         .toList();
   }
+
+  Future<Shop> fetchShop(String stadiumId,String shopId) async {
+    final doc = await _firestore
+        .collection('stadiums')
+        .doc(stadiumId)
+        .collection('shops')
+        .doc(shopId)
+        .get();
+    return Shop.fromMap(doc.id,
+      doc.data() as Map<String, dynamic>,
+    );
+  }
 }

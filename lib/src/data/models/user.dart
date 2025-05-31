@@ -10,6 +10,7 @@ class User extends Equatable {
   final String firstName;
   final String lastName;
   final String? image;
+  final String fcmToken;
   final List<DocumentReference>? favoriteFoods;
   final List<DocumentReference>? favoriteRestaurants;
   final DateTime createdAt;
@@ -23,6 +24,7 @@ class User extends Equatable {
     required this.lastName,
     required this.createdAt,
     this.image,
+    required this.fcmToken,
     this.favoriteFoods,
     this.favoriteRestaurants,
   });
@@ -51,6 +53,7 @@ class User extends Equatable {
           : null,
 
       createdAt: map['createdAt'].toDate(),
+      fcmToken: map['fcmToken'],
     );
   }
 
@@ -67,7 +70,8 @@ class User extends Equatable {
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(DateTime.now()),
       'isActive': true,
-      'type': 'customer'
+      'type': 'customer',
+      'fcmToken': fcmToken,
     };
   }
 
@@ -92,6 +96,7 @@ class User extends Equatable {
           : null,
 
       createdAt: box.get('createdAt', defaultValue: DateTime.now()),
+      fcmToken: box.get('fcmToken'),
     );
   }
 
@@ -106,8 +111,8 @@ class User extends Equatable {
     box.put('image', image);
     box.put('favoriteFoods', favoriteFoods);
     box.put('favoriteRestaurants', favoriteRestaurants);
-
     box.put('createdAt', createdAt);
+    box.put('fcmToken', fcmToken);
   }
 
   String get fullName => '$firstName $lastName';
@@ -125,5 +130,6 @@ class User extends Equatable {
         favoriteRestaurants,
 
         createdAt,
+        fcmToken,
       ];
 }

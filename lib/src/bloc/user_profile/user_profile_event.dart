@@ -7,11 +7,13 @@ class UpdateUserProfile extends UserProfileEvent {
   final String lastName;
   final String phone;
   final String? photoUrl;
+  final String? fcmToken;
 
   UpdateUserProfile({
     required this.firstName,
     required this.lastName,
     required this.phone,
     this.photoUrl,
+    this.fcmToken,
   });
 }

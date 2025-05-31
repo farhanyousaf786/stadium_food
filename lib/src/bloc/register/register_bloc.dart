@@ -32,6 +32,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
           id:userUid,
           firstName: '',
           lastName: '',
+          fcmToken: '',
           createdAt: DateTime.now(),
         );
         

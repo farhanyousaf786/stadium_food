@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:http/http.dart';
 
 
 // @pragma('vm:entry-point')
@@ -192,6 +195,42 @@ class NotificationServiceClass {
         //     .pushNamed('/notificationPage', arguments: message.data);
       }
     });
+  }
+
+  void sendNotification(String token, String title, String notifyBody) async {
+    log("Token is:> $token");
+
+
+      try {
+        final body = {
+          "to": token,
+          "notification": {
+            "title": title,
+            "body": notifyBody,
+          },
+          // "data": {
+          //   "username": username,
+          //   "url": url,
+          //   "click_action": "FLUTTER_NOTIFICATION_CLICK",
+          // },
+        };
+        var res = await post(
+          Uri.parse('https://fcm.googleapis.com/fcm/send'),
+          headers: {
+            HttpHeaders.contentTypeHeader: 'application/json',
+            HttpHeaders.authorizationHeader:
+            'key=AAAAN3FnHLs:APA91bGOSYTBUJ7BwXYwtTpsmdv7gQgfpVHEDFCdlbHGr3WJVkVi1eWMcxAN5ayzWaUX01VwmL303M8E4C3isdFvWneMI4Ov28roT1mTuMfa-UKs7WRilyHdvKcqdOCFjACDV9_HqvxM'
+          },
+          body: jsonEncode(body),
+        );
+        if (kDebugMode) {
+          print('Response status: ${res.statusCode}');
+          print('Response body: ${res.body}');
+        }
+      } catch (e) {
+        log("\nsendPushNotificationE: $e");
+
+    }
   }
 
 

@@ -20,6 +20,7 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
           'phone': event.phone,
           'email': FirebaseAuth.instance.currentUser!.email,
           'photoUrl': event.photoUrl,
+          'fcmToken': event.fcmToken,
           'updatedAt': DateTime.now().toIso8601String(),
         });
 

@@ -19,22 +19,7 @@ class CartItem extends StatefulWidget {
 }
 
 class _CartItemState extends State<CartItem> {
-  final FirestoreDatabase _db = FirestoreDatabase();
-  String category = "";
-  @override
-  void initState() {
-    super.initState();
-    _db.getDocumentFromReference(
-      FirebaseFirestore.instance.collection('categories').doc(widget.food.category)
-    ).then((value) {
-      if (mounted) {
-        setState(() {
-          var map = value.data() as Map<String, dynamic>;
-          category = map["name"];
-        });
-      }
-    });
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -65,12 +50,7 @@ class _CartItemState extends State<CartItem> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    category,
-                    style: CustomTextStyle.size14Weight400Text(
-                      AppColors().secondaryTextColor,
-                    ),
-                  ),
+
                   const SizedBox(height: 12),
                   Row(
                     children: [

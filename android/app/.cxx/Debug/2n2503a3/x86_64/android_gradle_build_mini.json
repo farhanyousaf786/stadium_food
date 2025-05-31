@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/Users/kami/Documents/Development/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/kami/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/kami/StudioProjects/stadium_food/android/app/.cxx/Debug/2n2503a3/x86_64",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/kami/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/kami/StudioProjects/stadium_food/android/app/.cxx/Debug/2n2503a3/x86_64",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}

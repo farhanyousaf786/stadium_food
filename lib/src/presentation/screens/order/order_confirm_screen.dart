@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:stadium_food/src/presentation/widgets/buttons/back_button.dart';
@@ -86,6 +88,30 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
   final _seatDetailsController = TextEditingController();
 
    Map<String, dynamic>? paymentIntent;
+  XFile? _image;
+  String imageUrl='';
+
+  // pick image from gallery
+  Future<void> _pickImageFromGallery() async {
+    _image = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 30,
+    );
+
+    setState(() {});
+  }
+
+  // pick image from camera
+  Future<void> _pickImageFromCamera() async {
+    _image = await ImagePicker().pickImage(
+      source: ImageSource.camera,
+      imageQuality: 30,
+    );
+
+    setState(() {});
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -229,6 +255,186 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                           hint: 'e.g. Near the stairs',
                           icon: Icons.info_outline,
                           maxLines: 3,
+                        ),
+
+                        _image != null
+                            ? Center(
+                          child: Container(
+                            width: 250,
+                            height: 250,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [AppStyles.boxShadow7],
+                              borderRadius: AppStyles.largeBorderRadius,
+                            ),
+                            child: Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: AppStyles.largeBorderRadius,
+                                  child: Image.file(
+                                    File(_image!.path),
+                                    width: 250,
+                                    height: 250,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 10,
+                                  right: 10,
+                                  child: InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        _image = null;
+                                      });
+                                    },
+                                    child: Container(
+                                      width: 30,
+                                      height: 30,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.5),
+                                        borderRadius:
+                                        AppStyles.largeBorderRadius,
+                                      ),
+                                      child: const Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                            : imageUrl != ""
+                            ? Center(
+                          child: Container(
+                            width: 250,
+                            height: 250,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [AppStyles.boxShadow7],
+                              borderRadius: AppStyles.largeBorderRadius,
+                            ),
+                            child: Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: AppStyles.largeBorderRadius,
+                                  child: Image.network(
+                                    imageUrl!,
+                                    width: 250,
+                                    height: 250,
+                                    fit: BoxFit.cover,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                    const Center(
+                                      child: Icon(
+                                        Icons.error,
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 10,
+                                  right: 10,
+                                  child: InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        imageUrl = "";
+                                      });
+                                    },
+                                    child: Container(
+                                      width: 30,
+                                      height: 30,
+                                      decoration: BoxDecoration(
+                                        color:
+                                        Colors.white.withOpacity(0.5),
+                                        borderRadius:
+                                        AppStyles.largeBorderRadius,
+                                      ),
+                                      child: const Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                            : Column(
+                          children: [
+                            Ink(
+                              decoration: BoxDecoration(
+                                color: AppColors().cardColor,
+                                boxShadow: [AppStyles.boxShadow7],
+                                borderRadius: AppStyles.largeBorderRadius,
+                              ),
+                              child: InkWell(
+                                onTap: () {
+                                  _pickImageFromGallery();
+                                },
+                                borderRadius: AppStyles.largeBorderRadius,
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  height: 130,
+                                  child: Column(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.center,
+                                    children: [
+                                      SvgPicture.asset(
+                                        "assets/svg/gallery.svg",
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                        "From Gallery",
+                                        style: CustomTextStyle
+                                            .size14Weight400Text(),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            // from camera
+                            Ink(
+                              decoration: BoxDecoration(
+                                color: AppColors().cardColor,
+                                boxShadow: [AppStyles.boxShadow7],
+                                borderRadius: AppStyles.largeBorderRadius,
+                              ),
+                              child: InkWell(
+                                onTap: () {
+                                  _pickImageFromCamera();
+                                },
+                                borderRadius: AppStyles.largeBorderRadius,
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  height: 130,
+                                  child: Column(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.center,
+                                    children: [
+                                      SvgPicture.asset(
+                                        "assets/svg/camera.svg",
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                        "From Camera",
+                                        style: CustomTextStyle
+                                            .size14Weight400Text(),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 20),
+                          ],
                         ),
                       ],
                     ),

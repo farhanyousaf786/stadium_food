@@ -10,6 +10,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
+import 'package:stadium_food/src/data/models/push_notification_model.dart';
+
+import '../presentation/screens/server.dart';
 
 
 // @pragma('vm:entry-point')
@@ -197,39 +201,49 @@ class NotificationServiceClass {
     });
   }
 
-  void sendNotification(String token, String title, String notifyBody) async {
-    log("Token is:> $token");
 
 
-      try {
-        final body = {
-          "to": token,
-          "notification": {
-            "title": title,
-            "body": notifyBody,
-          },
-          // "data": {
-          //   "username": username,
-          //   "url": url,
-          //   "click_action": "FLUTTER_NOTIFICATION_CLICK",
-          // },
-        };
-        var res = await post(
-          Uri.parse('https://fcm.googleapis.com/fcm/send'),
-          headers: {
-            HttpHeaders.contentTypeHeader: 'application/json',
-            HttpHeaders.authorizationHeader:
-            'key=AAAAN3FnHLs:APA91bGOSYTBUJ7BwXYwtTpsmdv7gQgfpVHEDFCdlbHGr3WJVkVi1eWMcxAN5ayzWaUX01VwmL303M8E4C3isdFvWneMI4Ov28roT1mTuMfa-UKs7WRilyHdvKcqdOCFjACDV9_HqvxM'
-          },
-          body: jsonEncode(body),
-        );
-        if (kDebugMode) {
-          print('Response status: ${res.statusCode}');
-          print('Response body: ${res.body}');
+  Future<void> sendNotification(String token, String title, String notifyBody) async {
+    try {
+    var notification=  PushNotificationModel(title: title, body: notifyBody);
+    final accessToken = await GetServerKey().getServerKeyToken();
+
+    // final body = {
+      //   "to": token,
+      //   "notification": {
+      //     "title": title,
+      //     "body": notifyBody,
+      //   },
+      //   // "data": {
+      //   //   "username": username,
+      //   //   "url": url,
+      //   //   "click_action": "FLUTTER_NOTIFICATION_CLICK",
+      //   // },
+      // };
+      final url = Uri.parse('https://fcm.googleapis.com/v1/projects/fans-food-stf/messages:send');
+
+      final response = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(notification.toFCMPayload(token)),
+    );
+
+      if (response.statusCode != 200) {
+        print('❌ Failed to send notification: ${response.body}');
+
+        // Clean up invalid tokens
+        if (response.statusCode == 404 || response.body.contains('UNREGISTERED')) {
+          print('🧹 Removing unregistered token: ');
+
         }
-      } catch (e) {
-        log("\nsendPushNotificationE: $e");
-
+      } else {
+        print('📤 Push sent [${response.statusCode}]: ${response.body}');
+      }
+    } catch (e) {
+      print('❌ Push notification failed: $e');
     }
   }
 

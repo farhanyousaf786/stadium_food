@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive/hive.dart';
+import 'package:stadium_food/src/presentation/screens/server.dart';
 
 import '../utils/app_colors.dart';
 
@@ -17,6 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    GetServerKey().getServerKeyToken();
     Future.delayed(const Duration(milliseconds: 500), () {
       setState(() {
         _visible = true;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stadium_food/src/bloc/profile/profile_bloc.dart';
+import 'package:stadium_food/src/bloc/settings/settings_bloc.dart';
 import 'package:stadium_food/src/bloc/theme/theme_bloc.dart';
 import 'package:stadium_food/src/data/models/user.dart';
 import 'package:stadium_food/src/presentation/widgets/image_placeholder.dart';
@@ -8,7 +9,10 @@ import 'package:stadium_food/src/presentation/widgets/items/food_item.dart';
 import 'package:stadium_food/src/presentation/widgets/items/restaurant_item.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_styles.dart';
+import 'package:stadium_food/src/presentation/utils/app_theme.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
+import 'package:stadium_food/src/presentation/widgets/loading_indicator.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -28,17 +32,131 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget _buildSettingsSection(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.primaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(Icons.dark_mode, color: AppColors.primaryColor),
+            ),
+            title: Text(
+              "Dark Mode",
+              style: CustomTextStyle.size16Weight400Text(),
+            ),
+            trailing: Switch(
+              value: Theme.of(context).brightness == Brightness.dark,
+              onChanged: (value) {
+                Hive.box('myBox').put('isDarkMode', value);
+                BlocProvider.of<ThemeBloc>(context).add(
+                  ChangeTheme(
+                    themeData: Theme.of(context).brightness == Brightness.dark
+                        ? AppTheme().lightThemeData
+                        : AppTheme().darkThemeData,
+                  ),
+                );
+              },
+            ),
+          ),
+          const Divider(height: 1),
+          ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.red.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(Icons.logout, color: Colors.red),
+            ),
+            title: Text(
+              "Log Out",
+              style: CustomTextStyle.size16Weight400Text(),
+            ),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text("Log Out"),
+                  content: const Text(
+                    "Are you sure you want to log out?",
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        "Cancel",
+                        style: TextStyle(
+                          color: AppColors().textColor,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        BlocProvider.of<SettingsBloc>(context).add(
+                          Logout(),
+                        );
+                      },
+                      child: const Text(
+                        "Log Out",
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ThemeBloc, ThemeState>(
-      builder: (context, state) {
-        return PopScope(
-          canPop: true,
-          onPopInvoked: ((didPop) {
-            if (didPop) {
-              Navigator.pushReplacementNamed(context, '/home');
-            }
-          }),
+    return BlocListener<SettingsBloc, SettingsState>(
+      listener: (context, state) async {
+        if (state is LogoutInProgress) {
+          showDialog(
+            context: context,
+            builder: (context) => const LoadingIndicator(),
+          );
+        } else if (state is LogoutSuccess) {
+          Navigator.pop(context);
+          await Navigator.pushNamedAndRemoveUntil(
+            context,
+            "/register",
+            (route) => false,
+          );
+        }
+      },
+      child: BlocBuilder<ThemeBloc, ThemeState>(
+        builder: (context, state) {
+          return PopScope(
+            canPop: true,
+            onPopInvoked: ((didPop) {
+              if (didPop) {
+                Navigator.pushReplacementNamed(context, '/home');
+              }
+            }),
           child: Scaffold(
             body: CustomScrollView(
               slivers: [
@@ -163,6 +281,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         const SizedBox(height: 20),
                         Text(
+                          'Settings',
+                          style: CustomTextStyle.size18Weight600Text(),
+                        ),
+                        const SizedBox(height: 10),
+                        _buildSettingsSection(context),
+                        const SizedBox(height: 20),
+                        Text(
                           'Favorite Foods',
                           style: CustomTextStyle.size18Weight600Text(),
                         ),
@@ -258,6 +383,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         );
       },
+    ),
     );
   }
 }

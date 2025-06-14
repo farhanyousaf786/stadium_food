@@ -9,7 +9,7 @@ import 'package:stadium_food/src/data/models/food.dart';
 import 'package:stadium_food/src/data/models/restaurant.dart';
 import 'package:stadium_food/src/data/repositories/order_repository.dart';
 import 'package:stadium_food/src/presentation/screens/chat/chat_list_screen.dart';
-import 'package:stadium_food/src/presentation/screens/home/profile_screen.dart';
+import 'package:stadium_food/src/presentation/screens/home/profile_page/profile_screen.dart';
 import 'package:stadium_food/src/presentation/screens/order/order_list_screen.dart';
 import 'package:stadium_food/src/presentation/widgets/items/food_item.dart';
 import 'package:stadium_food/src/presentation/widgets/items/restaurant_item.dart';

@@ -3,7 +3,14 @@ import 'package:stadium_food/src/data/services/firebase_auth.dart';
 import 'package:hive/hive.dart';
 
 class SettingsRepository {
-  // log out the user
+  // Toggle theme between light and dark mode
+  Future<void> toggleTheme() async {
+    final box = Hive.box('myBox');
+    bool currentMode = box.get('isDarkMode', defaultValue: false);
+    await box.put('isDarkMode', !currentMode);
+  }
+
+  // Log out the user
   Future<void> logout() async {
     await FirebaseAuth.instance.signOut();
     FirebaseAuthService(FirebaseAuth.instance).signOut();

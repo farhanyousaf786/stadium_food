@@ -7,7 +7,10 @@ abstract class ThemeEvent extends Equatable {
   List<Object> get props => [];
 }
 
-// change the theme
+// Toggle between light and dark theme
+class ToggleTheme extends ThemeEvent {}
+
+// Change to a specific theme
 class ChangeTheme extends ThemeEvent {
   final ThemeData themeData;
 

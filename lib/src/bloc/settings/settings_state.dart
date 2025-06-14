@@ -9,6 +9,12 @@ abstract class SettingsState extends Equatable {
 
 class SettingsInitial extends SettingsState {}
 
+// Theme states
+class ThemeToggled extends SettingsState {}
+
+class ThemeToggleFailure extends SettingsState {}
+
+// Logout states
 class LogoutInProgress extends SettingsState {}
 
 class LogoutSuccess extends SettingsState {}

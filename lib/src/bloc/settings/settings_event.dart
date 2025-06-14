@@ -7,5 +7,8 @@ abstract class SettingsEvent extends Equatable {
   List<Object> get props => [];
 }
 
-// log out the user
+// Toggle theme between light and dark mode
+class ToggleTheme extends SettingsEvent {}
+
+// Log out the user
 class Logout extends SettingsEvent {}

@@ -2,10 +2,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import '../../../bloc/stadium/stadium_bloc.dart';
-import '../../../data/models/stadium.dart';
-import '../../utils/app_colors.dart';
-import '../../widgets/sliding_images.dart';
+import 'package:stadium_food/src/bloc/stadium/stadium_bloc.dart';
+import 'package:stadium_food/src/core/constants/colors.dart';
+import 'package:stadium_food/src/data/models/stadium.dart';
+import 'package:stadium_food/src/presentation/widgets/sliding_images.dart';
+import 'widgets/event_popup.dart';
 import 'stadium_detail_screen.dart';
 
 class StadiumScreen extends StatefulWidget {
@@ -20,6 +21,22 @@ class _StadiumScreenState extends State<StadiumScreen> with SingleTickerProvider
   Timer? _debounce;
   late AnimationController _animationController;
   late Animation<double> _animation;
+  bool _hasShownEventPopup = false;
+
+  void _showEventPopup() {
+    if (!_hasShownEventPopup) {
+      _hasShownEventPopup = true;
+      
+      Future.delayed(const Duration(seconds: 2), () {
+        if (!mounted) return;
+        showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (context) => const EventPopup(),
+        );
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -27,6 +44,8 @@ class _StadiumScreenState extends State<StadiumScreen> with SingleTickerProvider
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
+      lowerBound: 0.95,
+      upperBound: 1.0,
     );
     _animation = CurvedAnimation(
       parent: _animationController,
@@ -34,6 +53,9 @@ class _StadiumScreenState extends State<StadiumScreen> with SingleTickerProvider
     );
     _animationController.forward();
     context.read<StadiumBloc>().add(LoadStadiums());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showEventPopup();
+    });
   }
 
   @override
@@ -53,158 +75,143 @@ class _StadiumScreenState extends State<StadiumScreen> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.bgColor,
-      appBar: AppBar(
-        title: const Text(
-          'Stadiums',
-          style: TextStyle(
-            color: AppColors.primaryColor,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1.0),
-          child: Container(
-            color: Colors.grey[300],
-            height: 1.0,
-          ),
-        ),
-      ),
-      body: Column(
-        children: [
-          SlidingImages(
-            height: 180,
-            images: const [
-              'https://firebasestorage.googleapis.com/v0/b/fans-food-stf.firebasestorage.app/o/static-images%2Fslide1.jpg?alt=media&token=4f077b5b-424b-4155-8dec-c4f0c33d914e',
-              'https://firebasestorage.googleapis.com/v0/b/fans-food-stf.firebasestorage.app/o/static-images%2Fslide1.jpg?alt=media&token=4f077b5b-424b-4155-8dec-c4f0c33d914e',
-              'https://firebasestorage.googleapis.com/v0/b/fans-food-stf.firebasestorage.app/o/static-images%2Fslide1.jpg?alt=media&token=4f077b5b-424b-4155-8dec-c4f0c33d914e',
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: AnimatedBuilder(
-              animation: _animation,
-              builder: (context, child) {
-                return Transform.scale(
-                  scale: _animation.value,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: AppColors.bgColor,
+       
+        body: Column(
+          children: [
+            SlidingImages(
+              height: 180,
+              images: const [
+                'https://firebasestorage.googleapis.com/v0/b/fans-food-stf.firebasestorage.app/o/static-images%2Fslide1.jpg?alt=media&token=4f077b5b-424b-4155-8dec-c4f0c33d914e',
+                'https://firebasestorage.googleapis.com/v0/b/fans-food-stf.firebasestorage.app/o/static-images%2Fslide1.jpg?alt=media&token=4f077b5b-424b-4155-8dec-c4f0c33d914e',
+                'https://firebasestorage.googleapis.com/v0/b/fans-food-stf.firebasestorage.app/o/static-images%2Fslide1.jpg?alt=media&token=4f077b5b-424b-4155-8dec-c4f0c33d914e',
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: AnimatedBuilder(
+                animation: _animation,
+                builder: (context, child) {
+                  return Transform.scale(
+                    scale: _animation.value,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: TextField(
+                        controller: _searchController,
+                        onChanged: _onSearchChanged,
+                        decoration: InputDecoration(
+                          hintText: 'Search by name or location...',
+                          hintStyle: TextStyle(color: Colors.grey[400]),
+                          prefixIcon: const Icon(Icons.search, color: AppColors.primaryColor),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
                         ),
-                      ],
-                    ),
-                    child: TextField(
-                      controller: _searchController,
-                      onChanged: _onSearchChanged,
-                      decoration: InputDecoration(
-                        hintText: 'Search by name or location...',
-                        hintStyle: TextStyle(color: Colors.grey[400]),
-                        prefixIcon: const Icon(Icons.search, color: AppColors.primaryColor),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                          borderSide: BorderSide.none,
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: Colors.white,
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
-          ),
-         
-          Expanded(
-            child: BlocBuilder<StadiumBloc, StadiumState>(
-              builder: (context, state) {
-                if (state is StadiumsLoading) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const CircularProgressIndicator(color: AppColors.primaryColor),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Loading stadiums...',
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                      ],
-                    ),
                   );
-                } else if (state is StadiumsLoaded) {
-                  return state.stadiums.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.stadium, size: 64, color: Colors.grey[400]),
-                              const SizedBox(height: 16),
-                              Text(
-                                'No stadiums found',
-                                style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              ),
-                            ],
+                },
+              ),
+            ),
+         
+         
+            SizedBox(height: 16),
+            Expanded(
+              child: BlocBuilder<StadiumBloc, StadiumState>(
+                builder: (context, state) {
+                  if (state is StadiumsLoading) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const CircularProgressIndicator(color: AppColors.primaryColor),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Loading stadiums...',
+                            style: TextStyle(color: Colors.grey[600]),
                           ),
-                        )
-                      : ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.only(bottom: 16),
-                      itemCount: state.stadiums.length,
-                      itemBuilder: (context, index) {
-                        return AnimationConfiguration.staggeredList(
-                          position: index,
-                          duration: const Duration(milliseconds: 375),
-                          child: SlideAnimation(
-                            verticalOffset: 50.0,
-                            child: FadeInAnimation(
-                              child: _StadiumCard(
-                                stadium: state.stadiums[index],
+                        ],
+                      ),
+                    );
+                  } else if (state is StadiumsLoaded) {
+                    return state.stadiums.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.stadium, size: 64, color: Colors.grey[400]),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'No stadiums found',
+                                  style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.only(bottom: 16),
+                        itemCount: state.stadiums.length,
+                        itemBuilder: (context, index) {
+                          return AnimationConfiguration.staggeredList(
+                            position: index,
+                            duration: const Duration(milliseconds: 375),
+                            child: SlideAnimation(
+                              verticalOffset: 50.0,
+                              child: FadeInAnimation(
+                                child: _StadiumCard(
+                                  stadium: state.stadiums[index],
+                                ),
                               ),
                             ),
+                          );
+                        },
+                      );
+                  } else if (state is StadiumError) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.error_outline, size: 64, color: Colors.red[400]),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Error: ${state.message}',
+                            style: TextStyle(color: Colors.red[600]),
+                            textAlign: TextAlign.center,
                           ),
-                        );
-                      },
+                        ],
+                      ),
                     );
-                } else if (state is StadiumError) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.error_outline, size: 64, color: Colors.red[400]),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Error: ${state.message}',
-                          style: TextStyle(color: Colors.red[600]),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  );
-                }
-                return const SizedBox();
-              },
+                  }
+                  return const SizedBox();
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

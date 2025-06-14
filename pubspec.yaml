@@ -60,6 +60,7 @@ dependencies:
   flutter_staggered_animations: ^1.1.1
   carousel_slider: ^5.1.1
   smooth_page_indicator: ^1.2.1
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:

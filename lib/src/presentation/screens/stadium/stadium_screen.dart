@@ -165,24 +165,25 @@ class _StadiumScreenState extends State<StadiumScreen> with SingleTickerProvider
                             ],
                           ),
                         )
-                      : AnimationLimiter(
-                          child: ListView.builder(
-                            padding: const EdgeInsets.all(16),
-                            itemCount: state.stadiums.length,
-                            itemBuilder: (context, index) {
-                              return AnimationConfiguration.staggeredList(
-                                position: index,
-                                duration: const Duration(milliseconds: 375),
-                                child: SlideAnimation(
-                                  verticalOffset: 50.0,
-                                  child: FadeInAnimation(
-                                    child: _StadiumCard(stadium: state.stadiums[index]),
-                                  ),
-                                ),
-                              );
-                            },
+                      : ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.only(bottom: 16),
+                      itemCount: state.stadiums.length,
+                      itemBuilder: (context, index) {
+                        return AnimationConfiguration.staggeredList(
+                          position: index,
+                          duration: const Duration(milliseconds: 375),
+                          child: SlideAnimation(
+                            verticalOffset: 50.0,
+                            child: FadeInAnimation(
+                              child: _StadiumCard(
+                                stadium: state.stadiums[index],
+                              ),
+                            ),
                           ),
                         );
+                      },
+                    );
                 } else if (state is StadiumError) {
                   return Center(
                     child: Column(

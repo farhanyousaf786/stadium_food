@@ -12,22 +12,25 @@ import 'package:stadium_food/src/presentation/widgets/buttons/back_button.dart';
 import 'package:stadium_food/src/presentation/widgets/loading_indicator.dart';
 import 'package:stadium_food/src/presentation/widgets/price_info_widget.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
-
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:hive/hive.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../../data/repositories/order_repository.dart';
+import '../../../data/services/firebase_storage.dart';
 import '../../utils/app_styles.dart';
 
 class OrderConfirmScreen extends StatefulWidget {
-
-   const OrderConfirmScreen({super.key});
+  const OrderConfirmScreen({super.key});
 
   @override
   State<OrderConfirmScreen> createState() => _OrderConfirmScreenState();
 }
 
 class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
+  final FirebaseStorageService _firebaseStorageService = FirebaseStorageService(
+    FirebaseStorage.instance,
+  );
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
@@ -81,7 +84,6 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     );
   }
   final _formKey = GlobalKey<FormState>();
-  final _roofNoController = TextEditingController();
   final _rowController = TextEditingController();
   final _seatNoController = TextEditingController();
   final _sectionController = TextEditingController();
@@ -90,6 +92,8 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
    Map<String, dynamic>? paymentIntent;
   XFile? _image;
   String imageUrl='';
+
+
 
   // pick image from gallery
   Future<void> _pickImageFromGallery() async {
@@ -158,21 +162,61 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
         bottomNavigationBar: BlocBuilder<OrderBloc, OrderState>(
           builder: (context, state) {
             return PriceInfoWidget(
-              onTap: () {
-                if (_formKey.currentState!.validate()) {
-                  // Create seat info map
+              onTap: () async {
+                // Check if image is selected
+                if (_image != null) {
+                  // Show loading
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) => const LoadingIndicator(),
+                  );
+
+                  try {
+                    // Upload image to firebase storage
+                    final uploadedImageUrl = await _firebaseStorageService.uploadImage(
+                      "tickets/${DateTime.now().millisecondsSinceEpoch}",
+                      File(_image!.path),
+                    );
+
+                    // Hide loading
+                    Navigator.of(context).pop();
+
+                    // Create seat info with uploaded image URL
+                    final seatInfo = {
+                      'ticketImage': uploadedImageUrl,
+                      'row': '',
+                      'seatNo': '',
+                      'section': '',
+                      'seatDetails': '',
+                    };
+                    
+                    final total = OrderRepository.total;
+                    makePayment(total, seatInfo);
+                  } catch (e) {
+                    // Hide loading
+                    Navigator.of(context).pop();
+                    
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Failed to upload image. Please try again.'),
+                        backgroundColor: AppColors.errorColor,
+                      ),
+                    );
+                  }
+                }
+                // If no image, validate and use text fields
+                else if (_formKey.currentState!.validate()) {
                   final seatInfo = {
-                    'roofNo': _roofNoController.text,
+                    'ticketImage': '',
                     'row': _rowController.text,
                     'seatNo': _seatNoController.text,
                     'section': _sectionController.text,
                     'seatDetails': _seatDetailsController.text,
                   };
 
-                final total=  OrderRepository.total;
-                  makePayment(total,seatInfo);
-                 
-
+                  final total = OrderRepository.total;
+                  makePayment(total, seatInfo);
                 }
               },
             );
@@ -214,15 +258,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                               ),
                             ),
                             const SizedBox(width: 16),
-                            Expanded(
-                              child: _buildTextField(
-                                controller: _roofNoController,
-                                label: 'Roof No.',
-                                hint: 'e.g. 1',
-                                icon: Icons.roofing_outlined,
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
+
                           ],
                         ),
                         const SizedBox(height: 16),
@@ -234,6 +270,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                 label: 'Row',
                                 hint: 'e.g. 5',
                                 icon: Icons.view_week_outlined,
+
                               ),
                             ),
                             const SizedBox(width: 16),
@@ -257,6 +294,34 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                           maxLines: 3,
                         ),
 
+                        const SizedBox(height: 20),
+                        
+                        // OR separator
+                        Row(
+                          children: [
+                            const Expanded(child: Divider(thickness: 1)),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              child: Text(
+                                'OR',
+                                style: CustomTextStyle.size14Weight600Text(
+                                  AppColors().secondaryTextColor,
+                                ),
+                              ),
+                            ),
+                            const Expanded(child: Divider(thickness: 1)),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        
+                        Text(
+                          'Upload ticket image',
+                          style: CustomTextStyle.size14Weight400Text(
+                            AppColors().secondaryTextColor,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        
                         _image != null
                             ? Center(
                           child: Container(
@@ -321,7 +386,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                 ClipRRect(
                                   borderRadius: AppStyles.largeBorderRadius,
                                   child: Image.network(
-                                    imageUrl!,
+                                    imageUrl,
                                     width: 250,
                                     height: 250,
                                     fit: BoxFit.cover,
@@ -364,22 +429,21 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                             ),
                           ),
                         )
-                            : Column(
+                            : Row(
                           children: [
-                            Ink(
-                              decoration: BoxDecoration(
-                                color: AppColors().cardColor,
-                                boxShadow: [AppStyles.boxShadow7],
-                                borderRadius: AppStyles.largeBorderRadius,
-                              ),
-                              child: InkWell(
-                                onTap: () {
-                                  _pickImageFromGallery();
-                                },
-                                borderRadius: AppStyles.largeBorderRadius,
-                                child: SizedBox(
-                                  width: double.infinity,
-                                  height: 130,
+                            Expanded(
+                              child: Ink(
+                                padding: const EdgeInsets.symmetric(vertical: 20),
+                                decoration: BoxDecoration(
+                                  color: AppColors().cardColor,
+                                  boxShadow: [AppStyles.boxShadow7],
+                                  borderRadius: AppStyles.largeBorderRadius,
+                                ),
+                                child: InkWell(
+                                  onTap: () {
+                                    _pickImageFromGallery();
+                                  },
+                                  borderRadius: AppStyles.largeBorderRadius,
                                   child: Column(
                                     mainAxisAlignment:
                                     MainAxisAlignment.center,
@@ -398,22 +462,21 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 20),
+                            const SizedBox(width: 20),
                             // from camera
-                            Ink(
-                              decoration: BoxDecoration(
-                                color: AppColors().cardColor,
-                                boxShadow: [AppStyles.boxShadow7],
-                                borderRadius: AppStyles.largeBorderRadius,
-                              ),
-                              child: InkWell(
-                                onTap: () {
-                                  _pickImageFromCamera();
-                                },
-                                borderRadius: AppStyles.largeBorderRadius,
-                                child: SizedBox(
-                                  width: double.infinity,
-                                  height: 130,
+                            Expanded(
+                              child: Ink(
+                                padding: const EdgeInsets.symmetric(vertical: 20),
+                                decoration: BoxDecoration(
+                                  color: AppColors().cardColor,
+                                  boxShadow: [AppStyles.boxShadow7],
+                                  borderRadius: AppStyles.largeBorderRadius,
+                                ),
+                                child: InkWell(
+                                  onTap: () {
+                                    _pickImageFromCamera();
+                                  },
+                                  borderRadius: AppStyles.largeBorderRadius,
                                   child: Column(
                                     mainAxisAlignment:
                                     MainAxisAlignment.center,

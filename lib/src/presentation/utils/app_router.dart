@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stadium_food/src/data/models/food.dart';
 import 'package:stadium_food/src/data/models/order.dart';
 import 'package:stadium_food/src/data/models/restaurant.dart';
+import 'package:stadium_food/src/data/models/shopuser.dart';
 import 'package:stadium_food/src/data/models/user.dart';
 import 'package:stadium_food/src/presentation/screens/auth/forgot_password_screen.dart';
 import 'package:stadium_food/src/presentation/screens/auth/login_screen.dart';
@@ -167,7 +168,7 @@ class AppRouter {
       case '/chats/detail':
         return MaterialPageRoute(
           builder: (_) => ChatDetailsScreen(
-            otherUser: settings.arguments as User,
+            otherUser: settings.arguments as ShopUser,
           ),
         );
 

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:stadium_food/src/data/models/order.dart' as model;
 import 'package:stadium_food/src/data/models/order_status.dart';
 import 'package:stadium_food/src/data/models/payment_method.dart';
@@ -119,7 +120,7 @@ class OrderRepository {
         'userId': box.get('id') ?? '',
       },
       seatInfo: {
-        'roofNo': seatInfo['roofNo'] ?? '',
+        'ticketImage': seatInfo['ticketImage'] ?? '',
         'row': seatInfo['row'] ?? '',
         'seatNo': seatInfo['seatNo'] ?? '',
         'section': seatInfo['section'] ?? '',
@@ -138,10 +139,12 @@ class OrderRepository {
       var shopInfo =
       await ShopRepository().fetchShop(cart[0].stadiumId, cart[0].shopId);
       NotificationServiceClass().sendNotification(shopInfo.shopUserFcmToken,
-          'Order Received', 'You received a new order from${user.fullName}');
+          'Order Received', 'You received a new order from ${user.fullName}');
 
     }catch (e) {
-      print("Error occurred: $e");
+      if (kDebugMode) {
+        print("Error occurred: $e");
+      }
     }
 
 

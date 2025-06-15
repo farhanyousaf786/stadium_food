@@ -7,16 +7,16 @@ import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:stadium_food/src/bloc/profile/profile_bloc.dart';
 import 'package:stadium_food/src/bloc/testimonial/testimonial_bloc.dart';
 import 'package:stadium_food/src/data/models/food.dart';
+import 'package:stadium_food/src/data/models/shopuser.dart';
 import 'package:stadium_food/src/data/models/testimonial.dart';
+import 'package:stadium_food/src/presentation/screens/chat/chat_details_screen.dart';
 import 'package:stadium_food/src/presentation/widgets/bullet_point.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
 import 'package:stadium_food/src/presentation/widgets/image_placeholder.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/like_button.dart';
 import 'package:stadium_food/src/presentation/widgets/items/testimonial_item.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
-import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
-
 import '../../widgets/buttons/back_button.dart';
 
 class FoodDetailsScreen extends StatefulWidget {
@@ -74,17 +74,56 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              BlocBuilder<ProfileBloc, ProfileState>(
-                builder: (context, state) {
-                  return LikeButton(
-                    isLiked: widget.food.isFavorite,
-                    onTap: () {
-                      BlocProvider.of<ProfileBloc>(context).add(
-                        ToggleFavoriteFood(foodId: widget.food.id, shopId: widget.food.shopId, stadiumId: widget.food.stadiumId,),
+              Row(
+                children: [
+                  BlocBuilder<ProfileBloc, ProfileState>(
+                    builder: (context, state) {
+                      return LikeButton(
+                        isLiked: widget.food.isFavorite,
+                        onTap: () {
+                          BlocProvider.of<ProfileBloc>(context).add(
+                            ToggleFavoriteFood(foodId: widget.food.id, shopId: widget.food.shopId, stadiumId: widget.food.stadiumId,),
+                          );
+                        },
                       );
                     },
-                  );
-                },
+                  ),
+                  const SizedBox(width: 10),
+                  IconButton(
+                    onPressed: () async {
+                      final querySnapshot = await FirebaseFirestore.instance
+                          .collection('users')
+                          .where('shopsId', arrayContains: widget.food.shopId)
+                          .limit(1)
+                          .get();
+
+                      if (querySnapshot.docs.isEmpty) {
+                        if (!mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Shop owner not found')),
+                        );
+                        return;
+                      }
+                      
+                      final shopUser = ShopUser.fromMap(querySnapshot.docs.first.data());
+                      
+                      if (!mounted) return;
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChatDetailsScreen(
+                            otherUser: shopUser,
+                          ),
+                        ),
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.message_rounded,
+                      color: AppColors.primaryColor,
+                      size: 28,
+                    ),
+                  ),
+                ],
               ),
 
               Expanded(
@@ -246,19 +285,19 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                     const SizedBox(height: 24),
 
                     // description
-                    widget.food.description != null
-                        ? Text(
-                            widget.food.description,
-                            style: CustomTextStyle.size14Weight400Text(),
-                          )
-                        : Center(
-                            child: Text(
-                              "No description available",
-                              style: CustomTextStyle.size14Weight400Text(
-                                AppColors().secondaryTextColor,
-                              ),
-                            ),
-                          ),
+                    Text(
+                      widget.food.description.isNotEmpty
+                          ? widget.food.description
+                          : "No description available",
+                      style: CustomTextStyle.size14Weight400Text(
+                        widget.food.description.isNotEmpty
+                            ? null
+                            : AppColors().secondaryTextColor,
+                      ),
+                      textAlign: widget.food.description.isNotEmpty
+                          ? TextAlign.left
+                          : TextAlign.center,
+                    ),
                     const SizedBox(height: 20),
 
                     // allergens

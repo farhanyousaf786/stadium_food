@@ -131,7 +131,7 @@ class NotificationServiceClass {
       log('payload....open app $payload');
 
       // Decode the JSON string into a map
-      Map<String, dynamic> data = json.decode(payload);
+     // Map<String, dynamic> data = json.decode(payload);
 
       // Assuming you want to pass the whole data map
       // MyApp.navigatorKey.currentState!

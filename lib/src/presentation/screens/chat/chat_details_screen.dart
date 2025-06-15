@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stadium_food/src/bloc/chat/chat_bloc.dart';
 import 'package:stadium_food/src/data/models/message.dart';
+import 'package:stadium_food/src/data/models/shopuser.dart';
 import 'package:stadium_food/src/data/models/user.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/back_button.dart';
 import 'package:stadium_food/src/presentation/widgets/chat_bubble.dart';
@@ -14,7 +15,7 @@ import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:hive/hive.dart';
 
 class ChatDetailsScreen extends StatefulWidget {
-  final User otherUser;
+  final ShopUser otherUser;
   const ChatDetailsScreen({
     super.key,
     required this.otherUser,
@@ -32,7 +33,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
     super.initState();
     BlocProvider.of<ChatBloc>(context).add(
       FetchMessagesBetweenTwoUsers(
-        otherUserId: widget.otherUser.id!,
+        otherUserId: widget.otherUser.userId,
       ),
     );
   }
@@ -121,7 +122,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              widget.otherUser.fullName,
+                              widget.otherUser.name,
                               overflow: TextOverflow.ellipsis,
                               style: CustomTextStyle.size16Weight400Text(),
                             ),
@@ -152,7 +153,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
                             final message = messages[index];
                             return ChatBubble(
                               message: message,
-                              isMe: message.receiver.id == widget.otherUser.id,
+                              isMe: message.receiver.id == widget.otherUser.userId,
                             );
                           },
                         );
@@ -192,10 +193,10 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
                                   var box = Hive.box('myBox');
                                   DocumentReference currentUserRef =
                                       FirebaseFirestore.instance
-                                          .doc('/users/${box.get('id')}');
+                                          .doc('/customers/${box.get('id')}');
                                   DocumentReference otherUserRef =
                                       FirebaseFirestore.instance
-                                          .doc('/users/${widget.otherUser.id}');
+                                          .doc('/users/${widget.otherUser.userId}');
                                   Message message = Message(
                                     receiver: otherUserRef,
                                     sender: currentUserRef,

@@ -10,7 +10,7 @@ class ChatRepository {
 
   Future<Map<String, List<Message>>> fetchChats() async {
     DocumentReference currentUserRef =
-        FirebaseFirestore.instance.doc('/users/${box.get('id')}');
+        FirebaseFirestore.instance.doc('/customers/${box.get('id')}');
 
     QuerySnapshot<Object?> sentMessagesCollection =
         await _db.getDocumentsWithQuery(
@@ -66,7 +66,7 @@ class ChatRepository {
   // fetch messages between two users
   Future<List<Message>> fetchMessagesBetweenTwoUsers(String otherUserId) async {
     DocumentReference currentUserRef =
-        FirebaseFirestore.instance.doc('/users/${box.get('id')}');
+        FirebaseFirestore.instance.doc('/customers/${box.get('id')}');
     DocumentReference otherUserRef =
         FirebaseFirestore.instance.doc('/users/$otherUserId');
 

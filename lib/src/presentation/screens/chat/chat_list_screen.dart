@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stadium_food/src/bloc/chat/chat_bloc.dart';
 import 'package:stadium_food/src/data/models/message.dart';
+import 'package:stadium_food/src/data/models/shopuser.dart';
 import 'package:stadium_food/src/data/models/user.dart';
 import 'package:stadium_food/src/data/services/firestore_db.dart';
 import 'package:stadium_food/src/presentation/widgets/image_placeholder.dart';
@@ -126,7 +127,7 @@ class ChatItem extends StatefulWidget {
 
 class _ChatItemState extends State<ChatItem> {
   final FirestoreDatabase _db = FirestoreDatabase();
-  late User otherUser;
+  late ShopUser otherUser;
   @override
   void initState() {
     super.initState();
@@ -136,7 +137,7 @@ class _ChatItemState extends State<ChatItem> {
   Future<void> _getUserData() async {
     var box = Hive.box('myBox');
     DocumentReference currentUserRef =
-        FirebaseFirestore.instance.doc('/users/${box.get('id')}');
+        FirebaseFirestore.instance.doc('/customers/${box.get('id')}');
 
     // display their name and profile picture not the current user
     // id is the document id
@@ -144,14 +145,14 @@ class _ChatItemState extends State<ChatItem> {
       var value =
           await _db.getDocumentFromReference(widget.messagesList[0].receiver);
       var map = value.data() as Map<String, dynamic>;
-      otherUser = User.fromMap(map);
-      otherUser.id = value.id;
+      otherUser = ShopUser.fromMap(map);
+      otherUser.userId = value.id;
     } else {
       var value =
           await _db.getDocumentFromReference(widget.messagesList[0].sender);
       var map = value.data() as Map<String, dynamic>;
-      otherUser = User.fromMap(map);
-      otherUser.id = value.id;
+      otherUser = ShopUser.fromMap(map);
+      otherUser.userId = value.id;
     }
   }
 
@@ -218,7 +219,7 @@ class _ChatItemState extends State<ChatItem> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      otherUser.fullName,
+                      otherUser.name,
                       style: CustomTextStyle.size16Weight400Text(),
                     ),
                     const SizedBox(height: 5),

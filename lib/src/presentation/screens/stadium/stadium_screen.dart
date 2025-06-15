@@ -2,10 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:stadium_food/src/bloc/offer/offer_bloc.dart';
+import 'package:stadium_food/src/bloc/offer/offer_event.dart';
 import 'package:stadium_food/src/bloc/stadium/stadium_bloc.dart';
 import 'package:stadium_food/src/core/constants/colors.dart';
 import 'package:stadium_food/src/data/models/stadium.dart';
-import 'package:stadium_food/src/presentation/widgets/sliding_images.dart';
+import 'package:stadium_food/src/presentation/widgets/offer_slider.dart';
 import 'widgets/event_popup.dart';
 import 'stadium_detail_screen.dart';
 
@@ -53,6 +55,7 @@ class _StadiumScreenState extends State<StadiumScreen> with SingleTickerProvider
     );
     _animationController.forward();
     context.read<StadiumBloc>().add(LoadStadiums());
+    context.read<OfferBloc>().add(LoadOffers());
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _showEventPopup();
     });
@@ -81,14 +84,7 @@ class _StadiumScreenState extends State<StadiumScreen> with SingleTickerProvider
        
         body: Column(
           children: [
-            SlidingImages(
-              height: 180,
-              images: const [
-                'https://firebasestorage.googleapis.com/v0/b/fans-food-stf.firebasestorage.app/o/static-images%2Fslide1.jpg?alt=media&token=4f077b5b-424b-4155-8dec-c4f0c33d914e',
-                'https://firebasestorage.googleapis.com/v0/b/fans-food-stf.firebasestorage.app/o/static-images%2Fslide1.jpg?alt=media&token=4f077b5b-424b-4155-8dec-c4f0c33d914e',
-                'https://firebasestorage.googleapis.com/v0/b/fans-food-stf.firebasestorage.app/o/static-images%2Fslide1.jpg?alt=media&token=4f077b5b-424b-4155-8dec-c4f0c33d914e',
-              ],
-            ),
+            const OfferSlider(),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: AnimatedBuilder(

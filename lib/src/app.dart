@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 
 import 'package:stadium_food/src/bloc/theme/theme_bloc.dart';
+import 'package:stadium_food/src/bloc/offer/offer_bloc.dart';
+import 'package:stadium_food/src/data/repositories/offer_repository.dart';
 import 'package:stadium_food/src/presentation/utils/app_router.dart';
 import 'package:stadium_food/src/presentation/utils/app_theme.dart';
 
@@ -11,7 +13,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ThemeBloc, ThemeState>(
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => OfferBloc(
+            offerRepository: OfferRepository(),
+          ),
+        ),
+      ],
+      child: BlocBuilder<ThemeBloc, ThemeState>(
       builder: (context, state) {
         ThemeData themeData =
             Hive.box('myBox').get('isDarkMode', defaultValue: false)
@@ -27,6 +37,7 @@ class MyApp extends StatelessWidget {
           onGenerateRoute: AppRouter.onGenerateRoute,
         );
       },
+    ),
     );
   }
 }

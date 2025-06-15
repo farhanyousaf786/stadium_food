@@ -9,7 +9,7 @@ class OfferRepository {
 
   Stream<List<Offer>> getOffers() {
     return _firestore
-        .collectionGroup('offers')
+        .collection('offers')
         .where('active', isEqualTo: true)
         .orderBy('createdAt', descending: true)
         .snapshots()

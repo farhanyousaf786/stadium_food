@@ -28,20 +28,20 @@ class ProfileRepository {
   }
 
   // fetch favorite restaurants
-  Future<List<Restaurant>> fetchFavoriteRestaurants() async {
-    List<DocumentReference> favoriteRestaurantsReferences =
-        User.fromHive().favoriteRestaurants ?? [];
-    List<Restaurant> favoriteRestaurants = [];
-    for (var restaurantReference in favoriteRestaurantsReferences) {
-      DocumentSnapshot restaurantSnapshot = await restaurantReference.get();
-      favoriteRestaurants.add(
-        Restaurant.fromMap(
-          restaurantSnapshot.data() as Map<String, dynamic>,
-        )..id = restaurantSnapshot.id,
-      );
-    }
-    return favoriteRestaurants;
-  }
+  // Future<List<Restaurant>> fetchFavoriteRestaurants() async {
+  //   List<DocumentReference> favoriteRestaurantsReferences =
+  //       User.fromHive().favoriteRestaurants ?? [];
+  //   List<Restaurant> favoriteRestaurants = [];
+  //   for (var restaurantReference in favoriteRestaurantsReferences) {
+  //     DocumentSnapshot restaurantSnapshot = await restaurantReference.get();
+  //     favoriteRestaurants.add(
+  //       Restaurant.fromMap(
+  //         restaurantSnapshot.data() as Map<String, dynamic>,
+  //       )..id = restaurantSnapshot.id,
+  //     );
+  //   }
+  //   return favoriteRestaurants;
+  // }
 
   // add/remove favorite food
   Future<void> toggleFavoriteFood(String foodId,String shopId,String stadiumId) async {
@@ -72,28 +72,28 @@ class ProfileRepository {
   }
 
   // add/remove favorite restaurant
-  Future<void> toggleFavoriteRestaurant(String restaurantId) async {
-    // get favorite restaurants from hive
-    List favoriteRestaurants = box.get('favoriteRestaurants', defaultValue: []);
-    DocumentReference restaurantReference =
-        FirebaseFirestore.instance.doc('/restaurants/$restaurantId');
-    // add/remove restaurant id
-    if (!favoriteRestaurants.contains(restaurantReference)) {
-      favoriteRestaurants.add(restaurantReference);
-    } else {
-      favoriteRestaurants.remove(restaurantReference);
-    }
-
-    // update firestore
-    await _db.updateDocument(
-      'users',
-      box.get("id"),
-      {
-        'favoriteRestaurants': favoriteRestaurants,
-      },
-    );
-
-    // update hive
-    box.put('favoriteRestaurants', favoriteRestaurants);
-  }
+  // Future<void> toggleFavoriteRestaurant(String restaurantId) async {
+  //   // get favorite restaurants from hive
+  //   List favoriteRestaurants = box.get('favoriteRestaurants', defaultValue: []);
+  //   DocumentReference restaurantReference =
+  //       FirebaseFirestore.instance.doc('/restaurants/$restaurantId');
+  //   // add/remove restaurant id
+  //   if (!favoriteRestaurants.contains(restaurantReference)) {
+  //     favoriteRestaurants.add(restaurantReference);
+  //   } else {
+  //     favoriteRestaurants.remove(restaurantReference);
+  //   }
+  //
+  //   // update firestore
+  //   await _db.updateDocument(
+  //     'users',
+  //     box.get("id"),
+  //     {
+  //       'favoriteRestaurants': favoriteRestaurants,
+  //     },
+  //   );
+  //
+  //   // update hive
+  //   box.put('favoriteRestaurants', favoriteRestaurants);
+  // }
 }

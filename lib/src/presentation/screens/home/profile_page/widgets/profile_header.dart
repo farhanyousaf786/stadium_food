@@ -62,32 +62,7 @@ class ProfileHeader extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Member Badge
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    color: theme.colorScheme.secondary.withOpacity(0.1),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.star,
-                        color: theme.colorScheme.secondary,
-                        size: 16,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Member Gold',
-                        style: TextStyle(
-                          color: theme.colorScheme.secondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+
 
                 // User Name
                 Text(

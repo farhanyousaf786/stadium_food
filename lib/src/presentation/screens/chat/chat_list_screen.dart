@@ -39,79 +39,72 @@ class _ChatListScreenState extends State<ChatListScreen> {
           messages = state.messages;
         }
       },
-      child: Stack(
-        children: [
-          Align(
-            alignment: Alignment.topRight,
-            child: SvgPicture.asset(
-              "assets/svg/pattern-small.svg",
-            ),
-          ),
-          SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(25),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Chat",
-                      style: CustomTextStyle.size25Weight600Text(),
-                    ),
+      child: Scaffold(
+        backgroundColor: AppColors.bgColor,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(25),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Chat",
+                    style: CustomTextStyle.size25Weight600Text(),
+                  ),
 
-                    const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                    // Chat list
-                    BlocBuilder<ChatBloc, ChatState>(
-                      builder: (context, state) {
-                        if (state is ChatLoading) {
-                          return ListView.builder(
-                            itemCount: 5,
-                            shrinkWrap: true,
-                            itemBuilder: (context, index) {
-                              return const Padding(
-                                padding: EdgeInsets.only(bottom: 20),
-                                child: ChatShimmerItem(),
-                              );
-                            },
-                          );
-                        } else if (state is ChatError) {
-                          return Center(
-                            child: Text(state.message),
-                          );
-                        } else {
-                          if (messages.isEmpty) {
-                            return SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.7,
-                              child: const Center(
-                                child: Text("No chats yet"),
-                              ),
+                  // Chat list
+                  BlocBuilder<ChatBloc, ChatState>(
+                    builder: (context, state) {
+                      if (state is ChatLoading) {
+                        return ListView.builder(
+                          itemCount: 5,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            return const Padding(
+                              padding: EdgeInsets.only(bottom: 20),
+                              child: ChatShimmerItem(),
                             );
-                          }
-                          return ListView.builder(
-                            itemCount: messages.length,
-                            shrinkWrap: true,
-                            itemBuilder: (context, index) {
-                              String key = messages.keys.elementAt(index);
-                              List<Message> messagesList = messages[key]!;
-
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 20),
-                                child: ChatItem(
-                                  messagesList: messagesList,
-                                ),
-                              );
-                            },
+                          },
+                        );
+                      } else if (state is ChatError) {
+                        return Center(
+                          child: Text(state.message),
+                        );
+                      } else {
+                        if (messages.isEmpty) {
+                          return SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.7,
+                            child: const Center(
+                              child: Text("No chats yet"),
+                            ),
                           );
                         }
-                      },
-                    ),
-                  ],
-                ),
+                        return ListView.builder(
+                          itemCount: messages.length,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            String key = messages.keys.elementAt(index);
+                            List<Message> messagesList = messages[key]!;
+
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 20),
+                              child: ChatItem(
+                                messagesList: messagesList,
+                              ),
+                            );
+                          },
+                        );
+                      }
+                    },
+                  ),
+                ],
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }

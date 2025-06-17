@@ -32,6 +32,15 @@ class CustomTextStyle {
     );
   }
 
+  static TextStyle size24Weight600Text([Color? color]) {
+    return TextStyle(
+      fontSize: 24,
+      fontFamily: 'SF',
+      fontWeight: FontWeight.w600,
+      color: color ?? AppColors().textColor,
+    );
+  }
+
   static TextStyle size22Weight600Text([Color? color]) {
     return TextStyle(
       fontSize: 22,

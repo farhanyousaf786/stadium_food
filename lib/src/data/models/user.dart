@@ -117,6 +117,8 @@ class User extends Equatable {
 
   String get fullName => '$firstName $lastName';
   String get initials => '${firstName[0]}${lastName[0]}';
+  String get username => email.split('@')[0];
+  String get photoUrl => image ?? 'https://ui-avatars.com/api/?name=$firstName+$lastName';
 
   @override
   List<Object?> get props => [

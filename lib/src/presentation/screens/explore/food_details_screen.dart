@@ -7,9 +7,7 @@ import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:stadium_food/src/bloc/profile/profile_bloc.dart';
 import 'package:stadium_food/src/bloc/testimonial/testimonial_bloc.dart';
 import 'package:stadium_food/src/data/models/food.dart';
-import 'package:stadium_food/src/data/models/shopuser.dart';
 import 'package:stadium_food/src/data/models/testimonial.dart';
-import 'package:stadium_food/src/presentation/screens/chat/chat_details_screen.dart';
 import 'package:stadium_food/src/presentation/widgets/bullet_point.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
 import 'package:stadium_food/src/presentation/widgets/image_placeholder.dart';
@@ -89,40 +87,6 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                     },
                   ),
                   const SizedBox(width: 10),
-                  IconButton(
-                    onPressed: () async {
-                      final querySnapshot = await FirebaseFirestore.instance
-                          .collection('users')
-                          .where('shopsId', arrayContains: widget.food.shopId)
-                          .limit(1)
-                          .get();
-
-                      if (querySnapshot.docs.isEmpty) {
-                        if (!mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Shop owner not found')),
-                        );
-                        return;
-                      }
-                      
-                      final shopUser = ShopUser.fromMap(querySnapshot.docs.first.data());
-                      
-                      if (!mounted) return;
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ChatDetailsScreen(
-                            otherUser: shopUser,
-                          ),
-                        ),
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.message_rounded,
-                      color: AppColors.primaryColor,
-                      size: 28,
-                    ),
-                  ),
                 ],
               ),
 

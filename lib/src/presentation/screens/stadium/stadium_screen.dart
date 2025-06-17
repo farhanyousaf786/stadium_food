@@ -78,12 +78,13 @@ class _StadiumScreenState extends State<StadiumScreen> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: AppColors.bgColor,
-       
-        body: Column(
+    return Scaffold(
+      backgroundColor: AppColors.bgColor,
+
+      body: SafeArea(
+        child: Column(
           children: [
+            const SizedBox(height: 6,),
             const OfferSlider(),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -128,9 +129,9 @@ class _StadiumScreenState extends State<StadiumScreen> with SingleTickerProvider
                 },
               ),
             ),
-         
-         
-            SizedBox(height: 16),
+
+
+            const SizedBox(height: 16),
             Expanded(
               child: BlocBuilder<StadiumBloc, StadiumState>(
                 builder: (context, state) {
@@ -313,7 +314,7 @@ class _StadiumCardState extends State<_StadiumCard> with SingleTickerProviderSta
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(Icons.people, color: AppColors.primaryColor, size: 16),
+                                    const Icon(Icons.people, color: AppColors.primaryColor, size: 16),
                                     const SizedBox(width: 4),
                                     Text(
                                       '${widget.stadium.capacity}',
@@ -364,23 +365,18 @@ class _StadiumCardState extends State<_StadiumCard> with SingleTickerProviderSta
                                 ],
                               ),
                               const SizedBox(height: 16),
-                              ConstrainedBox(
-                                constraints: const BoxConstraints(
-                                  maxHeight: 72, // Approximately 3 lines of text
+                              Container(
+                                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryColor.withOpacity(0.05),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: AppColors.primaryColor.withOpacity(0.1), width: 1),
                                 ),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primaryColor.withOpacity(0.05),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(color: AppColors.primaryColor.withOpacity(0.1), width: 1),
-                                  ),
-                                  child: Text(
-                                    widget.stadium.about,
-                                    style: const TextStyle(height: 1.5),
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
+                                child: Text(
+                                  widget.stadium.about,
+                                  style: const TextStyle(height: 1.5),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             ],

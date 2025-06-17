@@ -16,12 +16,12 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       emit(FetchingFavorites());
       try {
         List<Food> favoriteFoods = await profileRepository.fetchFavoriteFoods();
-        List<Restaurant> favoriteRestaurants =
-            await profileRepository.fetchFavoriteRestaurants();
+        // List<Restaurant> favoriteRestaurants =
+        //     await profileRepository.fetchFavoriteRestaurants();
         emit(
           FavoritesFetched(
             favoriteFoods: favoriteFoods,
-            favoriteRestaurants: favoriteRestaurants,
+            // favoriteRestaurants: favoriteRestaurants,
           ),
         );
       } catch (e, s) {
@@ -42,16 +42,16 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         emit(ProfileError(message: e.toString()));
       }
     });
-    on<ToggleFavoriteRestaurant>((event, emit) async {
-      try {
-        emit(ProfileInitial());
-        await profileRepository.toggleFavoriteRestaurant(event.restaurantId);
-        emit(FavoriteRestaurantToggled());
-      } catch (e, s) {
-        debugPrint(e.toString());
-        debugPrint(s.toString());
-        emit(ProfileError(message: e.toString()));
-      }
-    });
+    // on<ToggleFavoriteRestaurant>((event, emit) async {
+    //   try {
+    //     emit(ProfileInitial());
+    //     await profileRepository.toggleFavoriteRestaurant(event.restaurantId);
+    //     emit(FavoriteRestaurantToggled());
+    //   } catch (e, s) {
+    //     debugPrint(e.toString());
+    //     debugPrint(s.toString());
+    //     emit(ProfileError(message: e.toString()));
+    //   }
+    // });
   }
 }

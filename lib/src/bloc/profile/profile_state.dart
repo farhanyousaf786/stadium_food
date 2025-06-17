@@ -9,11 +9,11 @@ class FetchingFavorites extends ProfileState {}
 
 class FavoritesFetched extends ProfileState {
   final List<Food> favoriteFoods;
-  final List<Restaurant> favoriteRestaurants;
+  // final List<Restaurant> favoriteRestaurants;
 
   FavoritesFetched({
     required this.favoriteFoods,
-    required this.favoriteRestaurants,
+    // required this.favoriteRestaurants,
   });
 }
 

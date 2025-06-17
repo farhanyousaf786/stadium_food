@@ -38,22 +38,6 @@ class SettingsSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(
-                Icons.settings,
-                color: theme.primaryColor,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'Settings',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  color: theme.textTheme.titleLarge?.color,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: Icon(

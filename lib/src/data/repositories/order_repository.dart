@@ -158,8 +158,8 @@ class OrderRepository {
     final List<model.Order> orders = [];
     var data = await _db.getDocumentsWithQuery(
       'orders',
-      'userInfo.userEmail',
-      box.get('email') ?? '',
+      'userInfo.userId',
+      box.get('id') ?? '',
     );
     for (var item in data.docs) {
       model.Order order = model.Order.fromMap(

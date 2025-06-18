@@ -3,11 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stadium_food/src/bloc/profile/profile_bloc.dart';
 import 'package:stadium_food/src/bloc/settings/settings_bloc.dart';
 import 'package:stadium_food/src/bloc/theme/theme_bloc.dart';
+import 'package:stadium_food/src/core/constants/colors.dart';
 import 'package:stadium_food/src/data/models/user.dart';
 import 'package:stadium_food/src/presentation/widgets/items/food_item.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:stadium_food/src/presentation/widgets/loading_indicator.dart';
 
+import '../../../../bloc/order/order_bloc.dart';
+import '../../../../data/models/order.dart';
+import '../../../../data/models/order_status.dart';
 import 'widgets/settings_section.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -23,12 +27,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<ProfileBloc>(context).add(FetchFavorites());
+    final bloc = BlocProvider.of<ProfileBloc>(context);
+    BlocProvider.of<OrderBloc>(context).add(FetchOrders());
+    bloc.add(FetchFavorites());
+    // bloc.add(FetchOrderStats());
   }
 
   Widget _buildStatsItem(String value, String label) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      width: 100,
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -38,7 +47,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Theme.of(context).cardColor.withOpacity(0.5),
           ],
         ),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: Theme.of(context).primaryColor.withOpacity(0.15),
           width: 1,
@@ -46,8 +55,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).primaryColor.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+            spreadRadius: 2,
           ),
         ],
       ),
@@ -57,12 +67,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Text(
             value,
             style: CustomTextStyle.size24Weight600Text(
-              Theme.of(context).textTheme.titleLarge?.color,
+              Theme.of(context).primaryColor,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             label,
+            textAlign: TextAlign.center,
             style: CustomTextStyle.size14Weight400Text(
               Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
             ),
@@ -123,185 +134,258 @@ class _ProfileScreenState extends State<ProfileScreen> {
           );
         }
       },
-      child: BlocBuilder<ThemeBloc, ThemeState>(
-        builder: (context, state) {
-          return Scaffold(
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            body: SafeArea(
-              child: CustomScrollView(
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Profile Card
-                          Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  Theme.of(context)
-                                      .primaryColor
-                                      .withOpacity(0.05),
-                                  Theme.of(context).cardColor,
-                                ],
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Theme.of(context)
-                                    .primaryColor
-                                    .withOpacity(0.1),
-                                width: 1,
-                              ),
+      child: Scaffold(
+        backgroundColor: AppColors.bgColor,
+        body: SafeArea(
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Profile Card
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Theme.of(context)
+                                  .shadowColor
+                                  .withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
                             ),
-                            child: Column(
+                          ],
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color:
+                                Theme.of(context).primaryColor.withOpacity(0.1),
+                            width: 1,
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
                               children: [
-                                Row(
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 40,
-                                      backgroundImage:
-                                          NetworkImage(_user.photoUrl),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            _user.fullName,
-                                            style: CustomTextStyle
-                                                .size18Weight600Text(
-                                              Theme.of(context)
-                                                  .textTheme
-                                                  .titleLarge
-                                                  ?.color,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            _user.email,
-                                            style: CustomTextStyle
-                                                .size14Weight400Text(
-                                              Theme.of(context)
-                                                  .textTheme
-                                                  .bodyMedium
-                                                  ?.color
-                                                  ?.withOpacity(0.7),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
+                                CircleAvatar(
+                                  radius: 40,
+                                  backgroundImage: NetworkImage(_user.photoUrl),
                                 ),
-                                const SizedBox(height: 24),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    _buildStatsItem('12', 'Active'),
-                                    _buildStatsItem('3', 'Pending'),
-                                    _buildStatsItem('25', 'Complete'),
-                                  ],
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        _user.fullName,
+                                        style:
+                                            CustomTextStyle.size18Weight600Text(
+                                          Theme.of(context)
+                                              .textTheme
+                                              .titleLarge
+                                              ?.color,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        _user.email,
+                                        style:
+                                            CustomTextStyle.size14Weight400Text(
+                                          Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.color
+                                              ?.withOpacity(0.7),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
-                          ),
-
-                          const SizedBox(height: 24),
-
-                          // Settings Section
-                          Text(
-                            'Settings',
-                            style: CustomTextStyle.size18Weight600Text(
-                              Theme.of(context).primaryColor,
+                            const SizedBox(height: 24),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                BlocBuilder<OrderBloc, OrderState>(
+                                  builder: (context, stateOrder) {
+                                    if (stateOrder is OrdersFetching) {
+                                      return Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          _buildStatsItem('...', 'Active'),
+                                          _buildStatsItem('...', 'Cancelled'),
+                                          _buildStatsItem('...', 'Complete'),
+                                        ],
+                                      );
+                                    } else if (stateOrder is OrdersFetched) {
+                                      return Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          _buildStatsItem(
+                                              filterOrders(
+                                                  stateOrder.orders, 'active'),
+                                              'Active'),
+                                          _buildStatsItem(
+                                              filterOrders(stateOrder.orders,
+                                                  'completed'),
+                                              'Cancelled'),
+                                          _buildStatsItem(
+                                              filterOrders(stateOrder.orders,
+                                                  'cancelled'),
+                                              'Complete'),
+                                        ],
+                                      );
+                                    }
+                                    return Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        _buildStatsItem('...', 'Active'),
+                                        _buildStatsItem('...', 'Cancelled'),
+                                        _buildStatsItem('...', 'Complete'),
+                                      ],
+                                    );
+                                  },
+                                ),
+                              ],
                             ),
-                          ),
-                          const SizedBox(height: 12),
-                          _buildSettingsSection(context),
-                          const SizedBox(height: 24),
+                          ],
+                        ),
+                      ),
 
-                          // Favorite Foods Section
-                          Text(
-                            'Favorite Foods',
-                            style: CustomTextStyle.size18Weight600Text(
-                              Theme.of(context).primaryColor,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          BlocBuilder<ProfileBloc, ProfileState>(
-                            builder: (context, state) {
-                              if (state is FetchingFavorites) {
-                                return const SizedBox(
-                                  height: 300,
-                                  child: LoadingIndicator(),
-                                );
-                              } else if (state is FavoritesFetched) {
-                                if (state.favoriteFoods.isEmpty) {
-                                  return Center(
-                                    child: Text(
-                                      'No favorite foods',
-                                      style:
-                                          CustomTextStyle.size16Weight400Text(
-                                        Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium
-                                            ?.color
-                                            ?.withOpacity(0.7),
+                      const SizedBox(height: 24),
+
+                      // Settings Section
+                      Text(
+                        'Settings',
+                        style: CustomTextStyle.size18Weight600Text(
+                          Theme.of(context).primaryColor,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildSettingsSection(context),
+                      const SizedBox(height: 24),
+
+                      // Favorite Foods Section
+                      Text(
+                        'Favorite Foods',
+                        style: CustomTextStyle.size18Weight600Text(
+                          Theme.of(context).primaryColor,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      BlocBuilder<ProfileBloc, ProfileState>(
+                        builder: (context, state) {
+                          if (state is FetchingFavorites) {
+                            return Container(
+                              height: 220,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                color: Theme.of(context).cardColor,
+                              ),
+                              child: const Center(child: LoadingIndicator()),
+                            );
+                          } else if (state is FavoritesFetched) {
+                            if (state.favoriteFoods.isEmpty) {
+                              return Container(
+                                height: 220,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  color: Theme.of(context).cardColor,
+                                ),
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.favorite_border,
+                                        size: 48,
+                                        color: Theme.of(context)
+                                            .primaryColor
+                                            .withOpacity(0.5),
                                       ),
-                                    ),
-                                  );
-                                }
-
-                                return SizedBox(
-                                  height: 300,
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    shrinkWrap: true,
-                                    itemCount: state.favoriteFoods.length,
-                                    itemBuilder: (context, index) {
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 16),
-                                        child: SizedBox(
-                                          width: 200,
-                                          child: FoodItem(
-                                            food: state.favoriteFoods[index],
-                                            onTap: () {
-                                              Navigator.pushNamed(
-                                                context,
-                                                '/foods/detail',
-                                                arguments:
-                                                    state.favoriteFoods[index],
-                                              );
-                                            },
-                                          ),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        'No favorite foods yet',
+                                        style:
+                                            CustomTextStyle.size16Weight400Text(
+                                          Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.color
+                                              ?.withOpacity(0.7),
                                         ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }
+
+                            return SizedBox(
+                              height: 280,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: state.favoriteFoods.length,
+                                itemBuilder: (context, index) {
+                                  return FoodItem(
+                                    food: state.favoriteFoods[index],
+                                    onTap: () {
+                                      Navigator.pushNamed(
+                                        context,
+                                        '/foods/detail',
+                                        arguments: state.favoriteFoods[index],
                                       );
                                     },
-                                  ),
-                                );
-                              }
-                              return const SizedBox();
-                            },
-                          ),
-                          const SizedBox(height: 24),
-                        ],
+                                  );
+                                },
+                              ),
+                            );
+                          }
+                          return const SizedBox();
+                        },
                       ),
-                    ),
+                      const SizedBox(height: 24),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-          );
-        },
+            ],
+          ),
+        ),
       ),
     );
+  }
+
+  String filterOrders(List<Order> orders, String tabKey) {
+    switch (tabKey) {
+      case 'active':
+        return orders
+            .where((o) =>
+                o.status == OrderStatus.pending ||
+                o.status == OrderStatus.preparing ||
+                o.status == OrderStatus.delivering)
+            .length
+            .toString();
+      case 'completed':
+        return orders
+            .where((o) => o.status == OrderStatus.delivered)
+            .length
+            .toString();
+      case 'cancelled':
+        return orders
+            .where((o) => o.status == OrderStatus.canceled)
+            .length
+            .toString();
+      default:
+        return '0';
+    }
   }
 }

@@ -18,3 +18,5 @@ class ToggleFavoriteRestaurant extends ProfileEvent {
 
   ToggleFavoriteRestaurant({required this.restaurantId});
 }
+
+class FetchOrderStats extends ProfileEvent {}

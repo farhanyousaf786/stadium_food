@@ -111,6 +111,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
         body: CustomScrollView(
           slivers: [
             SliverAppBar(
+
               leading:     const CustomBackButton(),
 
               expandedHeight: MediaQuery.of(context).size.height * 0.4,

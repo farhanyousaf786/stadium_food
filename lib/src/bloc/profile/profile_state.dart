@@ -28,3 +28,17 @@ class ProfileError extends ProfileState {
 class FavoriteFoodToggled extends ProfileState {}
 
 class FavoriteRestaurantToggled extends ProfileState {}
+
+class FetchingOrderStats extends ProfileState {}
+
+class OrderStatsFetched extends ProfileState {
+  final int activeOrders;
+  final int canceledOrders;
+  final int completedOrders;
+
+  OrderStatsFetched({
+    required this.activeOrders,
+    required this.canceledOrders,
+    required this.completedOrders,
+  });
+}

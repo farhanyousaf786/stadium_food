@@ -10,7 +10,7 @@ class AppColors {
   static List<Color> primaryGradient = [
     primaryLightColor,
     primaryColor,
-    primaryDarkColor,
+    primaryLightColor,
   ];
   static const Color secondaryColor = Color(0xFFFEAD1D);
   static const Color secondaryLightColor = Color(0xFFF9A84D);

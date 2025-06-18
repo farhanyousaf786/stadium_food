@@ -21,7 +21,9 @@ class ImagePlaceholder extends StatelessWidget {
     return Container(
       width: width,
       height: height,
+
       decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(50),
         gradient: LinearGradient(
           colors: AppColors.primaryGradient,
           begin: Alignment.topLeft,
@@ -30,7 +32,7 @@ class ImagePlaceholder extends StatelessWidget {
       ),
       child: Icon(
         iconData,
-        color: AppColors.secondaryColor,
+        color: AppColors.bgColor,
         size: iconSize,
       ),
     );

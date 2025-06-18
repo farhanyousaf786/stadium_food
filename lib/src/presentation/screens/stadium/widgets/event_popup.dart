@@ -32,19 +32,19 @@ class _EventPopupState extends State<EventPopup> with SingleTickerProviderStateM
       title: 'Welcome to Stadium Food!',
       subtitle: 'Your ultimate game-day companion',
       image: 'https://firebasestorage.googleapis.com/v0/b/fans-food-stf.firebasestorage.app/o/static-images%2Fslide1.jpg?alt=media&token=4f077b5b-424b-4155-8dec-c4f0c33d914e',
-      color: Color(0xFFFF6B6B),
+      color: const Color(0xFF4CAF50),
     ),
     _EventItem(
       title: 'Order From Your Seat',
       subtitle: 'No more missing the action',
       image: 'https://firebasestorage.googleapis.com/v0/b/fans-food-stf.firebasestorage.app/o/static-images%2Fslide1.jpg?alt=media&token=4f077b5b-424b-4155-8dec-c4f0c33d914e',
-      color: Color(0xFF4ECDC4),
+      color: const Color(0xFF4CAF50),
     ),
     _EventItem(
       title: 'Skip The Lines',
       subtitle: 'Food delivered to your seat',
       image: 'https://firebasestorage.googleapis.com/v0/b/fans-food-stf.firebasestorage.app/o/static-images%2Fslide1.jpg?alt=media&token=4f077b5b-424b-4155-8dec-c4f0c33d914e',
-      color: Color(0xFFFFBE0B),
+      color: const Color(0xFF4CAF50),
     ),
   ];
   int _currentEventIndex = 0;

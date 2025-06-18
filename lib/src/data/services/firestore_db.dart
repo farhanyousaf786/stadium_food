@@ -3,6 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class FirestoreDatabase {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
+  // Expose Firestore instance for direct collection access
+  FirebaseFirestore get firestore => _firebaseFirestore;
+
   Future<QuerySnapshot> getCollection(String collectionName) async {
     return await _firebaseFirestore.collection(collectionName).get();
   }

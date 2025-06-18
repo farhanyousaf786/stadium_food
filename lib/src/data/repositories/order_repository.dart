@@ -154,24 +154,46 @@ class OrderRepository {
     return order;
   }
 
+
   Future<List<model.Order>> fetchOrders() async {
-    final List<model.Order> orders = [];
-    var data = await _db.getDocumentsWithQuery(
-      'orders',
-      'userInfo.userId',
-      box.get('id') ?? '',
-    );
-    for (var item in data.docs) {
-      model.Order order = model.Order.fromMap(
-        item.id,
-        item.data() as Map<String, dynamic>,
-      );
-      orders.add(order);
+    try {
+      final userID = box.get('id');
+      if (userID == null) {
+        throw Exception('User ID not found. Please login again.');
+      }
+
+      final snapshot = await _db.firestore.collection('orders')
+          .where('userId', isEqualTo: userID)
+          .orderBy('createdAt', descending: true)
+          .get();
+
+      return snapshot.docs
+          .map((doc) => model.Order.fromMap(doc.id, doc.data()))
+          .toList();
+    } catch (e) {
+      debugPrint('Error fetching orders: ${e.toString()}');
+      rethrow;
+    }
+  }
+
+
+  Stream<List<model.Order>> streamOrders() {
+    final userID = box.get('id');
+    debugPrint('Current userID: $userID');
+    if (userID == null) {
+      return Stream.error('User ID not found. Please login again.');
     }
 
-    // sort by date
-    orders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-    return orders;
+    return _db.firestore.collection('orders')
+        .where('userInfo.userId', isEqualTo: userID)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => model.Order.fromMap(doc.id, doc.data()))
+            .toList())
+        .handleError((error) {
+          debugPrint('Error streaming orders: ${error.toString()}');
+          throw error;
+        });
   }
 }

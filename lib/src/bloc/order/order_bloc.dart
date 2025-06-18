@@ -1,6 +1,6 @@
+import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
-import 'package:hive/hive.dart';
 import 'package:stadium_food/src/data/models/food.dart';
 import 'package:stadium_food/src/data/models/order.dart';
 import 'package:stadium_food/src/data/repositories/order_repository.dart';
@@ -10,6 +10,7 @@ part 'order_state.dart';
 
 class OrderBloc extends Bloc<OrderEvent, OrderState> {
   final OrderRepository orderRepository = OrderRepository();
+
   OrderBloc() : super(OrderInitial()) {
     on<OrderEvent>((event, emit) {});
     on<UpdateUI>((event, emit) {
@@ -45,14 +46,20 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     });
     on<FetchOrders>((event, emit) async {
       emit(OrdersFetching());
-      try {
-        List<Order> orders = await orderRepository.fetchOrders();
-        emit(OrdersFetched(orders));
-      } catch (e, s) {
-        debugPrint(e.toString());
-        debugPrint(s.toString());
-        emit(OrderFetchingError(e.toString()));
-      }
+      await emit.forEach<List<Order>>(
+        orderRepository.streamOrders(),
+        onData: (orders) => OrdersFetched(orders),
+        onError: (error, stackTrace) {
+          debugPrint(error.toString());
+          debugPrint(stackTrace.toString());
+          return OrderFetchingError(error.toString());
+        },
+      );
     });
+  }
+
+  @override
+  Future<void> close() async {
+    return super.close();
   }
 }

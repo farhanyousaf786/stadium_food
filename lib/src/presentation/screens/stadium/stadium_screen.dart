@@ -170,7 +170,7 @@ class _StadiumScreenState extends State<StadiumScreen> with SingleTickerProvider
                           )
                         : ListView.builder(
                         physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.only(bottom: 16,left: 10,right: 10),
                         itemCount: state.stadiums.length,
                         itemBuilder: (context, index) {
                           return AnimationConfiguration.staggeredList(

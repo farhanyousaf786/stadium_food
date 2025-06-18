@@ -56,66 +56,58 @@ class _OrderListScreenState extends State<OrderListScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor:AppColors.bgColor,
-      body: Stack(
-        children: [
-          Align(
-            alignment: Alignment.topRight,
-            child: SvgPicture.asset("assets/svg/pattern-small.svg"),
-          ),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 30, 20, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(context),
-                  const SizedBox(height: 20),
-                  TabBar(
-                    controller: _tabController,
-                    indicatorColor: AppColors.primaryColor,
-                    labelColor: AppColors.primaryColor,
-                    unselectedLabelColor: Colors.grey,
-                    tabs: const [
-                      Tab(text: 'Active'),
-                      Tab(text: 'Completed'),
-                      Tab(text: 'Cancelled'),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Expanded(
-                    child: BlocBuilder<OrderBloc, OrderState>(
-                      builder: (context, state) {
-                        if (state is OrdersFetching) {
-                          return _buildShimmer();
-                        } else if (state is OrdersFetched) {
-                          return TabBarView(
-                            controller: _tabController,
-                            children: [
-                              _buildOrderList(filterOrders(state.orders, 'active')),
-                              _buildOrderList(filterOrders(state.orders, 'completed')),
-                              _buildOrderList(filterOrders(state.orders, 'cancelled')),
-                            ],
-                          );
-                        } else if (state is OrderFetchingError) {
-                          return Center(
-                            child: Text(
-                              state.message,
-                              style: CustomTextStyle.size16Weight400Text(
-                                AppColors.errorColor,
-                              ),
-                            ),
-                          );
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      },
-                    ),
-                  ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 30, 20, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(context),
+              const SizedBox(height: 20),
+              TabBar(
+                controller: _tabController,
+                indicatorColor: AppColors.primaryColor,
+                labelColor: AppColors.primaryColor,
+                unselectedLabelColor: Colors.grey,
+                tabs: const [
+                  Tab(text: 'Active'),
+                  Tab(text: 'Completed'),
+                  Tab(text: 'Cancelled'),
                 ],
               ),
-            ),
+              const SizedBox(height: 10),
+              Expanded(
+                child: BlocBuilder<OrderBloc, OrderState>(
+                  builder: (context, state) {
+                    if (state is OrdersFetching) {
+                      return _buildShimmer();
+                    } else if (state is OrdersFetched) {
+                      return TabBarView(
+                        controller: _tabController,
+                        children: [
+                          _buildOrderList(filterOrders(state.orders, 'active')),
+                          _buildOrderList(filterOrders(state.orders, 'completed')),
+                          _buildOrderList(filterOrders(state.orders, 'cancelled')),
+                        ],
+                      );
+                    } else if (state is OrderFetchingError) {
+                      return Center(
+                        child: Text(
+                          state.message,
+                          style: CustomTextStyle.size16Weight400Text(
+                            AppColors.errorColor,
+                          ),
+                        ),
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  },
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

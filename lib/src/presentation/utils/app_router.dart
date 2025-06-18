@@ -134,7 +134,7 @@ class AppRouter {
 
       case '/cart':
         return MaterialPageRoute(
-          builder: (_) => const CartScreen(),
+          builder: (_) =>  CartScreen(isFromHome: false,),
         );
 
       case '/order/confirm':

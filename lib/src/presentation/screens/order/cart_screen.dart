@@ -11,10 +11,14 @@ import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 
 class CartScreen extends StatelessWidget {
-  const CartScreen({super.key});
+
+  final bool isFromHome;
+   CartScreen(  {super.key, required this.isFromHome});
+
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       bottomNavigationBar: BlocBuilder<OrderBloc, OrderState>(
@@ -42,7 +46,7 @@ class CartScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const CustomBackButton(),
+            isFromHome==false?    const CustomBackButton():SizedBox(),
                 const SizedBox(height: 20),
                 Text(
                   "Cart",

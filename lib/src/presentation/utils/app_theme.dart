@@ -34,7 +34,7 @@ class AppTheme {
       cursorColor: AppColors.primaryColor,
     ),
     // change dialog surface tint color
-    dialogTheme: const DialogTheme(
+    dialogTheme: const DialogThemeData(
       surfaceTintColor: Colors.transparent,
     ),
   );
@@ -71,7 +71,7 @@ class AppTheme {
       cursorColor: AppColors.primaryColor,
     ),
     // change dialog surface tint color
-    dialogTheme: const DialogTheme(
+    dialogTheme: const DialogThemeData(
       surfaceTintColor: Colors.transparent,
     ),
   );

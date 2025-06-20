@@ -55,11 +55,11 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBViYz3hVxzQZW_PbG5dsvuvAHMHjpRywY',
-    appId: '1:665208381476:ios:1ca700afeb1555178af8b1',
+    apiKey: 'AIzaSyCk0dB043MPcJDKDqq_Uf-jJUuQK2mjXiI',
+    appId: '1:267118373830:android:92f8d9bd8f965312fc60c7',
     messagingSenderId: '665208381476',
-    projectId: 'food-ninja-f7b7c',
-    storageBucket: 'food-ninja-f7b7c.appspot.com',
+    projectId: 'fans-food-stf',
+    storageBucket: 'fans-food-stf.firebasestorage.app',
     iosClientId: '665208381476-eg3dt1phf02bk05bus035nmtg7qofbni.apps.googleusercontent.com',
     iosBundleId: 'com.shokhrukhbek.foodNinja',
   );

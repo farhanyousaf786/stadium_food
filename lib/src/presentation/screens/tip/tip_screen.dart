@@ -79,7 +79,7 @@ class _TipScreenState extends State<TipScreen> {
           const SizedBox(height: 20),
           Center(
             child: Image.asset(
-              'assets/images/delivery_illustration.png',
+              'assets/png/delivery_illustration.png',
               height: 200,
               fit: BoxFit.contain,
             ),

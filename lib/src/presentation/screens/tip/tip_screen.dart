@@ -40,6 +40,7 @@ class _TipScreenState extends State<TipScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.bgColor,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -81,7 +82,7 @@ class _TipScreenState extends State<TipScreen> {
             child: Image.asset(
               'assets/png/delivery_illustration.png',
               height: 200,
-              fit: BoxFit.contain,
+              fit: BoxFit.cover,
             ),
           ),
           const SizedBox(height: 20),

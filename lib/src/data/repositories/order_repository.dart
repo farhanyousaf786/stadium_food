@@ -16,6 +16,10 @@ class OrderRepository {
   static final List<Food> cart = [];
 
   static final Box<dynamic> box = Hive.box('myBox');
+  static double _tip = 0;
+
+  static double get tip => _tip;
+  static set tip(double value) => _tip = value;
 
   // load cart from hive
   static void loadCart() {
@@ -98,17 +102,17 @@ class OrderRepository {
 
   // total
   static double get total {
-    return subtotal + deliveryFee - discount;
+    return subtotal + deliveryFee + tip - discount;
   }
 
-  Future<model.Order> createOrder(Map<String, dynamic> seatInfo, {required double tipAmount}) async {
+  Future<model.Order> createOrder(Map<String, dynamic> seatInfo) async {
     final model.Order order = model.Order(
       cart: [...cart],
       subtotal: subtotal,
       deliveryFee: deliveryFee,
       discount: discount,
-      total: total + tipAmount,
-      tipAmount: tipAmount,
+      total: total + tip,
+      tipAmount: tip,
       createdAt: DateTime.now(),
       status: OrderStatus.pending,
       stadiumId: cart[0].stadiumId ?? '',

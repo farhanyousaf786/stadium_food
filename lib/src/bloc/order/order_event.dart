@@ -25,11 +25,17 @@ class RemoveCompletelyFromCart extends OrderEvent {
 
 class CreateOrder extends OrderEvent {
   final Map<String, dynamic> seatInfo;
-  final double tipAmount;
 
-  CreateOrder({required this.seatInfo, required this.tipAmount});
+
+  CreateOrder({required this.seatInfo});
 }
 
 class FetchOrders extends OrderEvent {
   FetchOrders();
+}
+
+class UpdateTipEvent extends OrderEvent {
+  final double tipAmount;
+
+  UpdateTipEvent(this.tipAmount);
 }

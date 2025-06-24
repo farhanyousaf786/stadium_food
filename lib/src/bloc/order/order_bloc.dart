@@ -38,7 +38,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       try {
         Order order = await orderRepository.createOrder(
           event.seatInfo,
-          tipAmount: event.tipAmount,
+
         );
         emit(OrderCreated(order));
       } catch (e, s) {
@@ -58,6 +58,11 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
           return OrderFetchingError(error.toString());
         },
       );
+    });
+    on<UpdateTipEvent>((event, emit) {
+      emit(OrderInitial());
+      OrderRepository.tip = event.tipAmount;
+      emit(UIUpdated());
     });
   }
 

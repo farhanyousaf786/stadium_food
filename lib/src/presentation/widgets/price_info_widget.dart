@@ -74,6 +74,24 @@ class PriceInfoWidget extends StatelessWidget {
                       ),
                     ],
                   ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Tip',
+                        style: CustomTextStyle.size16Weight400Text(
+                          Colors.white,
+                        ),
+                      ),
+                      Text(
+                        '\$${OrderRepository.tip}',
+                        style: CustomTextStyle.size16Weight400Text(
+                          Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

@@ -34,7 +34,7 @@ class CartScreen extends StatelessWidget {
                 );
                 return;
               }
-              Navigator.pushNamed(context, "/order/confirm");
+              Navigator.pushNamed(context, "/tip");
             },
           );
         },

@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
         bottomNavigationBar: BlocBuilder<ThemeBloc, ThemeState>(
           builder: (context, state) {
             return Container(
-              margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+              margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
               decoration: BoxDecoration(
                 color: AppColors().cardColor,
                 borderRadius: AppStyles.largeBorderRadius,

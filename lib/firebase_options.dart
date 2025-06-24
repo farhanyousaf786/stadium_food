@@ -55,12 +55,12 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCk0dB043MPcJDKDqq_Uf-jJUuQK2mjXiI',
+    apiKey: 'AIzaSyDcvPXXbqn-E6J91XrecuWXK9eJn9r4_Q8',
     appId: '1:267118373830:android:92f8d9bd8f965312fc60c7',
     messagingSenderId: '665208381476',
     projectId: 'fans-food-stf',
     storageBucket: 'fans-food-stf.firebasestorage.app',
     iosClientId: '665208381476-eg3dt1phf02bk05bus035nmtg7qofbni.apps.googleusercontent.com',
-    iosBundleId: 'com.shokhrukhbek.foodNinja',
+    iosBundleId: 'com.fansfood',
   );
 }

@@ -171,11 +171,7 @@ class _TipScreenState extends State<TipScreen> {
                       // Navigate to order confirm screen with tip amount
                       Navigator.pushNamed(
                         context,
-                        '/order_confirm',
-                        arguments: {
-                          'orderTotal': widget.orderTotal + _tipAmount,
-                          'tipAmount': _tipAmount,
-                        },
+                        '/order/confirm',
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -203,11 +199,7 @@ class _TipScreenState extends State<TipScreen> {
                       // Skip tip and go to order confirm screen
                       Navigator.pushNamed(
                         context,
-                        '/order_confirm',
-                        arguments: {
-                          'orderTotal': widget.orderTotal,
-                          'tipAmount': 0.0,
-                        },
+                        '/order/confirm',
                       );
                     },
                     style: TextButton.styleFrom(

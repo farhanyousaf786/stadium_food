@@ -621,7 +621,10 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
      try {
        await Stripe.instance.presentPaymentSheet().then((value) {
          BlocProvider.of<OrderBloc>(context).add(
-           CreateOrder(seatInfo: seatInfo),
+           CreateOrder(
+             seatInfo: seatInfo,
+             tipAmount: 0.0, // Tip already added in previous screen
+           ),
          );
 
          showDialog(

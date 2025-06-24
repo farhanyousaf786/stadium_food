@@ -4,7 +4,6 @@ import 'package:stadium_food/src/data/models/order.dart';
 import 'package:stadium_food/src/data/models/restaurant.dart';
 import 'package:stadium_food/src/data/models/shopuser.dart';
 import 'package:stadium_food/src/data/models/user.dart';
-import 'package:stadium_food/src/data/repositories/order_repository.dart';
 import 'package:stadium_food/src/presentation/screens/auth/forgot_password_screen.dart';
 import 'package:stadium_food/src/presentation/screens/auth/login_screen.dart';
 import 'package:stadium_food/src/presentation/screens/auth/register_process_screen.dart';
@@ -119,9 +118,7 @@ class AppRouter {
 
       case '/tip':
         return MaterialPageRoute(
-          builder: (_) => TipScreen(
-            orderTotal: OrderRepository.subtotal,
-          ),
+          builder: (_) => const TipScreen(),
         );  
 
       // case '/foods':

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:stadium_food/src/core/constants/colors.dart';
+import 'package:stadium_food/src/data/repositories/order_repository.dart';
 
 class TipScreen extends StatefulWidget {
-  final double orderTotal;
-
   const TipScreen({
     super.key,
-    required this.orderTotal,
   });
 
   @override
@@ -17,16 +17,18 @@ class _TipScreenState extends State<TipScreen> {
   late double _selectedTipPercentage;
   late double _tipAmount;
   final List<double> _tipPercentages = [6, 10, 14, 18];
+  late double _orderTotal;
 
   @override
   void initState() {
     super.initState();
     _selectedTipPercentage = 10; // Default to 10%
+    _orderTotal = OrderRepository.total;
     _calculateTip();
   }
 
   void _calculateTip() {
-    _tipAmount = (widget.orderTotal * _selectedTipPercentage / 100)
+    _tipAmount = (_orderTotal * _selectedTipPercentage / 100)
         .roundToDouble();
   }
 
@@ -70,7 +72,7 @@ class _TipScreenState extends State<TipScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
-              '100% of your tip goes to your courier. Tips are based on your order total of \$${widget.orderTotal.toStringAsFixed(2)} before any discounts or promotions.',
+              '100% of your tip goes to your courier. Tips are based on your order total of \$${_orderTotal.toStringAsFixed(2)} before any discounts or promotions.',
               style: TextStyle(
                 color: Colors.grey[600],
                 fontSize: 14,
@@ -168,7 +170,13 @@ class _TipScreenState extends State<TipScreen> {
                   height: 56,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Navigate to order confirm screen with tip amount
+                      // Add tip to order total and navigate
+                      context.read<OrderBloc>().add(
+                            CreateOrder(
+                              seatInfo: {},
+                              tipAmount: _tipAmount,
+                            ),
+                          );
                       Navigator.pushNamed(
                         context,
                         '/order/confirm',
@@ -196,7 +204,13 @@ class _TipScreenState extends State<TipScreen> {
                   height: 56,
                   child: TextButton(
                     onPressed: () {
-                      // Skip tip and go to order confirm screen
+                      // Skip tip and create order
+                      context.read<OrderBloc>().add(
+                            CreateOrder(
+                              seatInfo: {},
+                              tipAmount: 0.0,
+                            ),
+                          );
                       Navigator.pushNamed(
                         context,
                         '/order/confirm',

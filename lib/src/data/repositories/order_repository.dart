@@ -101,13 +101,14 @@ class OrderRepository {
     return subtotal + deliveryFee - discount;
   }
 
-  Future<model.Order> createOrder(Map<String, dynamic> seatInfo) async {
+  Future<model.Order> createOrder(Map<String, dynamic> seatInfo, {required double tipAmount}) async {
     final model.Order order = model.Order(
       cart: [...cart],
       subtotal: subtotal,
       deliveryFee: deliveryFee,
       discount: discount,
-      total: total,
+      total: total + tipAmount,
+      tipAmount: tipAmount,
       createdAt: DateTime.now(),
       status: OrderStatus.pending,
       stadiumId: cart[0].stadiumId ?? '',

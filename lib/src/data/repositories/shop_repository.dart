@@ -6,8 +6,7 @@ class ShopRepository {
 
   Future<List<Shop>> fetchShopsByStadium(String stadiumId) async {
     final querySnapshot = await _firestore
-        .collection('stadiums')
-        .doc(stadiumId)
+
         .collection('shops')
         .where('stadiumId', isEqualTo: stadiumId)
         .get();
@@ -18,8 +17,6 @@ class ShopRepository {
 
   Future<Shop> fetchShop(String stadiumId,String shopId) async {
     final doc = await _firestore
-        .collection('stadiums')
-        .doc(stadiumId)
         .collection('shops')
         .doc(shopId)
         .get();

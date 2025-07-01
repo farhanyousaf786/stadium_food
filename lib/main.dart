@@ -12,7 +12,7 @@ import 'package:stadium_food/src/bloc/login/login_bloc.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:stadium_food/src/bloc/profile/profile_bloc.dart';
 import 'package:stadium_food/src/bloc/register/register_bloc.dart';
-import 'package:stadium_food/src/bloc/restaurant/restaurant_bloc.dart';
+
 import 'package:stadium_food/src/bloc/settings/settings_bloc.dart';
 import 'package:stadium_food/src/bloc/testimonial/testimonial_bloc.dart';
 import 'package:stadium_food/src/bloc/theme/theme_bloc.dart';
@@ -52,9 +52,7 @@ Future<void> main() async {
         BlocProvider(
           create: (context) => ForgotPasswordBloc(),
         ),
-        BlocProvider(
-          create: (context) => RestaurantBloc(),
-        ),
+
         BlocProvider(
           create: (context) => FoodBloc(),
         ),

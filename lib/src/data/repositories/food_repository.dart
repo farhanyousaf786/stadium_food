@@ -8,7 +8,7 @@ class FoodRepository {
 
   Future<Map<String, Object?>> fetchFoods(String stadiumId, String shopId,int limit, var lastDocument) async {
     QuerySnapshot<Object?> foodsCollection =
-        await _db.getMenuWithPagination(
+        await _db.getStadiumMenuWithPagination(
           stadiumId,
           shopId,
       "menuItems",

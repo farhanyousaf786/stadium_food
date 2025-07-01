@@ -5,6 +5,8 @@ abstract class ShopEvent {}
 
 class LoadShops extends ShopEvent {
   final String stadiumId;
-
   LoadShops(this.stadiumId);
+
+
 }
+

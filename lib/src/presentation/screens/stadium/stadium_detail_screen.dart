@@ -17,6 +17,8 @@ class StadiumDetailScreen extends StatefulWidget {
 }
 
 class _StadiumDetailScreenState extends State<StadiumDetailScreen> {
+
+
   @override
   void initState() {
     super.initState();
@@ -25,6 +27,7 @@ class _StadiumDetailScreenState extends State<StadiumDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       body: CustomScrollView(

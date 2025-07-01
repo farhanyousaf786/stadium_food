@@ -265,7 +265,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   SearchFilterWidget(
                     searchController: _searchController,
                     onChanged: (value) {},
-                    onTap: () {},
+                    onFilterTap: () {},
                   ),
                   const SizedBox(height: 20),
                   Container(

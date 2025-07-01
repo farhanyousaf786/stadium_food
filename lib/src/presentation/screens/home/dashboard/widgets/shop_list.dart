@@ -73,7 +73,7 @@ class _ShopListState extends State<ShopList> {
         ),
         const SizedBox(height: 16),
         SizedBox(
-          height: 280,
+          height: 320,
           child: BlocBuilder<ShopBloc, ShopState>(
             builder: (context, state) {
               if (state is ShopsLoading) {

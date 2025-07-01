@@ -54,7 +54,7 @@ class CategoryList extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         SizedBox(
-          height: 50,
+          height: 56,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -64,7 +64,7 @@ class CategoryList extends StatelessWidget {
               final isSelected = category['isSelected'] as bool;
 
               return Container(
-                margin: const EdgeInsets.only(right: 12),
+                margin: const EdgeInsets.only(right: 12, bottom: 4),
                 child: Material(
                   color: isSelected ? AppColors.primaryColor : Colors.white,
                   borderRadius: BorderRadius.circular(25),
@@ -73,18 +73,18 @@ class CategoryList extends StatelessWidget {
                     onTap: () {},
                     borderRadius: BorderRadius.circular(25),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       child: Row(
                         children: [
                           Text(
                             category['icon'] as String,
-                            style: const TextStyle(fontSize: 20),
+                            style: const TextStyle(fontSize: 24),
                           ),
                           const SizedBox(width: 8),
                           Text(
                             category['name'] as String,
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: 16,
                               fontWeight: FontWeight.w500,
                               color: isSelected ? Colors.white : Colors.black87,
                             ),

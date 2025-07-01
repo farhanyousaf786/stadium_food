@@ -43,7 +43,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         SearchFilterWidget(
                           searchController: _searchController,
                           onChanged: (value) {},
-                          onTap: () {},
+                          onFilterTap: () {},
                         ),
                         const SizedBox(height: 24),
                         const CategoryList(),

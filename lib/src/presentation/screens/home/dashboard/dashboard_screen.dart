@@ -33,36 +33,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const TopBar(),
-              SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SearchFilterWidget(
-                        searchController: _searchController,
-                        onChanged: (value) {},
-                        onTap: () {},
-                      ),
-                      const SizedBox(height: 24),
-                      const CategoryList(),
-                      const SizedBox(height: 24),
-                      const MenuList(),
-                      const SizedBox(height: 24),
-                      const ShopList(),
-                    ],
-                  ),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SearchFilterWidget(
+                          searchController: _searchController,
+                          onChanged: (value) {},
+                          onTap: () {},
+                        ),
+                        const SizedBox(height: 24),
+                        const CategoryList(),
+                        const SizedBox(height: 24),
+                        const MenuList(),
+                        const SizedBox(height: 24),
+                        const ShopList(),
+                      ],
                     ),
-                    const SizedBox(height: 24),
-                    const CategoryList(),
-                    const SizedBox(height: 24),
-                    const MenuList(),
-                    const SizedBox(height: 24),
-                    const ShopList(),
-                  ],
+                  ),
                 ),
               ),
-            ),
             ],
           ),
         ),

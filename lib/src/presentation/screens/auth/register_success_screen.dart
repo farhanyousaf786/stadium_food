@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive/hive.dart';
+
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
@@ -64,14 +65,20 @@ class RegisterSuccessScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.only(bottom: 60),
               child: PrimaryButton(
-                text: "Try Order",
-                onTap: () {
-
+                text: "Continue",
+                onTap: () async {
                   var box = Hive.box('myBox');
                   box.put('isRegistered', true);
+
+                  if (!context.mounted) return;
+                  
+                  // Always show stadium selection after registration
+                  await Navigator.pushNamed(context, '/select-stadium');
+                  
+                  if (!context.mounted) return;
                   Navigator.pushNamedAndRemoveUntil(
                     context,
-                    "/home",
+                    '/home',
                     (route) => false,
                   );
                 },

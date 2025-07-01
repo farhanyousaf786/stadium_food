@@ -20,7 +20,7 @@ import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 
-import '../stadium/stadium_screen.dart';
+import 'dashboard/dashboard_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -203,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
         body: _selectedIndex == 0
-            ? const StadiumScreen()
+            ? const DashboardScreen()
             : _selectedIndex == 1
                 ? const  OrderListScreen()
                 : _selectedIndex == 2

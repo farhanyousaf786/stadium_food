@@ -3,7 +3,6 @@ import 'package:stadium_food/src/data/models/food.dart';
 import 'package:stadium_food/src/data/models/order.dart';
 import 'package:stadium_food/src/data/models/restaurant.dart';
 import 'package:stadium_food/src/data/models/shopuser.dart';
-import 'package:stadium_food/src/data/models/user.dart';
 import 'package:stadium_food/src/presentation/screens/auth/forgot_password_screen.dart';
 import 'package:stadium_food/src/presentation/screens/auth/login_screen.dart';
 import 'package:stadium_food/src/presentation/screens/auth/register_process_screen.dart';
@@ -13,7 +12,6 @@ import 'package:stadium_food/src/presentation/screens/auth/register_success_scre
 import 'package:stadium_food/src/presentation/screens/auth/upload_photo_screen.dart';
 import 'package:stadium_food/src/presentation/screens/chat/chat_details_screen.dart';
 import 'package:stadium_food/src/presentation/screens/explore/food_details_screen.dart';
-import 'package:stadium_food/src/presentation/screens/explore/food_list_screen.dart';
 import 'package:stadium_food/src/presentation/screens/explore/restaurant_details_screen.dart';
 import 'package:stadium_food/src/presentation/screens/explore/restaurant_list_screen.dart';
 import 'package:stadium_food/src/presentation/screens/home/home_screen.dart';
@@ -26,16 +24,20 @@ import 'package:stadium_food/src/presentation/screens/order/cart_screen.dart';
 import 'package:stadium_food/src/presentation/screens/order/order_confirm_screen.dart';
 import 'package:stadium_food/src/presentation/screens/order/order_details_screen.dart';
 import 'package:stadium_food/src/presentation/screens/order/order_list_screen.dart';
-import 'package:stadium_food/src/presentation/screens/order/review_screen.dart';
 import 'package:stadium_food/src/presentation/screens/splash_screen.dart';
 import 'package:stadium_food/src/presentation/screens/stadium/stadium_screen.dart';
 import 'package:stadium_food/src/presentation/screens/tip/tip_screen.dart';
 
 import '../screens/chat/chat_list_screen.dart';
+import '../screens/stadium/select_stadium_screen.dart';
 
 class AppRouter {
   static Route onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case '/select-stadium':
+        return MaterialPageRoute(
+          builder: (_) => const SelectStadiumScreen(),
+        );
       case '/':
         return MaterialPageRoute(
           builder: (_) => const SplashScreen(),

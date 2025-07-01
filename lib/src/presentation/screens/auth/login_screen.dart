@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:stadium_food/src/bloc/login/login_bloc.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
@@ -41,11 +41,14 @@ class _LoginScreenState extends State<LoginScreen> {
         listener: (context, state) {
           if (state is LoginSuccess) {
             Navigator.pop(context);
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              "/home",
-              (route) => false,
-            );
+            // Always show stadium selection after login
+            Navigator.pushNamed(context, '/select-stadium').then((_) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/home',
+                (route) => false,
+              );
+            });
           }
 
           if (state is LoginError) {

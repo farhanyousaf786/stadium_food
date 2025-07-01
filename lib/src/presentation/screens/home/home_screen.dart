@@ -20,7 +20,7 @@ import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 
-import '../stadium/stadium_screen.dart';
+import 'dashboard/dashboard_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -67,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: NavigationBar(
                 backgroundColor: Colors.transparent,
                 labelBehavior:
-                    NavigationDestinationLabelBehavior.alwaysShow,
+                NavigationDestinationLabelBehavior.alwaysShow,
                 onDestinationSelected: (int index) {
                   setState(() {
                     _selectedIndex = index;
@@ -93,9 +93,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         int activeOrderCount = 0;
                         if (state is OrdersFetched) {
                           activeOrderCount = state.orders.where((o) =>
-                            o.status == OrderStatus.pending ||
-                            o.status == OrderStatus.preparing ||
-                            o.status == OrderStatus.delivering).length;
+                          o.status == OrderStatus.pending ||
+                              o.status == OrderStatus.preparing ||
+                              o.status == OrderStatus.delivering).length;
                         }
                         return Badge(
                           backgroundColor: AppColors.errorColor,
@@ -121,9 +121,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         int activeOrderCount = 0;
                         if (state is OrdersFetched) {
                           activeOrderCount = state.orders.where((o) =>
-                            o.status == OrderStatus.pending ||
-                            o.status == OrderStatus.preparing ||
-                            o.status == OrderStatus.delivering).length;
+                          o.status == OrderStatus.pending ||
+                              o.status == OrderStatus.preparing ||
+                              o.status == OrderStatus.delivering).length;
                         }
                         return Badge(
                           backgroundColor: AppColors.errorColor,
@@ -203,15 +203,13 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
         body: _selectedIndex == 0
-            ? const StadiumScreen()
+            ? const DashboardScreen()
             : _selectedIndex == 1
-                ? const  OrderListScreen()
-                : _selectedIndex == 2
-                    ?  CartScreen(isFromHome: true)
-                    : const ProfileScreen(),
+            ? const OrderListScreen()
+            : _selectedIndex == 2
+            ? CartScreen(isFromHome: true)
+            : const ProfileScreen(),
       ),
     );
   }
-
-
 }

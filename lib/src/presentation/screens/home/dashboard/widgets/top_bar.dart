@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stadium_food/src/data/models/user.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
+
+import '../../../../../data/repositories/order_repository.dart';
+import '../../../../utils/app_styles.dart';
+import '../../../../utils/custom_text_style.dart';
 
 class TopBar extends StatefulWidget {
   const TopBar({super.key});
@@ -26,7 +31,8 @@ class _TopBarState extends State<TopBar> {
     _user = User.fromHive();
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _selectedStadiumName = prefs.getString('selected_stadium_name') ?? 'Select Stadium';
+      _selectedStadiumName =
+          prefs.getString('selected_stadium_name') ?? 'Select Stadium';
     });
   }
 
@@ -56,80 +62,77 @@ class _TopBarState extends State<TopBar> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.location_on_outlined, color: AppColors.primaryColor),
+                  Icon(Icons.location_on_outlined,
+                      color: AppColors.primaryColor),
                   const SizedBox(width: 8),
-                  Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Selected Stadium',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.grayColor,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        _selectedStadiumName ?? 'Select Stadium',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                  InkWell(
+                    onTap: (){
+                      Navigator.pushNamed(context, '/select-stadium');
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Selected Stadium',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: AppColors.grayColor,
+                          ),
                         ),
-                      ),
-                      Icon(Icons.keyboard_arrow_down, color: AppColors.primaryColor),
-                    ],
-                  ),
-                ],
-              ),
-                ],
-              ),
-              Stack(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
+                        Row(
+                          children: [
+                            Text(
+                              _selectedStadiumName ?? 'Select Stadium',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Icon(Icons.keyboard_arrow_right_sharp,
+                                color: AppColors.primaryColor),
+                          ],
                         ),
                       ],
                     ),
-                    child: const Icon(
-                      Icons.shopping_cart_outlined,
-                      color: AppColors.primaryColor,
-                      size: 24,
-                    ),
-                  ),
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: AppColors.primaryColor,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Text(
-                        '2',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
                   ),
                 ],
               ),
+              InkWell(
+                onTap: () => Navigator.pushNamed(context, "/cart"),
+                borderRadius: AppStyles.defaultBorderRadius,
+                child: Container(
+                  width: 45,
+                  height: 45,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryColor.withOpacity(0.1),
+                    borderRadius: AppStyles.defaultBorderRadius,
+                    boxShadow: [AppStyles.boxShadow7],
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  child: Badge(
+                    backgroundColor: AppColors.errorColor,
+                    isLabelVisible: OrderRepository.cart.isNotEmpty,
+                    label: Text(
+                      OrderRepository.cart.length.toString(),
+                      style: CustomTextStyle.size14Weight400Text(Colors.white),
+                    ),
+                    offset: const Offset(10, -10),
+                    child: SvgPicture.asset(
+                      "assets/svg/cart.svg",
+                      colorFilter: const ColorFilter.mode(
+                        AppColors.primaryColor,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
             ],
           ),
         ),
+
         // Greeting Section
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),

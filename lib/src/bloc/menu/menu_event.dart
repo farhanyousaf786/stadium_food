@@ -13,3 +13,13 @@ class LoadStadiumMenu extends MenuEvent {
     this.lastDocument,
   });
 }
+
+class FilterMenuByCategory extends MenuEvent {
+  final String category;
+  final String stadiumId;
+
+  FilterMenuByCategory({
+    required this.category,
+    required this.stadiumId,
+  });
+}

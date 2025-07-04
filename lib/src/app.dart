@@ -32,6 +32,7 @@ class MyApp extends StatelessWidget {
         }
         
         return MaterialApp(
+          debugShowCheckedModeBanner: false,
           title: "Fans Food",
           theme: themeData,
           onGenerateRoute: AppRouter.onGenerateRoute,

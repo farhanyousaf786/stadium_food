@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stadium_food/src/bloc/menu/menu_bloc.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 
@@ -38,18 +37,9 @@ class _CategoryListState extends State<CategoryList> {
     _filterByCategory('All');
   }
 
-  Future<void> _filterByCategory(String category) async {
+  void _filterByCategory(String category) {
     if (!mounted) return;
-    
-    final prefs = await SharedPreferences.getInstance();
-    final stadiumId = prefs.getString('selected_stadium_id');
-    
-    if (stadiumId != null && mounted) {
-      context.read<MenuBloc>().add(FilterMenuByCategory(
-        category: category,
-        stadiumId: stadiumId,
-      ));
-    }
+    context.read<MenuBloc>().add(FilterMenuByCategory(category: category));
   }
   @override
   Widget build(BuildContext context) {
@@ -57,7 +47,7 @@ class _CategoryListState extends State<CategoryList> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.only(left: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

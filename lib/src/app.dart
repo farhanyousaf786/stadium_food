@@ -13,32 +13,23 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => OfferBloc(
-            offerRepository: OfferRepository(),
-          ),
-        ),
-      ],
-      child: BlocBuilder<ThemeBloc, ThemeState>(
-      builder: (context, state) {
-        ThemeData themeData =
-            Hive.box('myBox').get('isDarkMode', defaultValue: false)
-                ? AppTheme().darkThemeData
-                : AppTheme().lightThemeData;
-        if (state is ThemeChanged) {
-          themeData = state.themeData;
-        }
-        
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: "Fans Food",
-          theme: themeData,
-          onGenerateRoute: AppRouter.onGenerateRoute,
+    return BlocBuilder<ThemeBloc, ThemeState>(
+    builder: (context, state) {
+      ThemeData themeData =
+          Hive.box('myBox').get('isDarkMode', defaultValue: false)
+              ? AppTheme().lightThemeData
+              : AppTheme().lightThemeData;
+      if (state is ThemeChanged) {
+        themeData = state.themeData;
+      }
+
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: "Fans Food",
+        theme: themeData,
+        onGenerateRoute: AppRouter.onGenerateRoute,
+      );
+    },
         );
-      },
-    ),
-    );
   }
 }

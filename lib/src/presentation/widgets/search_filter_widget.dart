@@ -29,7 +29,7 @@ class SearchFilterWidget extends StatelessWidget {
                 controller: searchController,
                 onChanged: onChanged,
                 decoration: InputDecoration(
-                  hintText: 'Search dishes, restaurants',
+                  hintText: 'Search dishes',
                   hintStyle: CustomTextStyle.size14Weight400Text(Colors.grey[600]),
                   prefixIcon: Icon(Icons.search, color: Colors.grey[600], size: 22),
                   border: OutlineInputBorder(

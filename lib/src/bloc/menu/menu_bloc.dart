@@ -10,36 +10,17 @@ part 'menu_state.dart';
 class MenuBloc extends Bloc<MenuEvent, MenuState> {
   final MenuRepository menuRepository = MenuRepository();
   List<Food> _allFoods = [];
+  String _currentCategory = 'All';
+  String _searchQuery = '';
 
-  MenuBloc() : super(MenuInitial()) {
-    on<LoadStadiumMenu>((event, emit) async {
-      emit(MenuLoading());
-      try {
-        Map<String, dynamic> map = await menuRepository.fetchStadiumMenu(
-          event.stadiumId,
-          event.limit,
-          event.lastDocument,
-        );
-        _allFoods = map["menuItems"] as List<Food>;
-        emit(MenuLoaded(
-          foods: _allFoods,
-          lastDocument: map["lastDocument"] as DocumentSnapshot?,
-        ));
-      } catch (e) {
-        debugPrint(e.toString());
-        emit(MenuError(message: e.toString()));
-      }
-    });
+  void _filterAndEmitMenuItems(Emitter<MenuState> emit) {
+    List<Food> filteredFoods = _allFoods;
 
-    on<FilterMenuByCategory>((event, emit) async {
-      if (event.category == 'All') {
-        emit(MenuLoaded(foods: _allFoods, lastDocument: null));
-        return;
-      }
-
-      final filteredFoods = _allFoods.where((food) {
+    // Apply category filter
+    if (_currentCategory != 'All') {
+      filteredFoods = filteredFoods.where((food) {
         final normalizedFoodCategory = food.category.toLowerCase().trim();
-        final normalizedTargetCategory = event.category.toLowerCase().trim();
+        final normalizedTargetCategory = _currentCategory.toLowerCase().trim();
         
         // Handle special categories
         switch (normalizedTargetCategory) {
@@ -63,12 +44,50 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
             return normalizedFoodCategory.contains('drink') || 
                    normalizedFoodCategory.contains('beverage');
           default:
-            // For other categories, check if the food category contains the target category
             return normalizedFoodCategory.contains(normalizedTargetCategory.replaceAll('& ', ''));
         }
       }).toList();
- 
-      emit(MenuLoaded(foods: filteredFoods, lastDocument: null));
+    }
+
+
+    if (_searchQuery.isNotEmpty) {
+      filteredFoods = filteredFoods.where((food) {
+        return food.name.toLowerCase().contains(_searchQuery) || 
+               food.description.toLowerCase().contains(_searchQuery);
+      }).toList();
+    }
+
+    emit(MenuLoaded(foods: filteredFoods, lastDocument: null));
+  }
+
+  MenuBloc() : super(MenuInitial()) {
+    on<LoadStadiumMenu>((event, emit) async {
+      emit(MenuLoading());
+      try {
+        Map<String, dynamic> map = await menuRepository.fetchStadiumMenu(
+          event.stadiumId,
+          event.limit,
+          event.lastDocument,
+        );
+        _allFoods = map["menuItems"] as List<Food>;
+        emit(MenuLoaded(
+          foods: _allFoods,
+          lastDocument: map["lastDocument"] as DocumentSnapshot?,
+        ));
+      } catch (e) {
+        debugPrint(e.toString());
+        emit(MenuError(message: e.toString()));
+      }
+    });
+
+    on<FilterMenuByCategory>((event, emit) async {
+      _currentCategory = event.category;
+      _filterAndEmitMenuItems(emit);
+    });
+
+    on<FilterMenuBySearch>((event, emit) {
+      _searchQuery = event.query.toLowerCase();
+      _filterAndEmitMenuItems(emit);
     });
   }
 }

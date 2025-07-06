@@ -9,6 +9,8 @@ import 'package:stadium_food/src/bloc/chat/chat_bloc.dart';
 import 'package:stadium_food/src/bloc/food/food_bloc.dart';
 import 'package:stadium_food/src/bloc/forgot_password/forgot_password_bloc.dart';
 import 'package:stadium_food/src/bloc/login/login_bloc.dart';
+import 'package:stadium_food/src/bloc/menu/menu_bloc.dart';
+import 'package:stadium_food/src/bloc/offer/offer_bloc.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:stadium_food/src/bloc/profile/profile_bloc.dart';
 import 'package:stadium_food/src/bloc/register/register_bloc.dart';
@@ -18,6 +20,7 @@ import 'package:stadium_food/src/bloc/testimonial/testimonial_bloc.dart';
 import 'package:stadium_food/src/bloc/theme/theme_bloc.dart';
 import 'package:stadium_food/src/bloc/stadium/stadium_bloc.dart';
 import 'package:stadium_food/src/bloc/shop/shop_bloc.dart';
+import 'package:stadium_food/src/data/repositories/offer_repository.dart';
 import 'package:stadium_food/src/data/repositories/order_repository.dart';
 import 'package:stadium_food/src/data/services/hive_adapters.dart';
 import 'package:stadium_food/src/services/notification_class.dart';
@@ -79,6 +82,14 @@ Future<void> main() async {
         ),
         BlocProvider(
           create: (context) => ShopBloc(),
+        ),
+        BlocProvider(
+          create: (context) => MenuBloc(),
+        ),
+        BlocProvider(
+          create: (context) => OfferBloc(
+            offerRepository: OfferRepository(),
+          ),
         ),
       ],
       child: const MyApp(),

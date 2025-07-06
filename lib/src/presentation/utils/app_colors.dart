@@ -55,21 +55,21 @@ class AppColors {
   // getters
   Color backgroundColor = Hive.box("myBox").get("isDarkMode") == false
       ? lightBackgroundColor
-      : darkBackgroundColor;
+      : lightBackgroundColor;
 
   Color textColor = Hive.box("myBox").get("isDarkMode") == false
       ? lightTextColor
-      : darkTextColor;
+      : lightTextColor;
 
   Color cardColor = Hive.box("myBox").get("isDarkMode") == false
       ? lightCardColor
-      : darkCardColor;
+      : lightCardColor;
 
   Color secondaryTextColor = Hive.box("myBox").get("isDarkMode") == false
       ? grayColor.withOpacity(0.3)
-      : grayLightColor.withOpacity(0.3);
+      : grayColor.withOpacity(0.3);
 
   Color borderColor = Hive.box("myBox").get("isDarkMode") == false
       ? lightBorderColor
-      : Colors.transparent;
+      : lightBorderColor;
 }

@@ -16,10 +16,12 @@ class LoadStadiumMenu extends MenuEvent {
 
 class FilterMenuByCategory extends MenuEvent {
   final String category;
-  final String stadiumId;
 
-  FilterMenuByCategory({
-    required this.category,
-    required this.stadiumId,
-  });
+  FilterMenuByCategory({required this.category});
+}
+
+class FilterMenuBySearch extends MenuEvent {
+  final String query;
+
+  FilterMenuBySearch({required this.query});
 }

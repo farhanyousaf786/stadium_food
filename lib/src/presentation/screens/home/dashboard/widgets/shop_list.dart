@@ -37,7 +37,7 @@ class _ShopListState extends State<ShopList> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.only(left: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -168,6 +168,7 @@ class _ShopListState extends State<ShopList> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
+
                                     'Burger - Chicken - Rice - Wings',
                                     style: TextStyle(
                                       fontSize: 14,

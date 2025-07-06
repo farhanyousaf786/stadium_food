@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stadium_food/src/bloc/stadium/stadium_bloc.dart';
 import 'package:stadium_food/src/data/models/stadium.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
@@ -15,22 +14,16 @@ class SelectStadiumScreen extends StatefulWidget {
 
 class _SelectStadiumScreenState extends State<SelectStadiumScreen> {
   final TextEditingController _searchController = TextEditingController();
-  SharedPreferences? _prefs;
 
   @override
   void initState() {
     super.initState();
     context.read<StadiumBloc>().add(LoadStadiums());
-    _initPrefs();
-  }
-
-  Future<void> _initPrefs() async {
-    _prefs = await SharedPreferences.getInstance();
   }
 
   Future<void> _saveSelectedStadium(Stadium stadium) async {
-    await _prefs?.setString('selected_stadium_id', stadium.id);
-    await _prefs?.setString('selected_stadium_name', stadium.name);
+    // Use StadiumBloc to handle stadium selection
+    context.read<StadiumBloc>().add(SelectStadium(stadium));
     
     if (!mounted) return;
     Navigator.of(context).pop(stadium);

@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stadium_food/src/bloc/menu/menu_bloc.dart';
+import 'package:stadium_food/src/bloc/shop/shop_bloc.dart';
+import 'package:stadium_food/src/bloc/stadium/stadium_bloc.dart';
+import 'package:stadium_food/src/data/models/stadium.dart';
 import 'package:stadium_food/src/data/models/user.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 
@@ -66,8 +71,22 @@ class _TopBarState extends State<TopBar> {
                       color: AppColors.primaryColor),
                   const SizedBox(width: 8),
                   InkWell(
-                    onTap: (){
-                      Navigator.pushNamed(context, '/select-stadium');
+                    onTap: () async {
+                      final result = await Navigator.pushNamed(context, '/select-stadium');
+                      if (result != null && mounted) {
+                        // Refresh menu items with the new stadium
+                        final stadium = result as Stadium;
+                        
+                        // Update stadium using bloc
+                        context.read<StadiumBloc>().add(SelectStadium(stadium));
+                        
+                        // Refresh menu items and shops
+                        context.read<MenuBloc>().add(LoadStadiumMenu(
+                          stadiumId: stadium.id,
+                          limit: 10,
+                        ));
+                        context.read<ShopBloc>().add(LoadShops(stadium.id));
+                      }
                     },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,12 +101,22 @@ class _TopBarState extends State<TopBar> {
                         ),
                         Row(
                           children: [
-                            Text(
-                              _selectedStadiumName ?? 'Select Stadium',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
+                            BlocBuilder<StadiumBloc, StadiumState>(
+                              builder: (context, state) {
+                                String displayName = _selectedStadiumName ?? 'Choose a Stadium';
+                                
+                                if (state is StadiumSelected) {
+                                  displayName = state.stadium.name;
+                                }
+                                
+                                return Text(
+                                  displayName,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                );
+                              },
                             ),
                             Icon(Icons.keyboard_arrow_right_sharp,
                                 color: AppColors.primaryColor),
@@ -140,17 +169,18 @@ class _TopBarState extends State<TopBar> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Hey ${_user.firstName},',
+                '$_greeting, ${_user.firstName}!',
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w600,
                 ),
               ),
               Text(
-                _greeting,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
+                'What would you like to eat today?',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.grey[700],
                 ),
               ),
             ],

@@ -20,6 +20,14 @@ class _MenuListState extends State<MenuList> {
     super.initState();
     _loadStadiumIdAndFetchMenu();
   }
+  
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // This will be called when the widget is rebuilt due to changes in dependencies
+    // such as when returning from stadium selection
+    _loadStadiumIdAndFetchMenu();
+  }
 
   Future<void> _loadStadiumIdAndFetchMenu() async {
     final prefs = await SharedPreferences.getInstance();

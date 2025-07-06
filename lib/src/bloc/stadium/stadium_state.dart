@@ -13,6 +13,12 @@ class StadiumsLoaded extends StadiumState {
   StadiumsLoaded(this.stadiums);
 }
 
+class StadiumSelected extends StadiumState {
+  final Stadium stadium;
+
+  StadiumSelected(this.stadium);
+}
+
 class StadiumError extends StadiumState {
   final String message;
 

@@ -10,3 +10,9 @@ class SearchStadiums extends StadiumEvent {
 
   SearchStadiums(this.query);
 }
+
+class SelectStadium extends StadiumEvent {
+  final Stadium stadium;
+
+  SelectStadium(this.stadium);
+}

@@ -25,6 +25,8 @@ class _FoodListScreenState extends State<FoodListScreen> {
   final List<Food> _foods = [];
   List<Food> _filteredFoods = [];
   final TextEditingController _searchController = TextEditingController();
+  List<String> _categories = ['All'];
+  String _selectedCategory = 'All';
 
   // Food type filter
   final List<String> _foodTypes = ['halal', 'kosher', 'vegan'];
@@ -62,13 +64,21 @@ class _FoodListScreenState extends State<FoodListScreen> {
 
   void _filterFoods(String query) {
     setState(() {
-      // First filter by search query
-      var queryFiltered = _foods.where((food) =>
+      // First filter by category if not 'All'
+      var categoryFiltered = _foods;
+      if (_selectedCategory != 'All') {
+        categoryFiltered = _foods.where((food) =>
+            food.category.toLowerCase() == _selectedCategory.toLowerCase()).toList();
+      }
+
+      // Then filter by search query
+      var queryFiltered = categoryFiltered.where((food) =>
           food.name.toLowerCase().contains(query.toLowerCase()) ||
           food.description.toLowerCase().contains(query.toLowerCase()));
 
       // Then apply food type filters if any are selected
-      bool hasSelectedFilters = _selectedFilters.values.any((isSelected) => isSelected);
+      bool hasSelectedFilters =
+          _selectedFilters.values.any((isSelected) => isSelected);
       if (hasSelectedFilters) {
         queryFiltered = queryFiltered.where((food) {
           // Check if any selected filter matches the food's type
@@ -99,6 +109,7 @@ class _FoodListScreenState extends State<FoodListScreen> {
             _foods.clear();
             _foods.addAll(state.foods);
             _filteredFoods = _foods;
+            _updateCategories(_foods);
           });
         } else if (state is FoodMoreFetched) {
           setState(() {
@@ -155,7 +166,8 @@ class _FoodListScreenState extends State<FoodListScreen> {
                                 _filterFoods(_searchController.text);
                               });
                             },
-                            selectedColor: AppColors.primaryColor.withOpacity(0.2),
+                            selectedColor:
+                                AppColors.primaryColor.withOpacity(0.2),
                             checkmarkColor: AppColors.primaryColor,
                           ),
                         );
@@ -192,6 +204,57 @@ class _FoodListScreenState extends State<FoodListScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
+                  SizedBox(
+                    height: 50,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _categories.length,
+                      itemBuilder: (context, index) {
+                        final category = _categories[index];
+                        final isSelected = category == _selectedCategory;
+                        return Padding(
+                          padding: EdgeInsets.only(right: 8.0, left: index == 0 ? 8.0 : 0),
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _selectedCategory = category;
+                                _filterFoods(_searchController.text);
+                              });
+                            },
+                            child: IntrinsicWidth(
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                    child: Text(
+                                      category,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey[600],
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Container(
+                                    height: 3,
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: isSelected ? AppColors.primaryColor : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
                   Expanded(
                     child: BlocBuilder<FoodBloc, FoodState>(
                       builder: (context, state) {
@@ -214,36 +277,132 @@ class _FoodListScreenState extends State<FoodListScreen> {
                                 Text(
                                   'No food items found',
                                   style: TextStyle(
-                                      color: Colors.grey[600],
-                                      fontSize: 16),
+                                      color: Colors.grey[600], fontSize: 16),
                                 ),
                               ],
                             ),
                           );
                         }
 
-                        return GridView.builder(
+                        return ListView.builder(
                           controller: _scrollController,
-                          padding:
-                              const EdgeInsets.symmetric(horizontal: 5),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            mainAxisSpacing: 8,
-                            crossAxisSpacing: 8,
-                            childAspectRatio: 0.65,
-                            crossAxisCount: 2,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
                           itemCount: _filteredFoods.length,
                           itemBuilder: (context, index) {
-                            return FoodItem(
-                              food: _filteredFoods[index],
-                              onTap: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  '/foods/detail',
-                                  arguments: _filteredFoods[index],
-                                );
-                              },
+                            final food = _filteredFoods[index];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/foods/detail',
+                                    arguments: food,
+                                  );
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(15),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.05),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 5),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(15),
+                                          bottomLeft: Radius.circular(15),
+                                        ),
+                                        child: food.images.isNotEmpty
+                                            ? Image.network(
+                                                food.images[0],
+                                                width: 120,
+                                                height: 120,
+                                                fit: BoxFit.cover,
+                                              )
+                                            : Container(
+                                                width: 120,
+                                                height: 120,
+                                                color: Colors.grey[200],
+                                                child: Icon(Icons.fastfood,
+                                                    color: Colors.grey[400], size: 40),
+                                              ),
+                                      ),
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(12),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                food.name,
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                food.description,
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.grey[600],
+                                                ),
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Text(
+                                                    '\$${food.price.toStringAsFixed(2)}',
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight: FontWeight.bold,
+                                                      color: AppColors.primaryColor,
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    padding: const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 4,
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      color: AppColors.primaryColor.withOpacity(0.1),
+                                                      borderRadius: BorderRadius.circular(12),
+                                                    ),
+                                                    child: Row(
+                                                      children: [
+                                                        Icon(Icons.watch_later_rounded,color:AppColors.primaryColor ,),
+                                                        Text(
+                                                          '${food.preparationTime} min',
+                                                          style: TextStyle(
+                                                            fontSize: 13,
+                                                            color: AppColors.primaryColor,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             );
                           },
                         );
@@ -257,6 +416,14 @@ class _FoodListScreenState extends State<FoodListScreen> {
         ),
       ),
     );
+  }
+
+  void _updateCategories(List<Food> foods) {
+    final categories = foods.map((food) => food.category).toSet().toList();
+    categories.sort();
+    setState(() {
+      _categories = ['All', ...categories];
+    });
   }
 
   @override

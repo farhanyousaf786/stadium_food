@@ -22,15 +22,26 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final User _user = User.fromHive();
+  User? _user; // Make user nullable to handle guest users
 
   @override
   void initState() {
     super.initState();
     final bloc = BlocProvider.of<ProfileBloc>(context);
-    BlocProvider.of<OrderBloc>(context).add(FetchOrders());
-    bloc.add(FetchFavorites());
-    // bloc.add(FetchOrderStats());
+    
+    // Try to load user data, but don't crash if it fails
+    try {
+      _user = User.fromHive();
+      // Only fetch user-specific data if user is logged in
+      if (_user != null) {
+        BlocProvider.of<OrderBloc>(context).add(FetchOrders());
+        bloc.add(FetchFavorites());
+        // bloc.add(FetchOrderStats());
+      }
+    } catch (e) {
+      print('User data not available: $e');
+      _user = null;
+    }
   }
 
   Widget _buildStatsItem(String value, String label) {
@@ -84,8 +95,59 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildSettingsSection(BuildContext context) {
+    // If user is not logged in, show login button instead of settings
+    if (_user == null) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: Theme.of(context).primaryColor.withOpacity(0.1),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).shadowColor.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            const Text(
+              "You are currently browsing as a guest",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/login');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              child: const Text("Login"),
+            ),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/register');
+              },
+              child: const Text("Create Account"),
+            ),
+          ],
+        ),
+      );
+    }
+    
+    // Regular settings section for logged in users
     return SettingsSection(
-      user: _user,
+      user: _user!,
       settingsBloc: BlocProvider.of<SettingsBloc>(context),
       isDarkMode: Theme.of(context).brightness == Brightness.dark,
       onLogout: () {
@@ -214,7 +276,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               children: [
                                 CircleAvatar(
                                   radius: 40,
-                                  backgroundImage: NetworkImage(_user.photoUrl),
+                                  backgroundImage: _user != null && _user!.photoUrl != null
+                                    ? NetworkImage(_user!.photoUrl!)
+                                    : const AssetImage('assets/png/default_avatar.png') as ImageProvider,
                                 ),
                                 const SizedBox(width: 16),
                                 Expanded(
@@ -223,7 +287,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        _user.fullName,
+                                        _user != null ? _user!.fullName : 'Guest User',
                                         style:
                                             CustomTextStyle.size18Weight600Text(
                                           Theme.of(context)
@@ -234,7 +298,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        _user.email,
+                                        _user != null ? _user!.email : 'Sign in to access your profile',
                                         style:
                                             CustomTextStyle.size14Weight400Text(
                                           Theme.of(context)

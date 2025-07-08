@@ -23,7 +23,7 @@ class TopBar extends StatefulWidget {
 class _TopBarState extends State<TopBar> {
   String? _selectedStadiumName;
   String _greeting = '';
-  late User _user;
+  User? _user; // Make user nullable
 
   @override
   void initState() {
@@ -33,7 +33,15 @@ class _TopBarState extends State<TopBar> {
   }
 
   Future<void> _loadUserAndStadium() async {
-    _user = User.fromHive();
+    try {
+      // Try to load user from Hive, but don't crash if it fails
+      _user = User.fromHive();
+    } catch (e) {
+      // User is not logged in or data is invalid
+      _user = null;
+      print('User data not available: $e');
+    }
+    
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _selectedStadiumName =
@@ -169,7 +177,7 @@ class _TopBarState extends State<TopBar> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '$_greeting, ${_user.firstName}!',
+                _user != null ? '$_greeting, ${_user!.firstName}!' : '$_greeting, Guest!',
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w600,

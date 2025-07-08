@@ -26,7 +26,9 @@ class _SelectStadiumScreenState extends State<SelectStadiumScreen> {
     context.read<StadiumBloc>().add(SelectStadium(stadium));
     
     if (!mounted) return;
-    Navigator.of(context).pop(stadium);
+    
+    // Navigate to home screen instead of popping
+    Navigator.of(context).pushReplacementNamed('/home');
   }
 
   @override

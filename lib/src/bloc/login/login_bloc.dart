@@ -27,6 +27,19 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           "customers",
           firebaseAuth.currentUser!.uid
         ));
+        
+        // Check if account is active
+        final userData = userDocument.data() as Map<String, dynamic>;
+        final bool isActive = userData['isActive'] ?? true;
+        
+        if (!isActive) {
+          // Sign out the user since their account is inactive
+          await firebaseAuth.signOut();
+          emit(LoginError(
+            error: 'Your account has been deactivated. Please contact support to reactivate your account. Contact: switch2future@gmail.com',
+          ));
+          return;
+        }
 
         // Update FCM token
         await FirestoreDatabase().updateUserDocument(
@@ -36,9 +49,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         );
 
         // save user data to Hive
-        model.User user = model.User.fromMap(
-          userDocument.data() as Map<String, dynamic>,
-        );
+        model.User user = model.User.fromMap(userData);
         user.id = userDocument.id;
 
         user.saveToHive();

@@ -14,6 +14,7 @@ class User extends Equatable {
   final List<DocumentReference>? favoriteFoods;
   final List<DocumentReference>? favoriteRestaurants;
   final DateTime createdAt;
+  final bool isActive;
   String id;
 
   User({
@@ -27,6 +28,7 @@ class User extends Equatable {
     required this.fcmToken,
     this.favoriteFoods,
     this.favoriteRestaurants,
+    this.isActive = true,
   });
 
   factory User.fromMap(Map<String, dynamic> map) {
@@ -54,6 +56,7 @@ class User extends Equatable {
 
       createdAt: map['createdAt'].toDate(),
       fcmToken: map['fcmToken'],
+      isActive: map['isActive'] ?? true,
     );
   }
 
@@ -69,7 +72,7 @@ class User extends Equatable {
       'favoriteRestaurants': favoriteRestaurants,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(DateTime.now()),
-      'isActive': true,
+      'isActive': isActive,
       'type': 'customer',
       'fcmToken': fcmToken,
     };
@@ -97,6 +100,7 @@ class User extends Equatable {
 
       createdAt: box.get('createdAt', defaultValue: DateTime.now()),
       fcmToken: box.get('fcmToken'),
+      isActive: box.get('isActive', defaultValue: true),
     );
   }
 
@@ -113,6 +117,7 @@ class User extends Equatable {
     box.put('favoriteRestaurants', favoriteRestaurants);
     box.put('createdAt', createdAt);
     box.put('fcmToken', fcmToken);
+    box.put('isActive', isActive);
   }
 
   String get fullName => '$firstName $lastName';
@@ -124,14 +129,13 @@ class User extends Equatable {
   List<Object?> get props => [
         email,
         phone,
-
         firstName,
         lastName,
         image,
         favoriteFoods,
         favoriteRestaurants,
-
         createdAt,
         fcmToken,
+        isActive,
       ];
 }

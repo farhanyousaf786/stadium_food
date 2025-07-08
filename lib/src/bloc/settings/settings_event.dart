@@ -12,3 +12,6 @@ class ToggleTheme extends SettingsEvent {}
 
 // Log out the user
 class Logout extends SettingsEvent {}
+
+// Delete/Deactivate user account
+class DeleteAccount extends SettingsEvent {}

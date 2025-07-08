@@ -113,6 +113,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         );
       },
+      onDeleteAccount: () {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Delete Account"),
+            content: const Text(
+              "Are you sure you want to delete your account?",
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  BlocProvider.of<SettingsBloc>(context).add(DeleteAccount());
+                },
+                child: const Text(
+                  "Delete Account",
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -120,7 +147,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return BlocListener<SettingsBloc, SettingsState>(
       listener: (context, state) async {
-        if (state is LogoutInProgress) {
+        if (state is LogoutInProgress || state is AccountDeletionInProgress) {
           showDialog(
             context: context,
             builder: (context) => const LoadingIndicator(),
@@ -131,6 +158,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
             context,
             "/register",
             (route) => false,
+          );
+        } else if (state is AccountDeletionSuccess) {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Account successfully deactivated')),
+          );
+          await Navigator.pushNamedAndRemoveUntil(
+            context,
+            "/register",
+            (route) => false,
+          );
+        } else if (state is AccountDeletionFailure) {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to deactivate account: ${state.message}')),
           );
         }
       },

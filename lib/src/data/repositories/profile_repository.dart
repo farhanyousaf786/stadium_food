@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:stadium_food/src/data/models/food.dart';
 import 'package:stadium_food/src/data/models/restaurant.dart';
 import 'package:stadium_food/src/data/services/firestore_db.dart';
@@ -16,13 +17,22 @@ class ProfileRepository {
         User.fromHive().favoriteFoods ?? [];
     List<Food> favoriteFoods = [];
     for (var foodReference in favoriteFoodsReferences) {
-      DocumentSnapshot foodSnapshot = await foodReference.get();
-      favoriteFoods.add(
-        Food.fromMap(
-          foodSnapshot.id,
-          foodSnapshot.data() as Map<String, dynamic>,
-        ),
-      );
+      try {
+        DocumentSnapshot foodSnapshot = await foodReference.get();
+        final data = foodSnapshot.data();
+        if (data != null) {
+          favoriteFoods.add(
+            Food.fromMap(
+              foodSnapshot.id,
+              data as Map<String, dynamic>,
+            ),
+          );
+        }
+      } catch (e) {
+        debugPrint('Error fetching favorite food: ${e.toString()}');
+        // Continue to the next item if there's an error with this one
+        continue;
+      }
     }
     return favoriteFoods;
   }

@@ -27,5 +27,15 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         emit(LogoutFailure());
       }
     });
+    
+    on<DeleteAccount>((event, emit) async {
+      emit(AccountDeletionInProgress());
+      try {
+        await settingsRepository.deactivateAccount();
+        emit(AccountDeletionSuccess());
+      } catch (e) {
+        emit(AccountDeletionFailure(e.toString()));
+      }
+    });
   }
 }

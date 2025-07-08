@@ -9,6 +9,7 @@ class SettingsSection extends StatelessWidget {
   final SettingsBloc settingsBloc;
   final bool isDarkMode;
   final VoidCallback onLogout;
+  final VoidCallback onDeleteAccount;
 
   const SettingsSection({
     Key? key,
@@ -16,6 +17,7 @@ class SettingsSection extends StatelessWidget {
     required this.settingsBloc,
     required this.isDarkMode,
     required this.onLogout,
+    required this.onDeleteAccount,
   }) : super(key: key);
 
   @override
@@ -78,6 +80,20 @@ class SettingsSection extends StatelessWidget {
               ),
             ),
             onTap: onLogout,
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Icon(
+              Icons.delete_forever,
+              color: Colors.red,
+            ),
+            title: Text(
+              'Delete Account',
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: Colors.red,
+              ),
+            ),
+            onTap: onDeleteAccount,
           ),
         ],
       ),

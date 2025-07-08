@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stadium_food/src/bloc/register/register_bloc.dart';
+import 'package:stadium_food/src/presentation/screens/auth/privacy_policy_screen.dart';
 import 'package:stadium_food/src/presentation/widgets/loading_indicator.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
@@ -17,6 +18,7 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   bool hidePassword = true;
+  bool _privacyPolicyAccepted = false;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -154,6 +156,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                               ),
                             ),
+                            const SizedBox(height: 20),
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: _privacyPolicyAccepted,
+                                  activeColor: AppColors.primaryColor,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _privacyPolicyAccepted = value ?? false;
+                                    });
+                                  },
+                                ),
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => const PrivacyPolicyScreen(),
+                                        ),
+                                      );
+                                    },
+                                    child: Text(
+                                      "I agree to the Privacy Policy",
+                                      style: CustomTextStyle.size14Weight400Text(),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -206,6 +238,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 const SnackBar(
                                   backgroundColor: AppColors.errorColor,
                                   content: Text("Password is required"),
+                                ),
+                              );
+                              return;
+                            }
+                            if (!_privacyPolicyAccepted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  backgroundColor: AppColors.errorColor,
+                                  content: Text("You must accept the Privacy Policy"),
                                 ),
                               );
                               return;

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:stadium_food/src/bloc/login/login_bloc.dart';
+import 'package:stadium_food/src/presentation/screens/auth/privacy_policy_screen.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
 import 'package:stadium_food/src/presentation/widgets/loading_indicator.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
@@ -18,6 +19,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool hidePassword = true;
+  bool _privacyPolicyAccepted = false;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String _fcmToken = '';
@@ -174,6 +176,36 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: _privacyPolicyAccepted,
+                            activeColor: AppColors.primaryColor,
+                            onChanged: (value) {
+                              setState(() {
+                                _privacyPolicyAccepted = value ?? false;
+                              });
+                            },
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const PrivacyPolicyScreen(),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                "I agree to the Privacy Policy",
+                                style: CustomTextStyle.size14Weight400Text(),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
                       TextButton(
                         onPressed: () {
                           Navigator.pushNamed(
@@ -217,6 +249,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                 const SnackBar(
                                   backgroundColor: AppColors.errorColor,
                                   content: Text("Password is required"),
+                                ),
+                              );
+                              return;
+                            }
+                            if (!_privacyPolicyAccepted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  backgroundColor: AppColors.errorColor,
+                                  content: Text("You must accept the Privacy Policy"),
                                 ),
                               );
                               return;

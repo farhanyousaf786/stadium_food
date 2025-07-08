@@ -39,6 +39,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         await FirestoreDatabase().addUserDocument('customers', userUid, user.toMap());
         var box = Hive.box('myBox');
         box.put('email', event.email);
+        box.put('id', userUid);
         emit(RegisterSuccess());
       } catch (e, s) {
         debugPrint(e.toString());

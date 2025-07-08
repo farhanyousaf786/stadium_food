@@ -31,8 +31,16 @@ class _SplashScreenState extends State<SplashScreen> {
         // If stadium is selected, go to home
         Navigator.pushReplacementNamed(context, "/home");
       } else {
-        // Always direct to stadium selection first, regardless of login status
-        Navigator.pushReplacementNamed(context, "/select-stadium");
+        // Check if user has seen onboarding
+        bool hasSeenOnboarding = box.get('hasSeenOnboarding', defaultValue: false);
+        
+        if (hasSeenOnboarding) {
+          // If user has seen onboarding, go to stadium selection
+          Navigator.pushReplacementNamed(context, "/select-stadium");
+        } else {
+          // If user hasn't seen onboarding, show onboarding screens first
+          Navigator.pushReplacementNamed(context, "/onboarding/first");
+        }
       }
     });
   }

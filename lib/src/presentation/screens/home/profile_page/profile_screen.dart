@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stadium_food/src/bloc/profile/profile_bloc.dart';
 import 'package:stadium_food/src/bloc/settings/settings_bloc.dart';
-import 'package:stadium_food/src/bloc/theme/theme_bloc.dart';
 import 'package:stadium_food/src/core/constants/colors.dart';
 import 'package:stadium_food/src/data/models/user.dart';
 import 'package:stadium_food/src/presentation/widgets/items/food_item.dart';
@@ -276,9 +275,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               children: [
                                 CircleAvatar(
                                   radius: 40,
-                                  backgroundImage: _user != null && _user!.photoUrl != null
-                                    ? NetworkImage(_user!.photoUrl!)
-                                    : const AssetImage('assets/png/default_avatar.png') as ImageProvider,
+                                  backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                                  child: _user?.photoUrl != null
+                                    ? null // Let backgroundImage handle the display
+                                    : Icon(
+                                        Icons.person,
+                                        size: 40,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                  backgroundImage: _user?.photoUrl != null
+                                    ? NetworkImage(_user!.photoUrl)
+                                    : null,
                                 ),
                                 const SizedBox(width: 16),
                                 Expanded(

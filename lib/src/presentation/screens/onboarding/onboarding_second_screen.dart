@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
+import 'package:hive/hive.dart';
 
 import '../../utils/app_colors.dart';
 
@@ -38,9 +39,13 @@ class OnboardingSecondScreen extends StatelessWidget {
                 child: PrimaryButton(
                   text: "Next",
                   onTap: () {
-                    Navigator.pushNamed(
+                    // Mark that the user has seen onboarding
+                    Hive.box('myBox').put('hasSeenOnboarding', true);
+                    
+                    // Navigate to stadium selection instead of register
+                    Navigator.pushReplacementNamed(
                       context,
-                      "/register",
+                      "/select-stadium",
                     );
                   },
                 ),

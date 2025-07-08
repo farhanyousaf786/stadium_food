@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
+import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/models/stadium.dart';
 import '../../data/repositories/stadium_repository.dart';
@@ -42,6 +43,13 @@ class StadiumBloc extends Bloc<StadiumEvent, StadiumState> {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('selected_stadium_id', event.stadium.id);
         await prefs.setString('selected_stadium_name', event.stadium.name);
+        
+        // Save to Hive for splash screen detection
+        var box = Hive.box('myBox');
+        box.put('selectedStadium', {
+          'id': event.stadium.id,
+          'name': event.stadium.name,
+        });
         
         emit(StadiumSelected(event.stadium));
       } catch (e) {

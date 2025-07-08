@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive/hive.dart';
@@ -26,13 +25,14 @@ class _SplashScreenState extends State<SplashScreen> {
     });
     Future.delayed(const Duration(milliseconds: 1500), () {
       var box = Hive.box('myBox');
-
-      if (box.get('isRegistered') == true) {
+      
+      // Check if user has already selected a stadium
+      if (box.get('selectedStadium') != null) {
+        // If stadium is selected, go to home
         Navigator.pushReplacementNamed(context, "/home");
-      } else if (FirebaseAuth.instance.currentUser != null) {
-        Navigator.pushReplacementNamed(context, "/register/process");
       } else {
-        Navigator.pushReplacementNamed(context, "/onboarding/first");
+        // Always direct to stadium selection first, regardless of login status
+        Navigator.pushReplacementNamed(context, "/select-stadium");
       }
     });
   }

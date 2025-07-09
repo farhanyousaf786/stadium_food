@@ -216,17 +216,30 @@ class _ShopListState extends State<ShopList> {
                                       const SizedBox(width: 16),
                                       Row(
                                         children: [
-                                          Icon(
-                                            Icons.timer,
-                                            size: 20,
-                                            color: Colors.grey[600],
+                                          Container(
+                                            padding: const EdgeInsets.all(4),
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey[200],
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Icon(
+                                              Icons.info_outline,
+                                              size: 16,
+                                              color: Colors.grey[700],
+                                            ),
                                           ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            '20 min',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
+                                          const SizedBox(width: 6),
+                                          Container(
+                                            constraints: const BoxConstraints(maxWidth: 180),
+                                            child: Text(
+                                              shop.description.contains('A stadium is') ? 'Located near Gate A, Section 102' : shop.description,
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.grey[700],
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                         ],

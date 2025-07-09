@@ -192,6 +192,7 @@ class _ShopListState extends State<ShopList> {
                                     ),
                                   ),
 
+
                                   const SizedBox(width: 24),
                                   Icon(
                                     Icons.location_on,
@@ -204,8 +205,9 @@ class _ShopListState extends State<ShopList> {
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: Colors.grey[700],
-                                    ),
-                                  ),
+                                    )),
+                                  
+
                                 ],
                               ),
                               const SizedBox(height: 12),

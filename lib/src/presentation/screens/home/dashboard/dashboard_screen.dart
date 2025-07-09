@@ -6,8 +6,8 @@ import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/widgets/search_filter_widget.dart';
 import 'widgets/category_list.dart';
 import 'widgets/menu_list.dart';
-import 'widgets/shop_list.dart';
 import 'widgets/top_bar.dart';
+import 'package:stadium_food/src/presentation/screens/home/dashboard/widgets/shop_list.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});

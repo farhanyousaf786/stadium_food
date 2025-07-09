@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stadium_food/src/data/models/food.dart';
 import 'package:stadium_food/src/data/models/order.dart';
-import 'package:stadium_food/src/data/models/restaurant.dart';
 import 'package:stadium_food/src/data/models/shopuser.dart';
 import 'package:stadium_food/src/presentation/screens/auth/forgot_password_screen.dart';
 import 'package:stadium_food/src/presentation/screens/auth/login_screen.dart';
@@ -13,7 +12,6 @@ import 'package:stadium_food/src/presentation/screens/auth/upload_photo_screen.d
 import 'package:stadium_food/src/presentation/screens/chat/chat_details_screen.dart';
 import 'package:stadium_food/src/presentation/screens/explore/food_details_screen.dart';
 
-import 'package:stadium_food/src/presentation/screens/explore/food_list_screen.dart';
 
 import 'package:stadium_food/src/presentation/screens/home/home_screen.dart';
 import 'package:stadium_food/src/presentation/screens/home/notification_screen.dart';

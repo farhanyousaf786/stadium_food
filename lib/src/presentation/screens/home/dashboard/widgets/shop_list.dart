@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stadium_food/src/bloc/shop/shop_bloc.dart';
 import 'package:stadium_food/src/data/models/shop.dart';
+import 'package:stadium_food/src/data/models/stadium.dart';
 import 'package:stadium_food/src/presentation/screens/explore/food_list_screen.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
-import 'package:stadium_food/src/data/models/stadium.dart';
 
 class ShopList extends StatefulWidget {
   const ShopList({super.key});
@@ -79,10 +79,10 @@ class _ShopListState extends State<ShopList> {
               if (state is ShopsLoading) {
                 return const Center(child: CircularProgressIndicator());
               }
-              
+
               if (state is ShopsLoaded) {
                 _shops = state.shops;
-                
+
                 if (_shops.isEmpty) {
                   return const Center(
                     child: Text('No shops available in this stadium'),
@@ -114,7 +114,7 @@ class _ShopListState extends State<ShopList> {
                           final prefs = await SharedPreferences.getInstance();
                           final stadiumId = prefs.getString('selected_stadium_id');
                           final stadiumName = prefs.getString('selected_stadium_name');
-                          
+
                           if (stadiumId != null && stadiumName != null && mounted) {
                             final stadium = Stadium(
                               id: stadiumId,
@@ -126,7 +126,7 @@ class _ShopListState extends State<ShopList> {
                               createdAt: DateTime.now().toIso8601String(),
                               updatedAt: DateTime.now().toIso8601String(),
                             );
-                            
+
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -142,14 +142,13 @@ class _ShopListState extends State<ShopList> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Shop Image
                             ClipRRect(
                               borderRadius: const BorderRadius.vertical(
                                 top: Radius.circular(16),
                               ),
                               child: Image.network(
-                                'https://images.unsplash.com/photo-1546069901-ba9599a7e63c',
-                                height: 160,
+                                'https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+                                height: 120,
                                 width: double.infinity,
                                 fit: BoxFit.cover,
                               ),
@@ -159,85 +158,93 @@ class _ShopListState extends State<ShopList> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    shop.name,
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                              Text(
+                                shop.name,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                shop.description,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[600],
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 16),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.stadium,
+                                    color: AppColors.primaryColor,
+                                    size: 20,
                                   ),
-                                  const SizedBox(height: 8),
+                                  const SizedBox(width: 8),
                                   Text(
-
-                                    'Burger - Chicken - Rice - Wings',
+                                    shop.stadiumName,
                                     style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey[600],
+                                      fontSize: 16,
+                                      color: Colors.grey[700],
                                     ),
                                   ),
-                                  const SizedBox(height: 12),
-                                  Row(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            Icons.star,
-                                            size: 20,
-                                            color: Colors.orange,
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            '4.7',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(width: 16),
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            Icons.delivery_dining,
-                                            size: 20,
-                                            color: AppColors.primaryColor,
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            'Free',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(width: 16),
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            Icons.timer,
-                                            size: 20,
-                                            color: Colors.grey[600],
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            '20 min',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+
+                                  const SizedBox(width: 24),
+                                  Icon(
+                                    Icons.location_on,
+                                    color: AppColors.primaryColor,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    shop.location,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey[700],
+                                    ),
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.stairs,
+                                    color: AppColors.primaryColor,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Floor ${shop.floor}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey[700],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 24),
+                                  Icon(
+                                    Icons.door_front_door,
+                                    color: AppColors.primaryColor,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Gate ${shop.gate}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey[700],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
+                            ],
+                          ),
                       ),
                     );
                   },

@@ -112,15 +112,18 @@ class CartScreen extends StatelessWidget {
                 return;
               }
               
-              // Check if user is logged in
-              final currentUser = FirebaseAuth.instance.currentUser;
-              if (currentUser == null) {
-                // Show login/signup dialog
-                _showAuthDialog(context);
-              } else {
-                // User is logged in, proceed to checkout
-                Navigator.pushNamed(context, "/tip");
-              }
+              // // Check if user is logged in
+              // final currentUser = FirebaseAuth.instance.currentUser;
+              // if (currentUser == null) {
+              //   // Show login/signup dialog
+              //   _showAuthDialog(context);
+              // } else {
+              //   // User is logged in, proceed to checkout
+              //   Navigator.pushNamed(context, "/tip");
+              // }
+
+                              Navigator.pushNamed(context, "/tip");
+
             },
           );
         },

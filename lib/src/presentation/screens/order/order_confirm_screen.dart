@@ -181,10 +181,10 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     // Check if user is logged in
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser == null) {
-        // Show login/signup dialog and navigate back to cart
-        _showAuthDialog(context);
-      }
+      // if (currentUser == null) {
+      //   // Show login/signup dialog and navigate back to cart
+      //   _showAuthDialog(context);
+      // }
     });
   }
   
@@ -339,6 +339,16 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
           builder: (context, state) {
             return PriceInfoWidget(
               onTap: () async {
+
+
+               // Check if user is logged in
+              final currentUser = FirebaseAuth.instance.currentUser;
+              if (currentUser == null) {
+                // Show login/signup dialog
+                _showAuthDialog(context);
+              } else {
+              
+
                 // Check if image is selected
                 if (_image != null) {
                   // Show loading
@@ -394,6 +404,8 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                   final total = OrderRepository.total;
                   makePayment(total, seatInfo);
                 }
+
+              }
               },
             );
           },

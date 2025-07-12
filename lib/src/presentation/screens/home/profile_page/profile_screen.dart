@@ -180,7 +180,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           builder: (context) => AlertDialog(
             title: const Text("Delete Account"),
             content: const Text(
-              "Are you sure you want to delete your account?",
+              "Are you sure you want to delete your account? This action cannot be undone. Your account and all associated data will be permanently deleted.",
             ),
             actions: [
               TextButton(
@@ -190,6 +190,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
+                  // Show loading dialog
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) => const AlertDialog(
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircularProgressIndicator(),
+                          SizedBox(height: 16),
+                          Text("Deleting account..."),
+                        ],
+                      ),
+                    ),
+                  );
+                  
+                  // Add the delete account event
                   BlocProvider.of<SettingsBloc>(context).add(DeleteAccount());
                 },
                 child: const Text(
@@ -223,7 +240,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         } else if (state is AccountDeletionSuccess) {
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Account successfully deactivated')),
+            const SnackBar(content: Text('Account deleted successfully')),
           );
           await Navigator.pushNamedAndRemoveUntil(
             context,
@@ -233,7 +250,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         } else if (state is AccountDeletionFailure) {
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to deactivate account: ${state.message}')),
+            SnackBar(content: Text('Failed to delete account: ${state.message}')),
           );
         }
       },

@@ -36,7 +36,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           // Sign out the user since their account is inactive
           await firebaseAuth.signOut();
           emit(LoginError(
-            error: 'Your account has been deactivated. Please contact support to reactivate your account. Contact: switch2future@gmail.com',
+            error: 'Your account has been deleted. Please contact support to reactivate your account. Contact: switch2future@gmail.com',
           ));
           return;
         }

@@ -31,10 +31,10 @@ class _TipScreenState extends State<TipScreen> {
     // Check if user is logged in
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser == null) {
-        // Show login/signup dialog
-        _showAuthDialog(context);
-      }
+      // if (currentUser == null) {
+      //   // Show login/signup dialog
+      //   _showAuthDialog(context);
+      // }
     });
   }
 

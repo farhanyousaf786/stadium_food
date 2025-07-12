@@ -74,7 +74,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
               _buildBulletPoint('Account Settings: Update or delete your profile information'),
               _buildBulletPoint('Marketing Communications: Opt-out of promotional emails'),
               _buildBulletPoint('Location Information: Control location permissions through your device settings'),
-              _buildBulletPoint('Account Deactivation: Request to deactivate your account by contacting support'),
+              _buildBulletPoint('Account Deletion: Request to delete your account by contacting support'),
               
               _buildSectionTitle('6. Data Security'),
               _buildParagraph(

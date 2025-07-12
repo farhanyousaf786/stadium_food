@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stadium_food/src/bloc/menu/menu_bloc.dart';
 import 'package:stadium_food/src/data/models/food.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
+import 'package:stadium_food/src/presentation/widgets/shimmer_widgets.dart';
 
 class MenuList extends StatefulWidget {
   const MenuList({super.key});
@@ -62,7 +63,7 @@ class _MenuListState extends State<MenuList> {
           child: BlocBuilder<MenuBloc, MenuState>(
             builder: (context, state) {
               if (state is MenuLoading) {
-                return const Center(child: CircularProgressIndicator());
+                return const MenuShimmer();
               }
               
               if (state is MenuLoaded) {

@@ -47,26 +47,26 @@ class SettingsSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Icon(
-              Icons.dark_mode,
-              color: theme.iconTheme.color,
-            ),
-            title: Text(
-              'Dark Mode',
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.textTheme.bodyLarge?.color,
-              ),
-            ),
-            trailing: Switch(
-              value: isDarkMode,
-              onChanged: (value) {
-                context.read<themeBloc.ThemeBloc>().add(themeBloc.ToggleTheme());
-              },
-              activeColor: theme.primaryColor,
-            ),
-          ),
+          // ListTile(
+          //   contentPadding: EdgeInsets.zero,
+          //   leading: Icon(
+          //     Icons.dark_mode,
+          //     color: theme.iconTheme.color,
+          //   ),
+          //   title: Text(
+          //     'Dark Mode',
+          //     style: theme.textTheme.bodyLarge?.copyWith(
+          //       color: theme.textTheme.bodyLarge?.color,
+          //     ),
+          //   ),
+          //   trailing: Switch(
+          //     value: isDarkMode,
+          //     onChanged: (value) {
+          //       context.read<themeBloc.ThemeBloc>().add(themeBloc.ToggleTheme());
+          //     },
+          //     activeColor: theme.primaryColor,
+          //   ),
+          // ),
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: Icon(

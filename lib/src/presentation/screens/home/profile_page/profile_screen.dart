@@ -27,7 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     final bloc = BlocProvider.of<ProfileBloc>(context);
-    
+
     // Try to load user data, but don't crash if it fails
     try {
       _user = User.fromHive();
@@ -97,6 +97,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // If user is not logged in, show login button instead of settings
     if (_user == null) {
       return Container(
+        width: double.maxFinite,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -127,8 +128,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).primaryColor,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
               ),
               child: const Text("Login"),
             ),
@@ -143,7 +146,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       );
     }
-    
+
     // Regular settings section for logged in users
     return SettingsSection(
       user: _user!,
@@ -251,6 +254,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Failed to delete account: ${state.message}')),
+
           );
         }
       },
@@ -292,17 +296,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               children: [
                                 CircleAvatar(
                                   radius: 40,
-                                  backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
-                                  child: _user?.photoUrl != null
-                                    ? null // Let backgroundImage handle the display
-                                    : Icon(
-                                        Icons.person,
-                                        size: 40,
-                                        color: Theme.of(context).primaryColor,
-                                      ),
+                                  backgroundColor: Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.2),
                                   backgroundImage: _user?.photoUrl != null
-                                    ? NetworkImage(_user!.photoUrl)
-                                    : null,
+                                      ? NetworkImage(_user!.photoUrl)
+                                      : null,
+                                  child: _user?.photoUrl != null
+                                      ? null // Let backgroundImage handle the display
+                                      : Icon(
+                                          Icons.person,
+                                          size: 40,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
                                 ),
                                 const SizedBox(width: 16),
                                 Expanded(
@@ -311,7 +317,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        _user != null ? _user!.fullName : 'Guest User',
+                                        _user != null
+                                            ? _user!.fullName
+                                            : 'Guest User',
                                         style:
                                             CustomTextStyle.size18Weight600Text(
                                           Theme.of(context)
@@ -322,7 +330,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        _user != null ? _user!.email : 'Sign in to access your profile',
+                                        _user != null
+                                            ? _user!.email
+                                            : 'Sign in to access your profile',
                                         style:
                                             CustomTextStyle.size14Weight400Text(
                                           Theme.of(context)
@@ -418,7 +428,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               height: 220,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(16),
-                                color: Theme.of(context).cardColor,
+
                               ),
                               child: const Center(child: LoadingIndicator()),
                             );
@@ -428,7 +438,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 height: 220,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(16),
-                                  color: Theme.of(context).cardColor,
+
                                 ),
                                 child: Center(
                                   child: Column(

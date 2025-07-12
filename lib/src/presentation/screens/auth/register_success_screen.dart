@@ -15,20 +15,7 @@ class RegisterSuccessScreen extends StatelessWidget {
       backgroundColor: AppColors.bgColor,
       body: Stack(
         children: [
-          Align(
-            alignment: Alignment.topCenter,
-            child: ShaderMask(
-              shaderCallback: (bounds) => const LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Colors.black, Colors.transparent],
-              ).createShader(bounds),
-              blendMode: BlendMode.dstIn,
-              child: SvgPicture.asset(
-                "assets/svg/pattern-big.svg",
-              ),
-            ),
-          ),
+
           Align(
             alignment: Alignment.center,
             child: Column(
@@ -63,7 +50,8 @@ class RegisterSuccessScreen extends StatelessWidget {
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 60),
+              padding:
+              const EdgeInsets.only(bottom: 60, left: 25, right: 25),
               child: PrimaryButton(
                 text: "Continue",
                 onTap: () async {

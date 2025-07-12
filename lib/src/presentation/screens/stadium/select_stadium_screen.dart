@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stadium_food/src/bloc/stadium/stadium_bloc.dart';
 import 'package:stadium_food/src/data/models/stadium.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
-import 'package:stadium_food/src/presentation/widgets/loading_indicator.dart';
+import 'package:stadium_food/src/presentation/widgets/stadium_shimmer.dart';
 
 class SelectStadiumScreen extends StatefulWidget {
   const SelectStadiumScreen({super.key});
@@ -120,7 +120,7 @@ class _SelectStadiumScreenState extends State<SelectStadiumScreen> {
     return BlocBuilder<StadiumBloc, StadiumState>(
       builder: (context, state) {
         if (state is StadiumsLoading) {
-          return const Center(child: LoadingIndicator());
+          return const StadiumShimmer();
         }
 
         if (state is StadiumError) {

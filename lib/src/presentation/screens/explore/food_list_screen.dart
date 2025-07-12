@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:stadium_food/src/presentation/widgets/shimmer_widgets.dart';
 import '../../../bloc/food/food_bloc.dart';
 import '../../../data/models/food.dart';
 import '../../../data/models/shop.dart';
@@ -67,8 +68,10 @@ class _FoodListScreenState extends State<FoodListScreen> {
       // First filter by category if not 'All'
       var categoryFiltered = _foods;
       if (_selectedCategory != 'All') {
-        categoryFiltered = _foods.where((food) =>
-            food.category.toLowerCase() == _selectedCategory.toLowerCase()).toList();
+        categoryFiltered = _foods
+            .where((food) =>
+                food.category.toLowerCase() == _selectedCategory.toLowerCase())
+            .toList();
       }
 
       // Then filter by search query
@@ -213,7 +216,8 @@ class _FoodListScreenState extends State<FoodListScreen> {
                         final category = _categories[index];
                         final isSelected = category == _selectedCategory;
                         return Padding(
-                          padding: EdgeInsets.only(right: 8.0, left: index == 0 ? 8.0 : 0),
+                          padding: EdgeInsets.only(
+                              right: 8.0, left: index == 0 ? 8.0 : 0),
                           child: GestureDetector(
                             onTap: () {
                               setState(() {
@@ -225,7 +229,8 @@ class _FoodListScreenState extends State<FoodListScreen> {
                               child: Column(
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0),
                                     child: Text(
                                       category,
                                       style: TextStyle(
@@ -240,14 +245,15 @@ class _FoodListScreenState extends State<FoodListScreen> {
                                     height: 3,
                                     width: double.infinity,
                                     decoration: BoxDecoration(
-                                      color: isSelected ? AppColors.primaryColor : Colors.transparent,
+                                      color: isSelected
+                                          ? AppColors.primaryColor
+                                          : Colors.transparent,
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                   )
                                 ],
                               ),
                             ),
-
                           ),
                         );
                       },
@@ -258,11 +264,9 @@ class _FoodListScreenState extends State<FoodListScreen> {
                   Expanded(
                     child: BlocBuilder<FoodBloc, FoodState>(
                       builder: (context, state) {
-                        if (state is FoodFetching ||
-                            state is FoodMoreFetching) {
+                        if (state is FoodFetching || state is FoodMoreFetching) {
                           return const Center(
-                            child: CircularProgressIndicator(
-                                color: AppColors.primaryColor),
+                            child: FoodListShimmer(),
                           );
                         }
 
@@ -331,14 +335,16 @@ class _FoodListScreenState extends State<FoodListScreen> {
                                                 height: 120,
                                                 color: Colors.grey[200],
                                                 child: Icon(Icons.fastfood,
-                                                    color: Colors.grey[400], size: 40),
+                                                    color: Colors.grey[400],
+                                                    size: 40),
                                               ),
                                       ),
                                       Expanded(
                                         child: Padding(
                                           padding: const EdgeInsets.all(12),
                                           child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Text(
                                                 food.name,
@@ -361,33 +367,48 @@ class _FoodListScreenState extends State<FoodListScreen> {
                                               ),
                                               const SizedBox(height: 8),
                                               Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
                                                 children: [
                                                   Text(
                                                     '\$${food.price.toStringAsFixed(2)}',
                                                     style: TextStyle(
                                                       fontSize: 18,
-                                                      fontWeight: FontWeight.bold,
-                                                      color: AppColors.primaryColor,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: AppColors
+                                                          .primaryColor,
                                                     ),
                                                   ),
                                                   Container(
-                                                    padding: const EdgeInsets.symmetric(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
                                                       horizontal: 8,
                                                       vertical: 4,
                                                     ),
                                                     decoration: BoxDecoration(
-                                                      color: AppColors.primaryColor.withOpacity(0.1),
-                                                      borderRadius: BorderRadius.circular(12),
+                                                      color: AppColors
+                                                          .primaryColor
+                                                          .withOpacity(0.1),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12),
                                                     ),
                                                     child: Row(
                                                       children: [
-                                                        Icon(Icons.watch_later_rounded,color:AppColors.primaryColor ,),
+                                                        Icon(
+                                                          Icons
+                                                              .watch_later_rounded,
+                                                          color: AppColors
+                                                              .primaryColor,
+                                                        ),
                                                         Text(
                                                           '${food.preparationTime} min',
                                                           style: TextStyle(
                                                             fontSize: 13,
-                                                            color: AppColors.primaryColor,
+                                                            color: AppColors
+                                                                .primaryColor,
                                                           ),
                                                         ),
                                                       ],

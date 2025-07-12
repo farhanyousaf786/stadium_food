@@ -70,7 +70,8 @@ class _UploadPhotoScreenState extends State<UploadPhotoScreen> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 60),
+              padding:
+              const EdgeInsets.only(bottom: 60, left: 25, right: 25),
               child: PrimaryButton(
                 text: "Next",
                 onTap: () async {

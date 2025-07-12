@@ -6,6 +6,7 @@ import 'package:stadium_food/src/data/models/shop.dart';
 import 'package:stadium_food/src/data/models/stadium.dart';
 import 'package:stadium_food/src/presentation/screens/explore/food_list_screen.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
+import 'package:stadium_food/src/presentation/widgets/shimmer_widgets.dart';
 
 class ShopList extends StatefulWidget {
   const ShopList({super.key});
@@ -77,7 +78,7 @@ class _ShopListState extends State<ShopList> {
           child: BlocBuilder<ShopBloc, ShopState>(
             builder: (context, state) {
               if (state is ShopsLoading) {
-                return const Center(child: CircularProgressIndicator());
+                return const ShopShimmer();
               }
 
               if (state is ShopsLoaded) {
@@ -90,14 +91,14 @@ class _ShopListState extends State<ShopList> {
                 }
 
                 return ListView.builder(
-                  scrollDirection: Axis.horizontal,
+                  scrollDirection: Axis.vertical,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   itemCount: _shops.length,
                   itemBuilder: (context, index) {
                     final shop = _shops[index];
                     return Container(
-                      width: MediaQuery.of(context).size.width - 32,
-                      margin: const EdgeInsets.only(right: 16, bottom: 8),
+                      width: MediaQuery.of(context).size.width,
+                      margin: const EdgeInsets.only(right: 0, bottom: 8),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),

@@ -200,7 +200,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Image.asset(
-                  'assets/png/logo-small.jpeg',
+                  'assets/png/logo.png',
                   height: 80,
                   width: 80,
                 ),

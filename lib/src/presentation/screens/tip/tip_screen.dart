@@ -20,6 +20,7 @@ class _TipScreenState extends State<TipScreen> {
   late double _tipAmount;
   final List<double> _tipPercentages = [6, 10, 14, 18];
   late double _orderTotal;
+  final TextEditingController _customTipController = TextEditingController();
 
   @override
   void initState() {
@@ -27,15 +28,7 @@ class _TipScreenState extends State<TipScreen> {
     _selectedTipPercentage = 10; // Default to 10%
     _orderTotal = OrderRepository.total;
     _calculateTip();
-    
-    // Check if user is logged in
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final currentUser = FirebaseAuth.instance.currentUser;
-      // if (currentUser == null) {
-      //   // Show login/signup dialog
-      //   _showAuthDialog(context);
-      // }
-    });
+
   }
 
   void _calculateTip() {
@@ -49,111 +42,7 @@ class _TipScreenState extends State<TipScreen> {
       _calculateTip();
     });
   }
-  
-  // Show dialog to prompt user to login or register
-  void _showAuthDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Image.asset(
-                  'assets/png/logo-small.jpeg',
-                  height: 80,
-                  width: 80,
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Account Required',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'You need to be logged in to place an order. Please login or create an account to continue.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context); // Close dialog
-                      // Navigate to login without removing previous screens
-                      Navigator.pushNamed(context, '/login');
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text(
-                      'Login',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Close dialog
-                    // Navigate to register without removing previous screens
-                    Navigator.pushNamed(context, '/register');
-                  },
-                  child: Text(
-                    'Create Account',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.primaryColor,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Close dialog
-                    Navigator.pop(context); // Go back to cart
-                  },
-                  child: Text(
-                    'Cancel',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -214,12 +103,119 @@ class _TipScreenState extends State<TipScreen> {
                       ),
                       TextButton(
                         onPressed: () {
-                          // TODO: Implement custom tip dialog
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (context) => Container(
+                              padding: EdgeInsets.only(
+                                bottom: 20,
+                                left: 20,
+                                right: 20,
+                                top: 20,
+                              ),
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20),
+                                ),
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Custom Tip',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'Enter custom tip amount (up to ${_orderTotal.toStringAsFixed(2)})',
+                                    style: TextStyle(
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+                                  TextField(
+                                    controller: _customTipController,
+                                    keyboardType: TextInputType.number,
+                                    decoration: InputDecoration(
+                                      hintText: 'Enter amount',
+                                      filled: true,
+                                      fillColor: Colors.grey[100],
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 12,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text(
+                                          'Skip',
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          final customAmount = double.tryParse(_customTipController.text) ?? 0;
+                                          if (customAmount >= 0 && customAmount <= _orderTotal) {
+                                            setState(() {
+                                              _tipAmount = customAmount;
+                                              _selectedTipPercentage = (customAmount / _orderTotal * 100).roundToDouble();
+                                            });
+                                            Navigator.pop(context);
+                                          } else {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(
+                                                content: Text('Please enter a valid amount'),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: AppColors.primaryColor,
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 24,
+                                            vertical: 12,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'Save',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
                         },
                         child: const Text(
                           'Custom tip',
                           style: TextStyle(
-                            color: Colors.green,
+                            color: AppColors.primaryColor,
                             fontWeight: FontWeight.w500,
                           ),
                         ),

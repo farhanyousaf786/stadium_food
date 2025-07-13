@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
-import 'package:stadium_food/src/data/models/food.dart';
+
 import 'package:stadium_food/src/data/models/restaurant.dart';
 import 'package:stadium_food/src/data/services/firestore_db.dart';
 import 'package:hive/hive.dart';
 
+import '../models/food.dart';
 import '../models/user.dart';
 
 class ProfileRepository {

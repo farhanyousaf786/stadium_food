@@ -64,11 +64,12 @@ class OrderItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Ordered on ${order.createdAt.day}/${order.createdAt.month}/${order.createdAt.year}",
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.grey,
+                    order.createdAt != null
+                      ? '${order.createdAt!.toDate().day}/${order.createdAt!.toDate().month}/${order.createdAt!.toDate().year}'
+                      : 'Date not available',
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 12,
                     ),
                   ),
                   Container(

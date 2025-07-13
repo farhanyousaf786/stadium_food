@@ -113,7 +113,7 @@ class OrderRepository {
       discount: discount,
       total: total + tip,
       tipAmount: tip,
-      createdAt: DateTime.now(),
+      createdAt: Timestamp.now(),
       status: OrderStatus.pending,
       stadiumId: cart[0].stadiumId ?? '',
       shopId: cart[0].shopId ?? '',

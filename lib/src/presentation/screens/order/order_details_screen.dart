@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stadium_food/src/data/models/order.dart';
+import 'package:stadium_food/src/data/models/order_status.dart';
 import 'package:stadium_food/src/data/models/shopuser.dart';
 import 'package:stadium_food/src/presentation/screens/chat/chat_details_screen.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/back_button.dart';
@@ -9,16 +10,17 @@ import 'package:stadium_food/src/presentation/widgets/image_placeholder.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
+import 'package:stadium_food/src/presentation/widgets/order_status_stepper.dart';
 
 class OrderDetailsScreen extends StatelessWidget {
   final Order order;
+
   const OrderDetailsScreen({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bgColor,
-
       bottomNavigationBar: Container(
         height: 163,
         margin: const EdgeInsets.all(20),
@@ -130,34 +132,34 @@ class OrderDetailsScreen extends StatelessWidget {
                   const CustomBackButton(),
                   InkWell(
                     onTap: () async {
+                      final querySnapshot = await FirebaseFirestore.instance
+                          .collection('users')
+                          .where('shopsId', arrayContains: order.shopId)
+                          .limit(1)
+                          .get();
 
-                        final querySnapshot = await FirebaseFirestore.instance
-                            .collection('users')
-                            .where('shopsId', arrayContains: order.shopId)
-                            .limit(1)
-                            .get();
-
-                        if (querySnapshot.docs.isEmpty) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Shop owner not found')),
-                            );
-                          }
-                          return;
-                        }
-
-                        final shopUser = ShopUser.fromMap(querySnapshot.docs.first.data());
+                      if (querySnapshot.docs.isEmpty) {
                         if (context.mounted) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ChatDetailsScreen(
-                                otherUser: shopUser,
-                              ),
-                            ),
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Shop owner not found')),
                           );
                         }
+                        return;
+                      }
 
+                      final shopUser =
+                          ShopUser.fromMap(querySnapshot.docs.first.data());
+                      if (context.mounted) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChatDetailsScreen(
+                              otherUser: shopUser,
+                            ),
+                          ),
+                        );
+                      }
                     },
                     borderRadius: AppStyles.defaultBorderRadius,
                     child: Container(
@@ -168,18 +170,23 @@ class OrderDetailsScreen extends StatelessWidget {
                         color: AppColors.primaryColor.withOpacity(0.1),
                         borderRadius: AppStyles.defaultBorderRadius,
                       ),
-                      child:  SvgPicture.asset(
+                      child: SvgPicture.asset(
                         "assets/svg/chat.svg",
                       ),
                     ),
                   )
-
                 ],
               ),
               const SizedBox(height: 20),
               Text(
                 "Order #${order.id}",
                 style: CustomTextStyle.size22Weight600Text(),
+              ),
+              const SizedBox(height: 20),
+              OrderStatusStepper(
+                status: order.status,
+                orderTime: order.createdAt?.toDate(),
+                deliveryTime: order.deliveryTime?.toDate(),
               ),
               const SizedBox(height: 20),
               Text(
@@ -192,69 +199,123 @@ class OrderDetailsScreen extends StatelessWidget {
                   itemCount: order.cart.length,
                   itemBuilder: (context, index) {
                     var item = order.cart[index];
+
                     return Container(
-                      margin: const EdgeInsets.only(bottom: 20),
-                      padding: const EdgeInsets.fromLTRB(10, 10, 20, 10),
                       decoration: BoxDecoration(
-                        borderRadius: AppStyles.defaultBorderRadius,
-                        boxShadow: [AppStyles.boxShadow7],
-                        color: AppColors().cardColor,
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
                       ),
                       child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           ClipRRect(
-                            borderRadius: AppStyles.defaultBorderRadius,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(15),
+                              bottomLeft: Radius.circular(15),
+                            ),
                             child: item.images.isNotEmpty
                                 ? Image.network(
-                                    item.images.first,
+                                    item.images[0],
+                                    width: 120,
+                                    height: 120,
                                     fit: BoxFit.cover,
-                                    width: 64,
-                                    height: 64,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return ImagePlaceholder(
-                                        iconData: Icons.fastfood,
-                                        iconSize: 30,
-                                        width: 64,
-                                        height: 64,
-                                      );
-                                    },
-                                  ): const SizedBox(
-                                    width: 64,
-                                    )
-                          ),
-                          const SizedBox(width: 16),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item.name,
-                                style: CustomTextStyle.size16Weight500Text(),
-                              ),
-                              const SizedBox(height: 5),
-
-                              ShaderMask(
-                                shaderCallback: (rect) {
-                                  return LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: AppColors.primaryGradient,
-                                  ).createShader(rect);
-                                },
-                                child: Text(
-                                  "\$${item.price.toStringAsFixed(2)}",
-                                  style:
-                                      CustomTextStyle.size18Weight600Text(
-                                    Colors.white,
+                                  )
+                                : Container(
+                                    width: 120,
+                                    height: 120,
+                                    color: Colors.grey[200],
+                                    child: Icon(Icons.fastfood,
+                                        color: Colors.grey[400], size: 40),
                                   ),
-                                ),
-                              ),
-                            ],
                           ),
-                          const Spacer(),
-                          Text(
-                            "x${item.quantity}",
-                            style: CustomTextStyle.size16Weight500Text(),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        item.name,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Spacer(),
+                                      Text(
+                                        "Qty ${item.quantity}",
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    item.description,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey[600],
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        '\$${item.price.toStringAsFixed(2)}',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.primaryColor,
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 4,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.primaryColor
+                                              .withOpacity(0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.watch_later_rounded,
+                                              color: AppColors.primaryColor,
+                                            ),
+                                            Text(
+                                              '${item.preparationTime} min',
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                color: AppColors.primaryColor,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ],
                       ),

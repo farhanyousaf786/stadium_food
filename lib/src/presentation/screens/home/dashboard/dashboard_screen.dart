@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stadium_food/src/bloc/menu/menu_bloc.dart';
-import 'package:stadium_food/src/bloc/shop/shop_bloc.dart';
+import 'package:stadium_food/src/bloc/offer/offer_bloc.dart';
+import 'package:stadium_food/src/data/repositories/offer_repository.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/widgets/search_filter_widget.dart';
 import 'widgets/category_list.dart';
 import 'widgets/menu_list.dart';
+import 'widgets/offers_list.dart';
 import 'widgets/top_bar.dart';
-import 'package:stadium_food/src/presentation/screens/home/dashboard/widgets/shop_list.dart';
+import 'widgets/shop_list.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -25,7 +27,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocProvider(
+      create: (context) => OfferBloc(
+        offerRepository: OfferRepository(),
+      ),
+      child: Scaffold(
       backgroundColor: AppColors.bgColor,
       body: SafeArea(
         child: Column(
@@ -45,6 +51,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         onFilterTap: () {},
                       ),
                       const SizedBox(height: 24),
+                      OffersList(),
+                      const SizedBox(height: 24),
                       const CategoryList(),
                       const SizedBox(height: 24),
                       const MenuList(),
@@ -58,7 +66,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
         ),
       ),
-    );
+    ));
+
   }
 
   @override

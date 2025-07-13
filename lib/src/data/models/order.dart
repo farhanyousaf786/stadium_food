@@ -16,7 +16,8 @@ class Order extends Equatable {
   final String shopId;
   final String orderId;
   final OrderStatus status;
-  final DateTime createdAt;
+  final Timestamp? createdAt;
+  final Timestamp? deliveryTime;
   final Map<String, dynamic> seatInfo;
 
   String? id;
@@ -34,6 +35,7 @@ class Order extends Equatable {
     required this.orderId,
     required this.status,
     required this.createdAt,
+    this.deliveryTime,
     required this.seatInfo,
   });
 
@@ -55,7 +57,8 @@ class Order extends Equatable {
       shopId: map['shopId'] ?? '',
       orderId: map['orderId'] ?? '',
       status: OrderStatus.values[map['status'] ?? 0],
-      createdAt: (map['createdAt'] as Timestamp).toDate(),
+      createdAt: map['createdAt'] as Timestamp?,
+      deliveryTime: map['deliveryTime'] as Timestamp?,
       seatInfo: map['seatInfo'] ?? {},
     );
     order.id = id;
@@ -81,6 +84,7 @@ class Order extends Equatable {
       'orderId': orderId,
       'status': status.index,
       'createdAt': createdAt,
+      'deliveryTime': deliveryTime,
       'seatInfo': seatInfo,
     };
   }

@@ -83,7 +83,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ],
                           image: DecorationImage(
-                            image: AssetImage("assets/png/logo-small.jpeg"),
+                            image: AssetImage("assets/png/logo.png"),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -162,6 +162,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 Checkbox(
                                   value: _privacyPolicyAccepted,
                                   activeColor: AppColors.primaryColor,
+                                  checkColor: Colors.white,
                                   onChanged: (value) {
                                     setState(() {
                                       _privacyPolicyAccepted = value ?? false;

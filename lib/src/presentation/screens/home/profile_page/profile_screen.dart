@@ -46,8 +46,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildStatsItem(String value, String label) {
     return Container(
       width: 100,
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      margin: const EdgeInsets.symmetric(horizontal: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -76,11 +76,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Text(
             value,
-            style: CustomTextStyle.size24Weight600Text(
+            style: CustomTextStyle.size22Weight600Text(
               Theme.of(context).primaryColor,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
             label,
             textAlign: TextAlign.center,
@@ -153,73 +153,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       settingsBloc: BlocProvider.of<SettingsBloc>(context),
       isDarkMode: Theme.of(context).brightness == Brightness.dark,
       onLogout: () {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text("Log Out"),
-            content: const Text("Are you sure you want to log out?"),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("Cancel"),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  BlocProvider.of<SettingsBloc>(context).add(Logout());
-                },
-                child: const Text(
-                  "Log Out",
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-            ],
-          ),
-        );
+
+        BlocProvider.of<SettingsBloc>(context).add(Logout());
       },
       onDeleteAccount: () {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text("Delete Account"),
-            content: const Text(
-              "Are you sure you want to delete your account? This action cannot be undone. Your account and all associated data will be permanently deleted.",
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("Cancel"),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  // Show loading dialog
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (context) => const AlertDialog(
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 16),
-                          Text("Deleting account..."),
-                        ],
-                      ),
-                    ),
-                  );
-                  
-                  // Add the delete account event
-                  BlocProvider.of<SettingsBloc>(context).add(DeleteAccount());
-                },
-                child: const Text(
-                  "Delete Account",
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-            ],
-          ),
-        );
+
+        BlocProvider.of<SettingsBloc>(context).add(DeleteAccount());
+
       },
     );
   }
@@ -253,8 +193,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         } else if (state is AccountDeletionFailure) {
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to delete account: ${state.message}')),
-
+            SnackBar(
+                content: Text('Failed to delete account: ${state.message}')),
           );
         }
       },
@@ -348,53 +288,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ],
                             ),
                             const SizedBox(height: 24),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                BlocBuilder<OrderBloc, OrderState>(
-                                  builder: (context, stateOrder) {
-                                    if (stateOrder is OrdersFetching) {
-                                      return Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          _buildStatsItem('...', 'Active'),
-                                          _buildStatsItem('...', 'Cancelled'),
-                                          _buildStatsItem('...', 'Complete'),
-                                        ],
-                                      );
-                                    } else if (stateOrder is OrdersFetched) {
-                                      return Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          _buildStatsItem(
-                                              filterOrders(
-                                                  stateOrder.orders, 'active'),
-                                              'Active'),
-                                          _buildStatsItem(
-                                              filterOrders(stateOrder.orders,
-                                                  'completed'),
-                                              'Cancelled'),
-                                          _buildStatsItem(
-                                              filterOrders(stateOrder.orders,
-                                                  'cancelled'),
-                                              'Complete'),
-                                        ],
-                                      );
-                                    }
-                                    return Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        _buildStatsItem('...', 'Active'),
-                                        _buildStatsItem('...', 'Cancelled'),
-                                        _buildStatsItem('...', 'Complete'),
-                                      ],
-                                    );
-                                  },
-                                ),
-                              ],
+                            BlocBuilder<OrderBloc, OrderState>(
+                              builder: (context, stateOrder) {
+                                if (stateOrder is OrdersFetching) {
+                                  return Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                    children: [
+                                      _buildStatsItem('...', 'Active'),
+                                      _buildStatsItem('...', 'Cancelled'),
+                                      _buildStatsItem('...', 'Complete'),
+                                    ],
+                                  );
+                                } else if (stateOrder is OrdersFetched) {
+                                  return Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                    children: [
+                                      _buildStatsItem(
+                                          filterOrders(
+                                              stateOrder.orders, 'active'),
+                                          'Active'),
+                                      _buildStatsItem(
+                                          filterOrders(stateOrder.orders,
+                                              'completed'),
+                                          'Cancelled'),
+                                      _buildStatsItem(
+                                          filterOrders(stateOrder.orders,
+                                              'cancelled'),
+                                          'Complete'),
+                                    ],
+                                  );
+                                }
+                                return Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.center,
+                                  children: [
+                                    _buildStatsItem('...', 'Active'),
+                                    _buildStatsItem('...', 'Cancelled'),
+                                    _buildStatsItem('...', 'Complete'),
+                                  ],
+                                );
+                              },
                             ),
                           ],
                         ),
@@ -428,7 +363,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               height: 220,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(16),
-
                               ),
                               child: const Center(child: LoadingIndicator()),
                             );
@@ -438,7 +372,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 height: 220,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(16),
-
                                 ),
                                 child: Center(
                                   child: Column(

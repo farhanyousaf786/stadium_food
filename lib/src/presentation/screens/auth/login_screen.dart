@@ -99,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ],
                           image: DecorationImage(
-                            image: AssetImage("assets/png/logo-small.jpeg"),
+                            image: AssetImage("assets/png/logo.png"),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -181,6 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Checkbox(
                             value: _privacyPolicyAccepted,
                             activeColor: AppColors.primaryColor,
+                            checkColor: Colors.white,
                             onChanged: (value) {
                               setState(() {
                                 _privacyPolicyAccepted = value ?? false;

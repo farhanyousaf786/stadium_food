@@ -70,6 +70,51 @@ class SettingsSection extends StatelessWidget {
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: Icon(
+              Icons.privacy_tip_outlined,
+              color: theme.iconTheme.color,
+            ),
+            title: Text(
+              'Terms and Conditions',
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.textTheme.bodyLarge?.color,
+              ),
+            ),
+            onTap: onLogout,
+          ),
+
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Icon(
+              Icons.feedback_outlined,
+              color: theme.iconTheme.color,
+            ),
+            title: Text(
+              'Feedback Us',
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.textTheme.bodyLarge?.color,
+              ),
+            ),
+            onTap: onLogout,
+          ),
+
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Icon(
+              Icons.report_problem_outlined,
+              color: theme.iconTheme.color,
+            ),
+            title: Text(
+              'Report a Problem',
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.textTheme.bodyLarge?.color,
+              ),
+            ),
+            onTap: onLogout,
+          ),
+
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Icon(
               Icons.logout,
               color: theme.iconTheme.color,
             ),

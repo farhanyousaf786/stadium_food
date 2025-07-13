@@ -119,6 +119,7 @@ class SettingsScreen extends StatelessWidget {
                           );
                         },
                       ),
+
                     ],
                   ),
                 ),

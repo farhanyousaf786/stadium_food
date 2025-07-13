@@ -16,7 +16,7 @@ import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:hive/hive.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:google_ml_kit/google_ml_kit.dart' as ml_kit;
+// import 'package:google_ml_kit/google_ml_kit.dart' as ml_kit;
 
 import '../../../data/repositories/order_repository.dart';
 import '../../../data/services/firebase_storage.dart';
@@ -95,51 +95,51 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
   XFile? _image;
   String imageUrl='';
 
-  Future<void> _processTicketImage(XFile image) async {
-    final inputImage = ml_kit.InputImage.fromFilePath(image.path);
-    final textRecognizer = ml_kit.TextRecognizer(script: ml_kit.TextRecognitionScript.latin);
-
-    try {
-      final ml_kit.RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
-      
-      // Process each block of text to find seat information
-      for (ml_kit.TextBlock block in recognizedText.blocks) {
-        String text = block.text.toLowerCase();
-        
-        // Look for common patterns in ticket text
-        if (text.contains('SEC')) {
-          _sectionController.text = _extractValue(text, 'SEC');
-        }
-        if (text.contains('ROW')) {
-          _rowController.text = _extractValue(text, 'ROW');
-        }
-        if (text.contains('SEAT')) {
-          _seatNoController.text = _extractValue(text, 'SEAT');
-        }
-      }
-
-      setState(() {});
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Error processing ticket image. Please try again or enter details manually.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } finally {
-      textRecognizer.close();
-    }
-  }
-
-  String _extractValue(String text, String field) {
-    // Remove the field name and any common separators
-    text = text.replaceAll(field, '').trim();
-    text = text.replaceAll(':', '').replaceAll('#', '').trim();
-    
-    // Split by spaces and get the first word (likely the number/value we want)
-    final parts = text.split(' ');
-    return parts.isNotEmpty ? parts[0].toUpperCase() : '';
-  }
+  // Future<void> _processTicketImage(XFile image) async {
+  //   final inputImage = ml_kit.InputImage.fromFilePath(image.path);
+  //   final textRecognizer = ml_kit.TextRecognizer(script: ml_kit.TextRecognitionScript.latin);
+  //
+  //   try {
+  //     final ml_kit.RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
+  //
+  //     // Process each block of text to find seat information
+  //     for (ml_kit.TextBlock block in recognizedText.blocks) {
+  //       String text = block.text.toLowerCase();
+  //
+  //       // Look for common patterns in ticket text
+  //       if (text.contains('SEC')) {
+  //         _sectionController.text = _extractValue(text, 'SEC');
+  //       }
+  //       if (text.contains('ROW')) {
+  //         _rowController.text = _extractValue(text, 'ROW');
+  //       }
+  //       if (text.contains('SEAT')) {
+  //         _seatNoController.text = _extractValue(text, 'SEAT');
+  //       }
+  //     }
+  //
+  //     setState(() {});
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(
+  //         content: Text('Error processing ticket image. Please try again or enter details manually.'),
+  //         backgroundColor: Colors.red,
+  //       ),
+  //     );
+  //   } finally {
+  //     textRecognizer.close();
+  //   }
+  // }
+  //
+  // String _extractValue(String text, String field) {
+  //   // Remove the field name and any common separators
+  //   text = text.replaceAll(field, '').trim();
+  //   text = text.replaceAll(':', '').replaceAll('#', '').trim();
+  //
+  //   // Split by spaces and get the first word (likely the number/value we want)
+  //   final parts = text.split(' ');
+  //   return parts.isNotEmpty ? parts[0].toUpperCase() : '';
+  // }
 
 
 
@@ -151,7 +151,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     );
 
     if (_image != null) {
-      await _processTicketImage(_image!);
+     // await _processTicketImage(_image!);
     }
 
     setState(() {});
@@ -165,7 +165,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     );
 
     if (_image != null) {
-      await _processTicketImage(_image!);
+     // await _processTicketImage(_image!);
     }
 
     setState(() {});
@@ -177,15 +177,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
   @override
   void initState() {
     super.initState();
-    
-    // Check if user is logged in
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final currentUser = FirebaseAuth.instance.currentUser;
-      // if (currentUser == null) {
-      //   // Show login/signup dialog and navigate back to cart
-      //   _showAuthDialog(context);
-      // }
-    });
+
   }
   
   // Show dialog to prompt user to login or register
@@ -722,7 +714,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
        throw Exception(err);
      }
    }
-   createPaymentIntent(String amount, String currency) async {
+   Future createPaymentIntent(String amount, String currency) async {
      try {
        //Request body
        Map<String, dynamic> body = {
@@ -744,12 +736,12 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
        throw Exception(err.toString());
      }
    }
-   calculateAmount(String amount) {
+   String calculateAmount(String amount) {
      final doubleAmount = double.parse(amount);
      final intAmount = (doubleAmount * 100).round(); // Rounds to nearest cent
      return intAmount.toString();
    }
-   displayPaymentSheet(Map<String, String> seatInfo) async {
+   Future<void> displayPaymentSheet(Map<String, String> seatInfo) async {
      try {
        await Stripe.instance.presentPaymentSheet().then((value) {
          BlocProvider.of<OrderBloc>(context).add(
@@ -813,7 +805,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
 
 
 
-buildDialog(BuildContext context) {
+Future buildDialog(BuildContext context) {
   return showDialog(
     context: context,
     builder: (context) {

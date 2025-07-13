@@ -24,13 +24,13 @@ class OnboardingSecondScreen extends StatelessWidget {
               ),
               const SizedBox(height: 40),
               Text(
-                "Fans Food is Where Your Comfort \nFood Lives",
+                "Skip the lines. Never \nMiss a Moment.",
                 textAlign: TextAlign.center,
                 style: CustomTextStyle.size22Weight600Text(),
               ),
               const SizedBox(height: 20),
               const Text(
-                "Enjoy a fast and smooth food delivery at your \ndoorstep",
+                "Enjoy food, drinks and merch delivered right to your seat - so \nyou can stay in the action, not the line.",
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 60),

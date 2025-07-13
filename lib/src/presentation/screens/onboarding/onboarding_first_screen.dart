@@ -42,13 +42,13 @@ class _OnboardingFirstScreenState extends State<OnboardingFirstScreen> {
               ),
               const SizedBox(height: 40),
               Text(
-                "Find your Comfort \nFood here",
+                "Tap, Sit, \nEnjoy",
                 textAlign: TextAlign.center,
                 style: CustomTextStyle.size22Weight600Text(),
               ),
               const SizedBox(height: 20),
               const Text(
-                "Here You Can find a chef or dish for every \ntaste and color. Enjoy!",
+                "Order from your phone and get everything you need \nwithout ever leaving your seat. Enjoy!",
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 60),

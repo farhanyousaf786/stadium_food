@@ -2,6 +2,6 @@
 
 
 
-Still have amount on orders after we removed order.
+Still have amount on orders after we removed order...
 
 

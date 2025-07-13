@@ -4,9 +4,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 class AppColors {
   // general colors
   static const Color bgColor = Color(0xFFF5F5F5);
-  static const Color primaryColor = Color(0xFF4C9E48);
-  static const Color primaryDarkColor = Color(0xFF3B7B38); // 20% darker
-  static const Color primaryLightColor = Color(0xFF5EBE5A); // 20% lighter
+  static const Color primaryColor = Color(0xFF595CE6);
+  static const Color primaryDarkColor = Color.fromARGB(255, 72, 74, 192); // 20% darker
+  static const Color primaryLightColor = Color.fromARGB(255, 104, 106, 249); // 20% lighter
   static List<Color> primaryGradient = [
     primaryLightColor,
     primaryColor,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:hive/hive.dart';
 import 'package:stadium_food/src/presentation/screens/server.dart';
+import 'package:stadium_food/src/presentation/screens/goal/goal_screen.dart';
 
 import '../utils/app_colors.dart';
 
@@ -24,8 +24,15 @@ class _SplashScreenState extends State<SplashScreen> {
       });
     });
     Future.delayed(const Duration(milliseconds: 1500), () {
-      var box = Hive.box('myBox');
+      // Always show the goal screen first
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const GoalScreen()),
+      );
       
+      // The following code is now handled by the GoalScreen's button
+      // which navigates to the dashboard
+      /*
       // Check if user has already selected a stadium
       if (box.get('selectedStadium') != null) {
         // If stadium is selected, go to home
@@ -42,6 +49,7 @@ class _SplashScreenState extends State<SplashScreen> {
           Navigator.pushReplacementNamed(context, "/onboarding/first");
         }
       }
+      */
     });
   }
 

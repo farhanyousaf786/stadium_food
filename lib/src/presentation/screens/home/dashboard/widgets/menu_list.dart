@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stadium_food/src/bloc/menu/menu_bloc.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/models/food.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
+
 import 'package:stadium_food/src/presentation/widgets/shimmer_widgets.dart';
+import 'package:stadium_food/src/presentation/widgets/formatted_price_text.dart';
 
 class MenuList extends StatefulWidget {
   const MenuList({super.key});
@@ -21,7 +24,7 @@ class _MenuListState extends State<MenuList> {
     super.initState();
     _loadStadiumIdAndFetchMenu();
   }
-  
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -35,9 +38,9 @@ class _MenuListState extends State<MenuList> {
     final stadiumId = prefs.getString('selected_stadium_id');
     if (stadiumId != null && mounted) {
       context.read<MenuBloc>().add(LoadStadiumMenu(
-        stadiumId: stadiumId,
-        limit: 10,
-      ));
+            stadiumId: stadiumId,
+            limit: 10,
+          ));
     }
   }
 
@@ -49,7 +52,7 @@ class _MenuListState extends State<MenuList> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
-            'Popular Menu',
+            Translate.get('popularMenu'),
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -65,13 +68,13 @@ class _MenuListState extends State<MenuList> {
               if (state is MenuLoading) {
                 return const MenuShimmer();
               }
-              
+
               if (state is MenuLoaded) {
                 _menuItems = state.foods;
-                
+
                 if (_menuItems.isEmpty) {
-                  return const Center(
-                    child: Text('No menu items available for this stadium'),
+                  return Center(
+                    child: Text(Translate.get('noMenuItems')),
                   );
                 }
 
@@ -82,72 +85,72 @@ class _MenuListState extends State<MenuList> {
                   itemBuilder: (context, index) {
                     final food = _menuItems[index];
                     return Container(
-                      width: 160,
-                      margin: const EdgeInsets.only(right: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            '/foods/detail',
-                            arguments: food,
-                          );
-                        },
-                        borderRadius: BorderRadius.circular(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                          // Food Image
-                          ClipRRect(
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(16),
+                        width: 160,
+                        margin: const EdgeInsets.only(right: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
                             ),
-                            child: Image.network(
-                              food.images.first,
-                              height: 120,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  food.name,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                          ],
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              '/foods/detail',
+                              arguments: food,
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Food Image
+                              ClipRRect(
+                                borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(16),
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  '\$${food.price.toStringAsFixed(2)}',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.primaryColor,
-                                  ),
+                                child: Image.network(
+                                  food.images.first,
+                                  height: 120,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
                                 ),
-                              ],
-                            ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(12),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      food.name,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    FormattedPriceText(
+                                      amount: food.price,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.primaryColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      ));
+                        ));
                   },
                 );
               }

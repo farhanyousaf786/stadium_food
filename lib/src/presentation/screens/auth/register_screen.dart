@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stadium_food/src/bloc/register/register_bloc.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/presentation/screens/auth/privacy_policy_screen.dart';
 import 'package:stadium_food/src/presentation/widgets/loading_indicator.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
@@ -90,7 +90,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       const SizedBox(height: 60),
                       Text(
-                        'Sign Up For Free',
+                        Translate.get('register_title'),
                         style: CustomTextStyle.size20Weight600Text(),
                       ),
                       const SizedBox(height: 40),
@@ -107,7 +107,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 decoration: InputDecoration(
                                   fillColor: AppColors().cardColor,
                                   filled: true,
-                                  hintText: "Email",
+                                  hintText: Translate.get('register_email_hint'),
                                   hintStyle:
                                       CustomTextStyle.size14Weight400Text(
                                     AppColors().secondaryTextColor,
@@ -131,7 +131,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 decoration: InputDecoration(
                                   fillColor: AppColors().cardColor,
                                   filled: true,
-                                  hintText: "Password",
+                                  hintText: Translate.get('register_password_hint'),
                                   hintStyle:
                                       CustomTextStyle.size14Weight400Text(
                                     AppColors().secondaryTextColor,
@@ -180,7 +180,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       );
                                     },
                                     child: Text(
-                                      "I agree to the Privacy Policy",
+                                      Translate.get('register_privacy_policy'),
                                       style: CustomTextStyle.size14Weight400Text(),
                                     ),
                                   ),
@@ -206,7 +206,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ).createShader(bounds),
                           blendMode: BlendMode.srcIn,
                           child: Text(
-                            "Already have an account?",
+                            Translate.get('register_login_link'),
                             style: CustomTextStyle.size14Weight400Text()
                                 .copyWith(
                               decoration: TextDecoration.underline,
@@ -218,7 +218,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 60),
                         child: PrimaryButton(
-                          text: "Create Account",
+                          text: Translate.get('register_button'),
                           onTap: () {
                             // print email and password
                             debugPrint(_emailController.text.trim());
@@ -227,27 +227,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             // Validate
                             if (_emailController.text.trim().isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
+                                SnackBar(
                                   backgroundColor: AppColors.errorColor,
-                                  content: Text("Email is required"),
+                                  content: Text(Translate.get('register_error_email_required')),
                                 ),
                               );
                               return;
                             }
                             if (_passwordController.text.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
+                                SnackBar(
                                   backgroundColor: AppColors.errorColor,
-                                  content: Text("Password is required"),
+                                  content: Text(Translate.get('register_error_password_required')),
                                 ),
                               );
                               return;
                             }
                             if (!_privacyPolicyAccepted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
+                                SnackBar(
                                   backgroundColor: AppColors.errorColor,
-                                  content: Text("You must accept the Privacy Policy"),
+                                  content: Text(Translate.get('register_error_privacy_policy')),
                                 ),
                               );
                               return;

@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:hive/hive.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 
 import '../../utils/app_colors.dart';
 
@@ -24,24 +25,24 @@ class OnboardingSecondScreen extends StatelessWidget {
               ),
               const SizedBox(height: 40),
               Text(
-                "Skip the lines. Never \nMiss a Moment.",
+                Translate.get('onboarding_second_title'),
                 textAlign: TextAlign.center,
                 style: CustomTextStyle.size22Weight600Text(),
               ),
               const SizedBox(height: 20),
-              const Text(
-                "Enjoy food, drinks and merch delivered right to your seat - so \nyou can stay in the action, not the line.",
+              Text(
+                Translate.get('onboarding_second_description'),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 60),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: PrimaryButton(
-                  text: "Next",
+                  text: Translate.get('onboarding_button_next'),
                   onTap: () {
                     // Mark that the user has seen onboarding
                     Hive.box('myBox').put('hasSeenOnboarding', true);
-                    
+
                     // Navigate to stadium selection instead of register
                     Navigator.pushReplacementNamed(
                       context,

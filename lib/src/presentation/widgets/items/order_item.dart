@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/models/order.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_styles.dart';
@@ -31,7 +32,7 @@ class OrderItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Order #${order.id}",
+                "${Translate.get('order')} #${order.id}",
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -42,7 +43,7 @@ class OrderItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "${order.cart.length} items",
+                    "${order.cart.length} ${Translate.get('items')}",
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -66,7 +67,7 @@ class OrderItem extends StatelessWidget {
                   Text(
                     order.createdAt != null
                       ? '${order.createdAt!.toDate().day}/${order.createdAt!.toDate().month}/${order.createdAt!.toDate().year}'
-                      : 'Date not available',
+                      : Translate.get('dateNotAvailable'),
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 12,

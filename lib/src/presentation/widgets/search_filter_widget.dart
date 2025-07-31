@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/colors.dart';
-import '../utils/custom_text_style.dart';
+import '../../core/translations/translate.dart';
 
 class SearchFilterWidget extends StatelessWidget {
   final TextEditingController searchController;
@@ -34,7 +34,7 @@ class SearchFilterWidget extends StatelessWidget {
         controller: searchController,
         onChanged: onChanged,
         decoration: InputDecoration(
-          hintText: 'Search for food...',
+          hintText: Translate.get('searchForFood'),
           prefixIcon: const Icon(Icons.search,
               color: AppColors.primaryColor),
           border: OutlineInputBorder(

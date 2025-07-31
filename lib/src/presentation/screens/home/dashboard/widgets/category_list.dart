@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stadium_food/src/bloc/menu/menu_bloc.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 
 class CategoryList extends StatefulWidget {
@@ -14,27 +15,27 @@ class _CategoryListState extends State<CategoryList> {
   int _selectedIndex = 0;
 
   final List<Map<String, dynamic>> categories = [
-    {'name': 'All', 'icon': '🔥'},
-    {'name': 'Snacks & Street Food', 'icon': '🥨'},
-    {'name': 'Salads & Soups', 'icon': '🥗'},
-    {'name': 'Pizza, Pasta & Burgers', 'icon': '🍕'},
-    {'name': 'Grill & BBQ', 'icon': '🍖'},
-    {'name': 'Seafood', 'icon': '🦐'},
-    {'name': 'Vegetarian / Vegan', 'icon': '🥬'},
-    {'name': 'Desserts & Sweets', 'icon': '🍰'},
-    {'name': 'Drinks & Beverages', 'icon': '🥤'},
-    {'name': 'Kids Menu', 'icon': '🧸'},
-    {'name': 'Combos & Deals', 'icon': '🎯'},
-    {'name': 'Traditional / Local Specials', 'icon': '🏆'},
-    {'name': 'Trending / Chef\'s Specials', 'icon': '⭐'},
-    {'name': 'Appetizers', 'icon': '🍱'},
+    {'name': 'all', 'icon': '🔥'},
+    {'name': 'snacksStreetFood', 'icon': '🥨'},
+    {'name': 'saladsSoups', 'icon': '🥗'},
+    {'name': 'pizzaPastaBurgers', 'icon': '🍕'},
+    {'name': 'grillBbq', 'icon': '🍖'},
+    {'name': 'seafood', 'icon': '🦐'},
+    {'name': 'vegetarianVegan', 'icon': '🥬'},
+    {'name': 'dessertsSweets', 'icon': '🍰'},
+    {'name': 'drinksBeverages', 'icon': '🥤'},
+    {'name': 'kidsMenu', 'icon': '🧸'},
+    {'name': 'combosDeals', 'icon': '🎯'},
+    {'name': 'traditionalLocal', 'icon': '🏆'},
+    {'name': 'trendingChef', 'icon': '⭐'},
+    {'name': 'appetizers', 'icon': '🍱'},
   ];
 
   @override
   void initState() {
     super.initState();
     // Initial filter with 'All' category
-    _filterByCategory('All');
+    _filterByCategory('all');
   }
 
   void _filterByCategory(String category) {
@@ -52,7 +53,7 @@ class _CategoryListState extends State<CategoryList> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'All Categories',
+                Translate.get('allCategories'),
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -64,7 +65,7 @@ class _CategoryListState extends State<CategoryList> {
                 child: Row(
                   children: [
                     Text(
-                      'See All',
+                      Translate.get('seeAll'),
                       style: TextStyle(
                         fontSize: 14,
                         color: AppColors.primaryColor,
@@ -118,7 +119,7 @@ class _CategoryListState extends State<CategoryList> {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            category['name'] as String,
+                            Translate.get(category['name'] as String),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,

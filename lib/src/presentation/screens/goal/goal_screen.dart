@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:lottie/lottie.dart';
 import 'dart:math' as math;
 import 'package:hive/hive.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 
 class GoalScreen extends StatefulWidget {
@@ -20,7 +20,7 @@ class _GoalScreenState extends State<GoalScreen> with TickerProviderStateMixin {
   late Animation<double> _headlineRotateAnimation;
   late Animation<Offset> _sublineSlideAnimation;
   late Animation<double> _sublineOpacityAnimation;
-  
+
   // App color scheme
   final List<Color> gradientColors = [
     AppColors.primaryColor,
@@ -39,13 +39,12 @@ class _GoalScreenState extends State<GoalScreen> with TickerProviderStateMixin {
         // Use simple sine wave animation that's guaranteed to be in range
         final scale = 0.8 + 0.2 * math.sin(value * math.pi);
         final opacity = 0.7 + 0.3 * math.sin(value * math.pi);
-        
+
         return Transform.scale(
           scale: scale,
           child: Opacity(
             opacity: opacity,
             child: Container(
-              
               padding: const EdgeInsets.all(12),
               child: Icon(
                 icon,
@@ -62,13 +61,13 @@ class _GoalScreenState extends State<GoalScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    
+
     // Headline animations
     _headlineController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
     );
-    
+
     // Set up repeating animation for the headline
     _headlineController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
@@ -81,7 +80,7 @@ class _GoalScreenState extends State<GoalScreen> with TickerProviderStateMixin {
         });
       }
     });
-    
+
     _headlineScaleAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -89,7 +88,7 @@ class _GoalScreenState extends State<GoalScreen> with TickerProviderStateMixin {
       parent: _headlineController,
       curve: Curves.elasticOut,
     ));
-    
+
     _headlineRotateAnimation = Tween<double>(
       begin: -0.1,
       end: 0.0,
@@ -97,13 +96,13 @@ class _GoalScreenState extends State<GoalScreen> with TickerProviderStateMixin {
       parent: _headlineController,
       curve: Curves.elasticOut,
     ));
-    
+
     // Subline animations
     _sublineController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
     );
-    
+
     _sublineOpacityAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -111,7 +110,7 @@ class _GoalScreenState extends State<GoalScreen> with TickerProviderStateMixin {
       parent: _sublineController,
       curve: Curves.easeIn,
     ));
-    
+
     _sublineSlideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.5),
       end: Offset.zero,
@@ -119,15 +118,13 @@ class _GoalScreenState extends State<GoalScreen> with TickerProviderStateMixin {
       parent: _sublineController,
       curve: Curves.easeOutCubic,
     ));
-    
 
-    
     // Food icons animation
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 3),
     );
-    
+
     // Start animations with a slight delay between them
     _headlineController.forward();
     Future.delayed(const Duration(milliseconds: 1000), () {
@@ -157,7 +154,7 @@ class _GoalScreenState extends State<GoalScreen> with TickerProviderStateMixin {
             height: double.infinity,
             color: AppColors.primaryColor,
           ),
-          
+
           // Floating food icons animation
           Positioned.fill(
             child: Stack(
@@ -166,53 +163,59 @@ class _GoalScreenState extends State<GoalScreen> with TickerProviderStateMixin {
                 Positioned(
                   top: 50,
                   left: 30,
-                  child: _buildFoodIcon(Icons.fastfood, 40, AppColors.primaryLightColor.withOpacity(0.4)),
+                  child: _buildFoodIcon(Icons.fastfood, 40,
+                      AppColors.primaryLightColor.withOpacity(0.4)),
                 ),
                 Positioned(
                   top: 80,
                   left: 120,
-                  child: _buildFoodIcon(Icons.lunch_dining, 45, AppColors.primaryColor.withOpacity(0.4)),
+                  child: _buildFoodIcon(Icons.lunch_dining, 45,
+                      AppColors.primaryColor.withOpacity(0.4)),
                 ),
                 Positioned(
                   top: 40,
                   right: 60,
-                  child: _buildFoodIcon(Icons.local_pizza, 50, AppColors.secondaryColor.withOpacity(0.4)),
+                  child: _buildFoodIcon(Icons.local_pizza, 50,
+                      AppColors.secondaryColor.withOpacity(0.4)),
                 ),
-                
+
                 // Middle row food icons
                 Positioned(
                   top: MediaQuery.of(context).size.height * 0.3,
                   left: 40,
-                  child: _buildFoodIcon(Icons.local_drink, 45, AppColors.primaryDarkColor.withOpacity(0.4)),
+                  child: _buildFoodIcon(Icons.local_drink, 45,
+                      AppColors.primaryDarkColor.withOpacity(0.4)),
                 ),
                 Positioned(
                   top: MediaQuery.of(context).size.height * 0.35,
                   right: 50,
-                  child: _buildFoodIcon(Icons.icecream, 35, AppColors.secondaryLightColor.withOpacity(0.4)),
+                  child: _buildFoodIcon(Icons.icecream, 35,
+                      AppColors.secondaryLightColor.withOpacity(0.4)),
                 ),
-                
+
                 // Bottom row food icons
                 Positioned(
                   bottom: 120,
                   left: 60,
-                  child: _buildFoodIcon(Icons.bakery_dining, 42, AppColors.primaryLightColor.withOpacity(0.4)),
+                  child: _buildFoodIcon(Icons.bakery_dining, 42,
+                      AppColors.primaryLightColor.withOpacity(0.4)),
                 ),
                 Positioned(
                   bottom: 80,
                   right: 70,
-                  child: _buildFoodIcon(Icons.emoji_food_beverage, 38, AppColors.secondaryColor.withOpacity(0.4)),
+                  child: _buildFoodIcon(Icons.emoji_food_beverage, 38,
+                      AppColors.secondaryColor.withOpacity(0.4)),
                 ),
                 Positioned(
                   bottom: 180,
                   right: 140,
-                  child: _buildFoodIcon(Icons.sports_bar, 36, AppColors.primaryDarkColor.withOpacity(0.4)),
+                  child: _buildFoodIcon(Icons.sports_bar, 36,
+                      AppColors.primaryDarkColor.withOpacity(0.4)),
                 ),
-                
-                
               ],
             ),
           ),
-          
+
           // Stadium animation at top
           Positioned(
             top: 80,
@@ -227,7 +230,7 @@ class _GoalScreenState extends State<GoalScreen> with TickerProviderStateMixin {
               ),
             ),
           ),
-          
+
           // Content
           Center(
             child: Padding(
@@ -240,102 +243,86 @@ class _GoalScreenState extends State<GoalScreen> with TickerProviderStateMixin {
                     // Headline with scale and rotation animation
                     AnimatedBuilder(
                       animation: _headlineController,
-                    builder: (context, child) {
-                      return Transform.scale(
-                        scale: _headlineScaleAnimation.value,
-                        child: Transform.rotate(
-                          angle: _headlineRotateAnimation.value,
-                          child: child,
-                        ),
-                      );
-                    },
-                    child: Column(
-                      children: [
-
-                        const SizedBox(height: 16),
-                        // Pulsating text animation
-                        TweenAnimationBuilder<double>(
-                          tween: Tween<double>(begin: 0.95, end: 1.05),
-                          duration: const Duration(milliseconds: 1500),
-                          curve: Curves.easeInOut,
-                          builder: (context, scale, child) {
-                            return Transform.scale(
-                              scale: scale,
-                              child: child,
-                            );
-                          },
-                          child: Text(
-                            'Tap. Sit. Enjoy.',
-                            style: TextStyle(
-                              fontSize: 40,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.2,
-                              color: Colors.white,
-                              shadows: [
-                                Shadow(
-                                  blurRadius: 10.0,
-                                  color: Colors.white.withOpacity(0.3),
-                                  offset: const Offset(0, 0),
-                                ),
-                              ],
-                            ),
-                            textAlign: TextAlign.center,
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: _headlineScaleAnimation.value,
+                          child: Transform.rotate(
+                            angle: _headlineRotateAnimation.value,
+                            child: child,
                           ),
-                        ),
-                      ],
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 16),
+                          // Pulsating text animation
+                          TweenAnimationBuilder<double>(
+                            tween: Tween<double>(begin: 0.95, end: 1.05),
+                            duration: const Duration(milliseconds: 1500),
+                            curve: Curves.easeInOut,
+                            builder: (context, scale, child) {
+                              return Transform.scale(
+                                scale: scale,
+                                child: child,
+                              );
+                            },
+                            child: Text(
+                              Translate.get('goal_screen_main_title'),
+                              style: TextStyle(
+                                fontSize: 40,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                    
+
                     const SizedBox(height: 40),
-                    
+
                     // Subline with fade and slide animation
                     AnimatedBuilder(
                       animation: _sublineController,
-                    builder: (context, child) {
-                      return FadeTransition(
-                        opacity: _sublineOpacityAnimation,
-                        child: SlideTransition(
-                          position: _sublineSlideAnimation,
-                          child: child,
-                        ),
-                      );
-                    },
-                    child: Column(
-                      children: [
-
-                        Text(
-                          "Enjoy food, drinks and merch delivered right to your seat - so you can stay in the action, not the line.",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                            height: 1.5,
+                      builder: (context, child) {
+                        return FadeTransition(
+                          opacity: _sublineOpacityAnimation,
+                          child: SlideTransition(
+                            position: _sublineSlideAnimation,
+                            child: child,
                           ),
-                        ),
-                        const SizedBox(height: 16),
-
-
-                        Text(
-                          "Skip the lines. Never Miss a Moment.",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            height: 1.5,
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          Text(
+                            Translate.get('goal_screen_description'),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
-                        
-                      ],
+                          const SizedBox(height: 16),
+                          Text(
+                            Translate.get('goal_screen_title'),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                    
                   ],
                 ),
               ),
             ),
           ),
-          
+
           // Button positioned at bottom right with smooth animation
           Positioned(
             bottom: 40,
@@ -354,53 +341,55 @@ class _GoalScreenState extends State<GoalScreen> with TickerProviderStateMixin {
                 );
               },
               child: ElevatedButton(
-                      onPressed: () {
-                        var box = Hive.box('myBox');
-                        
-                        // Check if user has already selected a stadium
-                        if (box.get('selectedStadium') != null) {
-                          // If stadium is selected, go to home
-                          Navigator.of(context).pushReplacementNamed('/home');
-                        } else {
-                          // Check if user has seen onboarding
-                          bool hasSeenOnboarding = box.get('hasSeenOnboarding', defaultValue: false);
-                          
-                          if (hasSeenOnboarding) {
-                            // If user has seen onboarding, go to stadium selection
-                            Navigator.of(context).pushReplacementNamed('/select-stadium');
-                          } else {
-                            // If user hasn't seen onboarding, show onboarding screens first
-                            Navigator.of(context).pushReplacementNamed('/onboarding/first');
-                          }
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 254, 254, 254),
-                        foregroundColor: Colors.white,
-                        elevation: 4,
-                        shadowColor: AppColors.primaryColor.withOpacity(0.4),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 40,
-                          vertical: 16,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      child: const Text(
-                        "Let's Go!",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primaryColor,
-                        ),
-                      ),
+                onPressed: () {
+                  var box = Hive.box('myBox');
+
+                  // Check if user has already selected a stadium
+                  if (box.get('selectedStadium') != null) {
+                    // If stadium is selected, go to home
+                    Navigator.of(context).pushReplacementNamed('/home');
+                  } else {
+                    // Check if user has seen onboarding
+                    bool hasSeenOnboarding =
+                        box.get('hasSeenOnboarding', defaultValue: false);
+
+                    if (hasSeenOnboarding) {
+                      // If user has seen onboarding, go to stadium selection
+                      Navigator.of(context)
+                          .pushReplacementNamed('/select-stadium');
+                    } else {
+                      // If user hasn't seen onboarding, show onboarding screens first
+                      Navigator.of(context)
+                          .pushReplacementNamed('/onboarding/first');
+                    }
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 254, 254, 254),
+                  foregroundColor: Colors.black,
+                  elevation: 4,
+                  shadowColor: AppColors.primaryColor.withOpacity(0.4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 16,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: Text(
+                  Translate.get('goal_screen_button'),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
               ),
             ),
-      )],
+          )
+        ],
       ),
     );
   }
 }
-
-

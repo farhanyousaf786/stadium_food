@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/services/firebase_storage.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/back_button.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
@@ -73,7 +74,7 @@ class _UploadPhotoScreenState extends State<UploadPhotoScreen> {
               padding:
               const EdgeInsets.only(bottom: 60, left: 25, right: 25),
               child: PrimaryButton(
-                text: "Next",
+                text: Translate.get('upload_photo_next'),
                 onTap: () async {
                   var box = Hive.box('myBox');
 
@@ -117,12 +118,12 @@ class _UploadPhotoScreenState extends State<UploadPhotoScreen> {
                   const CustomBackButton(),
                   const SizedBox(height: 20),
                   Text(
-                    "Upload Your Profile \nPhoto",
+                    Translate.get('upload_photo_title'),
                     style: CustomTextStyle.size25Weight600Text(),
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    "This data will be displayed in your account \nprofile for security",
+                    Translate.get('upload_photo_description'),
                     style: CustomTextStyle.size14Weight400Text(),
                   ),
                   const SizedBox(height: 20),
@@ -259,7 +260,7 @@ class _UploadPhotoScreenState extends State<UploadPhotoScreen> {
                                           ),
                                           const SizedBox(height: 10),
                                           Text(
-                                            "From Gallery",
+                                            Translate.get('upload_photo_from_gallery'),
                                             style: CustomTextStyle
                                                 .size14Weight400Text(),
                                           ),
@@ -293,7 +294,7 @@ class _UploadPhotoScreenState extends State<UploadPhotoScreen> {
                                           ),
                                           const SizedBox(height: 10),
                                           Text(
-                                            "From Camera",
+                                            Translate.get('upload_photo_from_camera'),
                                             style: CustomTextStyle
                                                 .size14Weight400Text(),
                                           ),

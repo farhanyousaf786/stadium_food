@@ -28,9 +28,45 @@ class AccountDeletionSuccess extends SettingsState {}
 
 class AccountDeletionFailure extends SettingsState {
   final String message;
-  
+
   const AccountDeletionFailure(this.message);
-  
+
   @override
   List<Object> get props => [message];
+}
+
+class LanguageChanged extends SettingsState {
+  final String language;
+
+  const LanguageChanged(this.language);
+
+  @override
+  List<Object> get props => [language];
+}
+
+class LanguageChangeFailure extends SettingsState {
+  final String error;
+
+  const LanguageChangeFailure(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
+
+class CurrencyChanged extends SettingsState {
+  final String currency;
+
+  const CurrencyChanged(this.currency);
+
+  @override
+  List<Object> get props => [currency];
+}
+
+class CurrencyChangeFailure extends SettingsState {
+  final String error;
+
+  const CurrencyChangeFailure(this.error);
+
+  @override
+  List<Object> get props => [error];
 }

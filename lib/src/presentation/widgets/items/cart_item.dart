@@ -5,6 +5,7 @@ import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:stadium_food/src/data/models/food.dart';
 import 'package:stadium_food/src/data/services/firestore_db.dart';
 import 'package:stadium_food/src/presentation/widgets/image_placeholder.dart';
+import 'package:stadium_food/src/presentation/widgets/formatted_price_text.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
@@ -19,8 +20,6 @@ class CartItem extends StatefulWidget {
 }
 
 class _CartItemState extends State<CartItem> {
-
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -50,18 +49,18 @@ class _CartItemState extends State<CartItem> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-
                   const SizedBox(height: 12),
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: AppColors.primaryColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Text(
-                          "\$${widget.food.price}",
+                        child: FormattedPriceText(
+                          amount: widget.food.price,
                           style: CustomTextStyle.size18Weight600Text(
                             AppColors.primaryColor,
                           ),
@@ -71,7 +70,8 @@ class _CartItemState extends State<CartItem> {
                       Row(
                         children: [
                           UpdateQuantityButton(
-                            backgroundColor: AppColors.primaryColor.withOpacity(0.1),
+                            backgroundColor:
+                                AppColors.primaryColor.withOpacity(0.1),
                             iconColor: AppColors.primaryColor,
                             icon: Icons.remove,
                             onTap: () {
@@ -80,7 +80,8 @@ class _CartItemState extends State<CartItem> {
                                   context: context,
                                   builder: (context) => AlertDialog(
                                     title: const Text('Remove Item'),
-                                    content: Text('Remove ${widget.food.name} from cart?'),
+                                    content: Text(
+                                        'Remove ${widget.food.name} from cart?'),
                                     actions: [
                                       TextButton(
                                         onPressed: () => Navigator.pop(context),
@@ -88,7 +89,8 @@ class _CartItemState extends State<CartItem> {
                                       ),
                                       TextButton(
                                         onPressed: () {
-                                          BlocProvider.of<OrderBloc>(context).add(
+                                          BlocProvider.of<OrderBloc>(context)
+                                              .add(
                                             RemoveFromCart(widget.food),
                                           );
                                           Navigator.pop(context);
@@ -146,20 +148,20 @@ class _CartItemState extends State<CartItem> {
               height: 120,
               width: 120,
               child: widget.food.images.isEmpty
-                ? ImagePlaceholder(
-                    iconData: Icons.fastfood,
-                    iconSize: 40,
-                  )
-                : Image.network(
-                    widget.food.images.first,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return ImagePlaceholder(
-                        iconData: Icons.fastfood,
-                        iconSize: 40,
-                      );
-                    },
-                  ),
+                  ? ImagePlaceholder(
+                      iconData: Icons.fastfood,
+                      iconSize: 40,
+                    )
+                  : Image.network(
+                      widget.food.images.first,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return ImagePlaceholder(
+                          iconData: Icons.fastfood,
+                          iconSize: 40,
+                        );
+                      },
+                    ),
             ),
           ),
         ],

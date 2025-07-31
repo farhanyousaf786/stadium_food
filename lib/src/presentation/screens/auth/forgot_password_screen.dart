@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:stadium_food/src/bloc/forgot_password/forgot_password_bloc.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
@@ -58,7 +59,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             right: 25,
           ),
           child: PrimaryButton(
-            text: "Send",
+            text: Translate.get('forgot_password_send_button'),
             onTap: () {
               BlocProvider.of<ForgotPasswordBloc>(context).add(
                 SendResetPasswordLink(
@@ -88,12 +89,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     const CustomBackButton(),
                     const SizedBox(height: 20),
                     Text(
-                      "Forgot Password?",
+                      Translate.get('forgot_password_title'),
                       style: CustomTextStyle.size25Weight600Text(),
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      "Enter your email address to reset password",
+                      Translate.get('forgot_password_description'),
                       style: CustomTextStyle.size14Weight400Text(),
                     ),
                     const SizedBox(height: 20),
@@ -107,7 +108,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         decoration: InputDecoration(
                           fillColor: AppColors().cardColor,
                           filled: true,
-                          hintText: "Email",
+                          hintText: Translate.get('forgot_password_email_hint'),
                           hintStyle: CustomTextStyle.size14Weight400Text(
                             AppColors().secondaryTextColor,
                           ),

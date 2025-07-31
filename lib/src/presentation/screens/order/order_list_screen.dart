@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/repositories/order_repository.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
 import 'package:stadium_food/src/presentation/widgets/items/order_item.dart';
@@ -69,10 +70,10 @@ class _OrderListScreenState extends State<OrderListScreen>
                 indicatorColor: AppColors.primaryColor,
                 labelColor: AppColors.primaryColor,
                 unselectedLabelColor: Colors.grey,
-                tabs: const [
-                  Tab(text: 'Active'),
-                  Tab(text: 'Completed'),
-                  Tab(text: 'Cancelled'),
+                tabs: [
+                  Tab(text: Translate.get('active')),
+                  Tab(text: Translate.get('completed')),
+                  Tab(text: Translate.get('cancelled')),
                 ],
               ),
               const SizedBox(height: 10),
@@ -116,7 +117,7 @@ class _OrderListScreenState extends State<OrderListScreen>
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text("Orders", style: CustomTextStyle.size25Weight600Text()),
+        Text(Translate.get('orders'), style: CustomTextStyle.size25Weight600Text()),
         InkWell(
           onTap: () => Navigator.pushNamed(context, "/cart"),
           borderRadius: AppStyles.defaultBorderRadius,
@@ -180,11 +181,11 @@ class _OrderListScreenState extends State<OrderListScreen>
             const SizedBox(
               height: 16,
             ),
-            Text("No orders found", style: CustomTextStyle.size22Weight600Text()),
+            Text(Translate.get('noOrdersFound'), style: CustomTextStyle.size22Weight600Text()),
             const SizedBox(height: 20),
             PrimaryButton(
               iconData: Icons.shopping_bag,
-              text: "Continue Shopping",
+              text: Translate.get('continueShopping'),
               onTap: () => Navigator.pushNamed(context, "/foods"),
             ),
           ],

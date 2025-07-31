@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/models/order.dart';
 import 'package:stadium_food/src/data/models/order_status.dart';
 import 'package:stadium_food/src/data/models/shopuser.dart';
@@ -21,105 +22,105 @@ class OrderDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bgColor,
-      bottomNavigationBar: Container(
-        height: 163,
-        margin: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: AppColors.primaryGradient,
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: AppStyles.largeBorderRadius,
-          boxShadow: [AppStyles.boxShadow7],
-        ),
-        child: Stack(
-          children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: SvgPicture.asset(
-                'assets/svg/pattern-card.svg',
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Subtotal',
-                        style: CustomTextStyle.size16Weight400Text(
-                          Colors.white,
-                        ),
-                      ),
-                      Text(
-                        '\$${order.subtotal}',
-                        style: CustomTextStyle.size16Weight400Text(
-                          Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Delivery fee',
-                        style: CustomTextStyle.size16Weight400Text(
-                          Colors.white,
-                        ),
-                      ),
-                      Text(
-                        '\$${order.deliveryFee}',
-                        style: CustomTextStyle.size16Weight400Text(
-                          Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Discount',
-                        style: CustomTextStyle.size16Weight400Text(
-                          Colors.white,
-                        ),
-                      ),
-                      Text(
-                        '\$${order.discount}',
-                        style: CustomTextStyle.size16Weight400Text(
-                          Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Total',
-                        style: CustomTextStyle.size22Weight600Text(
-                          Colors.white,
-                        ),
-                      ),
-                      Text(
-                        '\$${order.total.toStringAsFixed(2)}',
-                        style: CustomTextStyle.size22Weight600Text(
-                          Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+      // bottomNavigationBar: Container(
+      //   height: 163,
+      //   margin: const EdgeInsets.all(20),
+      //   decoration: BoxDecoration(
+      //     gradient: LinearGradient(
+      //       colors: AppColors.primaryGradient,
+      //       begin: Alignment.topLeft,
+      //       end: Alignment.bottomRight,
+      //     ),
+      //     borderRadius: AppStyles.largeBorderRadius,
+      //     boxShadow: [AppStyles.boxShadow7],
+      //   ),
+      //   child: Stack(
+      //     children: [
+      //       Align(
+      //         alignment: Alignment.topRight,
+      //         child: SvgPicture.asset(
+      //           'assets/svg/pattern-card.svg',
+      //         ),
+      //       ),
+      //       Padding(
+      //         padding: const EdgeInsets.all(20),
+      //         child: Column(
+      //           children: [
+      //             Row(
+      //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //               children: [
+      //                 Text(
+      //                   'Subtotal',
+      //                   style: CustomTextStyle.size16Weight400Text(
+      //                     Colors.white,
+      //                   ),
+      //                 ),
+      //                 Text(
+      //                   '\$${order.subtotal}',
+      //                   style: CustomTextStyle.size16Weight400Text(
+      //                     Colors.white,
+      //                   ),
+      //                 ),
+      //               ],
+      //             ),
+      //             Row(
+      //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //               children: [
+      //                 Text(
+      //                   'Handling & Delivery ',
+      //                   style: CustomTextStyle.size16Weight400Text(
+      //                     Colors.white,
+      //                   ),
+      //                 ),
+      //                 Text(
+      //                   '\$${order.deliveryFee}',
+      //                   style: CustomTextStyle.size16Weight400Text(
+      //                     Colors.white,
+      //                   ),
+      //                 ),
+      //               ],
+      //             ),
+      //             Row(
+      //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //               children: [
+      //                 Text(
+      //                   'Discount',
+      //                   style: CustomTextStyle.size16Weight400Text(
+      //                     Colors.white,
+      //                   ),
+      //                 ),
+      //                 Text(
+      //                   '\$${order.discount}',
+      //                   style: CustomTextStyle.size16Weight400Text(
+      //                     Colors.white,
+      //                   ),
+      //                 ),
+      //               ],
+      //             ),
+      //             const SizedBox(height: 20),
+      //             Row(
+      //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //               children: [
+      //                 Text(
+      //                   'Total',
+      //                   style: CustomTextStyle.size22Weight600Text(
+      //                     Colors.white,
+      //                   ),
+      //                 ),
+      //                 Text(
+      //                   '\$${order.total.toStringAsFixed(2)}',
+      //                   style: CustomTextStyle.size22Weight600Text(
+      //                     Colors.white,
+      //                   ),
+      //                 ),
+      //               ],
+      //             ),
+      //           ],
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -141,8 +142,8 @@ class OrderDetailsScreen extends StatelessWidget {
                       if (querySnapshot.docs.isEmpty) {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Shop owner not found')),
+                            SnackBar(
+                                content: Text(Translate.get('shopOwnerNotFound'))),
                           );
                         }
                         return;
@@ -179,7 +180,7 @@ class OrderDetailsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Text(
-                "Order #${order.id}",
+                "${Translate.get('order')} #${order.id}",
                 style: CustomTextStyle.size22Weight600Text(),
               ),
               const SizedBox(height: 20),
@@ -190,7 +191,7 @@ class OrderDetailsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Text(
-                "Items",
+                Translate.get('items'),
                 style: CustomTextStyle.size18Weight600Text(),
               ),
               const SizedBox(height: 10),
@@ -253,7 +254,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                       ),
                                       Spacer(),
                                       Text(
-                                        "Qty ${item.quantity}",
+                                        "${Translate.get('quantity')} ${item.quantity}",
                                         style: const TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
@@ -302,7 +303,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                               color: AppColors.primaryColor,
                                             ),
                                             Text(
-                                              '${item.preparationTime} min',
+                                              '${item.preparationTime} ${Translate.get('minutes')}',
                                               style: TextStyle(
                                                 fontSize: 13,
                                                 color: AppColors.primaryColor,

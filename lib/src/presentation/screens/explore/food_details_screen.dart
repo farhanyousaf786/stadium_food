@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stadium_food/src/bloc/food/food_bloc.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:stadium_food/src/bloc/profile/profile_bloc.dart';
 import 'package:stadium_food/src/bloc/testimonial/testimonial_bloc.dart';
@@ -10,6 +11,7 @@ import 'package:stadium_food/src/data/models/food.dart';
 import 'package:stadium_food/src/data/models/testimonial.dart';
 import 'package:stadium_food/src/presentation/widgets/bullet_point.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
+import 'package:stadium_food/src/presentation/widgets/formatted_price_text.dart';
 import 'package:stadium_food/src/presentation/widgets/image_placeholder.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/like_button.dart';
 import 'package:stadium_food/src/presentation/widgets/items/testimonial_item.dart';
@@ -53,22 +55,23 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
           setState(() {
             testimonials = state.testimonials;
             try {
-              rating = testimonials.map((e) => e.rating).reduce((a, b) => a + b) /
-                  testimonials.length;
+              rating =
+                  testimonials.map((e) => e.rating).reduce((a, b) => a + b) /
+                      testimonials.length;
             } catch (e) {
               rating = 0;
             }
           });
         } else if (state is TestimonialFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to load testimonials')),
+            SnackBar(content: Text(Translate.get('failedToLoadTestimonials'))),
           );
         }
       },
       child: Scaffold(
-        backgroundColor:   AppColors.bgColor,
+        backgroundColor: AppColors.bgColor,
         bottomNavigationBar: Padding(
-          padding: const EdgeInsets.fromLTRB(16,10,0,16),
+          padding: const EdgeInsets.fromLTRB(16, 10, 0, 16),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -80,7 +83,11 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                         isLiked: widget.food.isFavorite,
                         onTap: () {
                           BlocProvider.of<ProfileBloc>(context).add(
-                            ToggleFavoriteFood(foodId: widget.food.id, shopId: widget.food.shopId, stadiumId: widget.food.stadiumId,),
+                            ToggleFavoriteFood(
+                              foodId: widget.food.id,
+                              shopId: widget.food.shopId,
+                              stadiumId: widget.food.stadiumId,
+                            ),
                           );
                         },
                       );
@@ -89,13 +96,12 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                   const SizedBox(width: 10),
                 ],
               ),
-
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
                   child: PrimaryButton(
                     iconData: Icons.add_shopping_cart,
-                    text: "Add to Cart",
+                    text: Translate.get('addToCart'),
                     onTap: () {
                       BlocProvider.of<OrderBloc>(context).add(
                         AddToCart(widget.food),
@@ -111,9 +117,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
         body: CustomScrollView(
           slivers: [
             SliverAppBar(
-
-              leading:     const CustomBackButton(),
-
+              leading: const CustomBackButton(),
               expandedHeight: MediaQuery.of(context).size.height * 0.4,
               flexibleSpace: Stack(
                 children: [
@@ -157,7 +161,6 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
             SliverToBoxAdapter(
               child: Container(
                 color: AppColors().backgroundColor,
-
                 padding: const EdgeInsets.fromLTRB(
                   20,
                   0,
@@ -167,7 +170,6 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -179,8 +181,8 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                             style: CustomTextStyle.size27Weight600Text(),
                           ),
                         ),
-                        Text(
-                          "\$${widget.food.price}",
+                        FormattedPriceText(
+                          amount: widget.food.price,
                           style: CustomTextStyle.size22Weight600Text(
                             AppColors.primaryColor,
                           ),
@@ -189,7 +191,8 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                     ),
                     const SizedBox(height: 20),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 8),
                       decoration: BoxDecoration(
                         color: AppColors.primaryColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
@@ -204,7 +207,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                           BlocBuilder<TestimonialBloc, TestimonialState>(
                             builder: (context, state) {
                               return Text(
-                                "${rating.toStringAsFixed(2)} Rating",
+                                rating > 0 ? "${rating.toStringAsFixed(2)} ${Translate.get('rating')}" : Translate.get('noRatings'),
                                 style: CustomTextStyle.size14Weight400Text(
                                   AppColors().secondaryTextColor,
                                 ),
@@ -229,14 +232,14 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                                 );
                               } else if (state is OrderCountFetched) {
                                 return Text(
-                                  "${state.count} ${state.count == 1 ? 'Order' : 'Orders'}",
+                                  "${state.count} ${Translate.get('orderCount')}",
                                   style: CustomTextStyle.size14Weight400Text(
                                     AppColors().secondaryTextColor,
                                   ),
                                 );
                               }
                               return Text(
-                                "0 Orders",
+                                "0 ${Translate.get('orderCount')}",
                                 style: CustomTextStyle.size14Weight400Text(
                                   AppColors().secondaryTextColor,
                                 ),
@@ -246,14 +249,15 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                         ],
                       ),
                     ),
-
                     const SizedBox(height: 24),
 
-                    // description
+                    Text(
+                      Translate.get('description'),
+                    ),
                     Text(
                       widget.food.description.isNotEmpty
                           ? widget.food.description
-                          : "No description available",
+                          : Translate.get('noDescriptionAvailable'),
                       style: CustomTextStyle.size14Weight400Text(
                         widget.food.description.isNotEmpty
                             ? null
@@ -267,7 +271,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
 
                     // allergens
                     Text(
-                      "Allergens",
+                      Translate.get('allergens'),
                       style: CustomTextStyle.size18Weight600Text(),
                     ),
                     const SizedBox(height: 10),
@@ -294,7 +298,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                           )
                         : Center(
                             child: Text(
-                              "No ingredients available",
+                              Translate.get('noIngredientsAvailable'),
                               style: CustomTextStyle.size14Weight400Text(
                                 AppColors().secondaryTextColor,
                               ),
@@ -304,7 +308,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
 
                     // testimonials
                     Text(
-                      "Testimonials",
+                      Translate.get('testimonials'),
                       style: CustomTextStyle.size18Weight600Text(),
                     ),
                     const SizedBox(height: 20),
@@ -312,14 +316,15 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                       builder: (context, state) {
                         if (state is TestimonialLoading) {
                           return const Center(
-                            child: CircularProgressIndicator(color: AppColors.primaryColor),
+                            child: CircularProgressIndicator(
+                                color: AppColors.primaryColor),
                           );
                         }
-                        
+
                         if (testimonials.isEmpty) {
                           return Center(
                             child: Text(
-                              "No testimonials available",
+                              Translate.get('noTestimonialsAvailable'),
                               style: CustomTextStyle.size14Weight400Text(
                                 AppColors().secondaryTextColor,
                               ),

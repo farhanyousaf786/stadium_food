@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/repositories/order_repository.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/secondary_button.dart';
+import 'package:stadium_food/src/presentation/widgets/formatted_price_text.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
@@ -17,7 +19,6 @@ class PriceInfoWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return IntrinsicHeight(
       child: Container(
-
         margin: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -44,48 +45,13 @@ class PriceInfoWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Subtotal',
+                        Translate.get('subtotal'),
                         style: CustomTextStyle.size16Weight400Text(
                           Colors.white,
                         ),
                       ),
-                      Text(
-                        '\$${OrderRepository.subtotal}',
-                        style: CustomTextStyle.size16Weight400Text(
-                          Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Delivery fee',
-                        style: CustomTextStyle.size16Weight400Text(
-                          Colors.white,
-                        ),
-                      ),
-                      Text(
-                        '\$${OrderRepository.deliveryFee}',
-                        style: CustomTextStyle.size16Weight400Text(
-                          Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Tip',
-                        style: CustomTextStyle.size16Weight400Text(
-                          Colors.white,
-                        ),
-                      ),
-                      Text(
-                        '\$${OrderRepository.tip}',
+                      FormattedPriceText(
+                        amount: OrderRepository.subtotal,
                         style: CustomTextStyle.size16Weight400Text(
                           Colors.white,
                         ),
@@ -96,13 +62,47 @@ class PriceInfoWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Discount',
+                        Translate.get('handlingDelivery'),
                         style: CustomTextStyle.size16Weight400Text(
                           Colors.white,
                         ),
                       ),
+                      FormattedPriceText(
+                        amount: OrderRepository.deliveryFee,
+                        style: CustomTextStyle.size16Weight400Text(
+                          Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
                       Text(
-                        '\$${OrderRepository.discount}',
+                        Translate.get('tip'),
+                        style: CustomTextStyle.size16Weight400Text(
+                          Colors.white,
+                        ),
+                      ),
+                      FormattedPriceText(
+                        amount: OrderRepository.tip,
+                        style: CustomTextStyle.size16Weight400Text(
+                          Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        Translate.get('discount'),
+                        style: CustomTextStyle.size16Weight400Text(
+                          Colors.white,
+                        ),
+                      ),
+                      FormattedPriceText(
+                        amount: OrderRepository.discount,
                         style: CustomTextStyle.size16Weight400Text(
                           Colors.white,
                         ),
@@ -114,13 +114,13 @@ class PriceInfoWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Total',
+                        Translate.get('total'),
                         style: CustomTextStyle.size22Weight600Text(
                           Colors.white,
                         ),
                       ),
-                      Text(
-                        '\$${OrderRepository.total.toStringAsFixed(2)}',
+                      FormattedPriceText(
+                        amount: OrderRepository.total,
                         style: CustomTextStyle.size22Weight600Text(
                           Colors.white,
                         ),
@@ -132,7 +132,7 @@ class PriceInfoWidget extends StatelessWidget {
                     children: [
                       Expanded(
                         child: SecondaryButton(
-                          text: "Place Order",
+                          text: Translate.get('placeOrder'),
                           onTap: onTap,
                         ),
                       ),

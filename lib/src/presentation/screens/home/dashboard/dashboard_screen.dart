@@ -52,6 +52,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       const SizedBox(height: 24),
                       OffersList(),
+
                       const SizedBox(height: 24),
                       const CategoryList(),
                       const SizedBox(height: 24),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:hive/hive.dart';
 
 import '../../utils/app_colors.dart';
@@ -42,20 +43,20 @@ class _OnboardingFirstScreenState extends State<OnboardingFirstScreen> {
               ),
               const SizedBox(height: 40),
               Text(
-                "Tap, Sit, \nEnjoy",
+                Translate.get('onboarding_first_title'),
                 textAlign: TextAlign.center,
                 style: CustomTextStyle.size22Weight600Text(),
               ),
               const SizedBox(height: 20),
-              const Text(
-                "Order from your phone and get everything you need \nwithout ever leaving your seat. Enjoy!",
+              Text(
+                Translate.get('onboarding_first_description'),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 60),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: PrimaryButton(
-                  text: "Next",
+                  text: Translate.get('onboarding_button_next'),
                   onTap: () {
                     Navigator.pushNamed(
                       context,

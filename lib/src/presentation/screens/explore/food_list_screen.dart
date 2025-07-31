@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/presentation/widgets/shimmer_widgets.dart';
 import '../../../bloc/food/food_bloc.dart';
 import '../../../data/models/food.dart';
@@ -10,6 +11,7 @@ import '../../widgets/buttons/back_button.dart';
 import '../../widgets/items/food_item.dart';
 import '../../utils/custom_text_style.dart';
 import '../../utils/app_colors.dart';
+import '../../widgets/formatted_price_text.dart';
 
 class FoodListScreen extends StatefulWidget {
   final Stadium stadium;
@@ -162,7 +164,7 @@ class _FoodListScreenState extends State<FoodListScreen> {
                           padding: const EdgeInsets.only(right: 8.0),
                           child: FilterChip(
                             selected: _selectedFilters[type] ?? false,
-                            label: Text(type.toUpperCase()),
+                            label: Text(Translate.get(type).toUpperCase()),
                             onSelected: (bool selected) {
                               setState(() {
                                 _selectedFilters[type] = selected;
@@ -194,7 +196,7 @@ class _FoodListScreenState extends State<FoodListScreen> {
                       controller: _searchController,
                       onChanged: _filterFoods,
                       decoration: InputDecoration(
-                        hintText: 'Search for food...',
+                        hintText: Translate.get('searchFood'),
                         prefixIcon: const Icon(Icons.search,
                             color: AppColors.primaryColor),
                         border: OutlineInputBorder(
@@ -264,7 +266,8 @@ class _FoodListScreenState extends State<FoodListScreen> {
                   Expanded(
                     child: BlocBuilder<FoodBloc, FoodState>(
                       builder: (context, state) {
-                        if (state is FoodFetching || state is FoodMoreFetching) {
+                        if (state is FoodFetching ||
+                            state is FoodMoreFetching) {
                           return const Center(
                             child: FoodListShimmer(),
                           );
@@ -279,7 +282,7 @@ class _FoodListScreenState extends State<FoodListScreen> {
                                     size: 64, color: Colors.grey[400]),
                                 const SizedBox(height: 16),
                                 Text(
-                                  'No food items found',
+                                  Translate.get('noFoodItemsFound'),
                                   style: TextStyle(
                                       color: Colors.grey[600], fontSize: 16),
                                 ),
@@ -371,12 +374,12 @@ class _FoodListScreenState extends State<FoodListScreen> {
                                                     MainAxisAlignment
                                                         .spaceBetween,
                                                 children: [
-                                                  Text(
-                                                    '\$${food.price.toStringAsFixed(2)}',
+                                                  FormattedPriceText(
+                                                    amount: food.price,
                                                     style: TextStyle(
                                                       fontSize: 18,
                                                       fontWeight:
-                                                          FontWeight.bold,
+                                                          FontWeight.w600,
                                                       color: AppColors
                                                           .primaryColor,
                                                     ),
@@ -404,7 +407,7 @@ class _FoodListScreenState extends State<FoodListScreen> {
                                                               .primaryColor,
                                                         ),
                                                         Text(
-                                                          '${food.preparationTime} min',
+                                                          '${food.preparationTime} ${Translate.get('preparationTime')}',
                                                           style: TextStyle(
                                                             fontSize: 13,
                                                             color: AppColors

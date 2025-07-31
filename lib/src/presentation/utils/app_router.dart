@@ -12,7 +12,6 @@ import 'package:stadium_food/src/presentation/screens/auth/upload_photo_screen.d
 import 'package:stadium_food/src/presentation/screens/chat/chat_details_screen.dart';
 import 'package:stadium_food/src/presentation/screens/explore/food_details_screen.dart';
 
-
 import 'package:stadium_food/src/presentation/screens/home/home_screen.dart';
 import 'package:stadium_food/src/presentation/screens/home/notification_screen.dart';
 import 'package:stadium_food/src/presentation/screens/home/settings_screen.dart';
@@ -62,12 +61,10 @@ class AppRouter {
           builder: (_) => const RegisterProcessScreen(),
         );
 
-
       case '/register/upload-photo':
         return MaterialPageRoute(
           builder: (_) => const UploadPhotoScreen(),
         );
-
 
       case '/register/success':
         return MaterialPageRoute(
@@ -89,7 +86,6 @@ class AppRouter {
           builder: (_) => const StadiumScreen(),
         );
 
-
       case '/home':
         return MaterialPageRoute(
           builder: (_) => const HomeScreen(),
@@ -105,12 +101,10 @@ class AppRouter {
           builder: (_) => const VouchersScreen(),
         );
 
-
-
       case '/tip':
         return MaterialPageRoute(
           builder: (_) => const TipScreen(),
-        );  
+        );
 
       // case '/foods':
       //   return MaterialPageRoute(
@@ -131,7 +125,9 @@ class AppRouter {
 
       case '/cart':
         return MaterialPageRoute(
-          builder: (_) =>  CartScreen(isFromHome: false,),
+          builder: (_) => CartScreen(
+            isFromHome: false,
+          ),
         );
 
       case '/order/confirm':

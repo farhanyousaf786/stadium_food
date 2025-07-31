@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:stadium_food/src/presentation/screens/explore/food_details_screen.dart';
+
 import 'package:stadium_food/src/presentation/screens/explore/food_list_screen.dart';
 import '../../../bloc/shop/shop_bloc.dart';
 import '../../../data/models/stadium.dart';

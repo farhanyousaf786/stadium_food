@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:stadium_food/src/bloc/login/login_bloc.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/presentation/screens/auth/privacy_policy_screen.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
 import 'package:stadium_food/src/presentation/widgets/loading_indicator.dart';
@@ -106,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 60),
                       Text(
-                        'Login To Your Account',
+                        Translate.get('login_title'),
                         style: CustomTextStyle.size20Weight600Text(),
                       ),
                       const SizedBox(height: 40),
@@ -123,11 +123,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                 decoration: InputDecoration(
                                   fillColor: AppColors().cardColor,
                                   filled: true,
-                                  hintText: "Email",
-                                  hintStyle:
-                                      CustomTextStyle.size14Weight400Text(
-                                    AppColors().secondaryTextColor,
+                                  hintText: Translate.get('login_email_hint'),
+                                  hintStyle: CustomTextStyle.size14Weight400Text()
+                                      .copyWith(
+                                    color: Colors.grey,
                                   ),
+                                  border: InputBorder.none,
                                   enabledBorder:
                                       AppStyles().defaultEnabledBorder,
                                   focusedBorder:
@@ -147,28 +148,29 @@ class _LoginScreenState extends State<LoginScreen> {
                                 decoration: InputDecoration(
                                   fillColor: AppColors().cardColor,
                                   filled: true,
-                                  hintText: "Password",
-                                  hintStyle:
-                                      CustomTextStyle.size14Weight400Text(
-                                    AppColors().secondaryTextColor,
+                                  hintText: Translate.get('login_password_hint'),
+                                  hintStyle: CustomTextStyle.size14Weight400Text()
+                                      .copyWith(
+                                    color: Colors.grey,
+                                  ),
+                                  border: InputBorder.none,
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      hidePassword
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                      color: Colors.grey,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        hidePassword = !hidePassword;
+                                      });
+                                    },
                                   ),
                                   enabledBorder:
                                       AppStyles().defaultEnabledBorder,
                                   focusedBorder:
                                       AppStyles.defaultFocusedBorder(),
-                                  suffixIcon: GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        hidePassword = !hidePassword;
-                                      });
-                                    },
-                                    child: Icon(
-                                      hidePassword
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
-                                      color: AppColors.primaryColor,
-                                    ),
-                                  ),
                                 ),
                               ),
                             ),
@@ -199,7 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 );
                               },
                               child: Text(
-                                "I agree to the Privacy Policy",
+                                Translate.get('login_privacy_policy'),
                                 style: CustomTextStyle.size14Weight400Text(),
                               ),
                             ),
@@ -222,7 +224,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ).createShader(bounds),
                           blendMode: BlendMode.srcIn,
                           child: Text(
-                            "Forgot Password?",
+                            Translate.get('login_forgot_password'),
                             style: CustomTextStyle.size14Weight400Text()
                                 .copyWith(
                               decoration: TextDecoration.underline,
@@ -234,31 +236,31 @@ class _LoginScreenState extends State<LoginScreen> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 60),
                         child: PrimaryButton(
-                          text: "Login",
+                          text: Translate.get('login_button'),
                           onTap: () {
                             if (_emailController.text.trim().isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
+                                SnackBar(
                                   backgroundColor: AppColors.errorColor,
-                                  content: Text("Email is required"),
+                                  content: Text(Translate.get('login_error_email_required')),
                                 ),
                               );
                               return;
                             }
                             if (_passwordController.text.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
+                                SnackBar(
                                   backgroundColor: AppColors.errorColor,
-                                  content: Text("Password is required"),
+                                  content: Text(Translate.get('login_error_password_required')),
                                 ),
                               );
                               return;
                             }
                             if (!_privacyPolicyAccepted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
+                                SnackBar(
                                   backgroundColor: AppColors.errorColor,
-                                  content: Text("You must accept the Privacy Policy"),
+                                  content: Text(Translate.get('login_error_privacy_policy')),
                                 ),
                               );
                               return;

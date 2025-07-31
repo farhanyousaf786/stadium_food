@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:stadium_food/src/bloc/settings/settings_bloc.dart';
-import 'package:stadium_food/src/bloc/theme/theme_bloc.dart' as themeBloc;
-import 'package:stadium_food/src/core/constants/colors.dart';
-import '../../../../../data/models/user.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:stadium_food/src/bloc/settings/settings_bloc.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
+import 'package:stadium_food/src/data/services/currency_service.dart';
+import 'package:stadium_food/src/data/services/language_service.dart';
+import '../../../../../data/models/user.dart';
 
-class SettingsSection extends StatelessWidget {
+class SettingsSection extends StatefulWidget {
   final User user;
   final SettingsBloc settingsBloc;
   final bool isDarkMode;
@@ -22,19 +23,21 @@ class SettingsSection extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<SettingsSection> createState() => _SettingsSectionState();
+}
+
+class _SettingsSectionState extends State<SettingsSection> {
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Container(
-
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Theme.of(context)
-              .primaryColor
-              .withOpacity(0.1),
+          color: Theme.of(context).primaryColor.withOpacity(0.1),
           width: 1,
         ),
         boxShadow: [
@@ -48,26 +51,73 @@ class SettingsSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ListTile(
-          //   contentPadding: EdgeInsets.zero,
-          //   leading: Icon(
-          //     Icons.dark_mode,
-          //     color: theme.iconTheme.color,
-          //   ),
-          //   title: Text(
-          //     'Dark Mode',
-          //     style: theme.textTheme.bodyLarge?.copyWith(
-          //       color: theme.textTheme.bodyLarge?.color,
-          //     ),
-          //   ),
-          //   trailing: Switch(
-          //     value: isDarkMode,
-          //     onChanged: (value) {
-          //       context.read<themeBloc.ThemeBloc>().add(themeBloc.ToggleTheme());
-          //     },
-          //     activeColor: theme.primaryColor,
-          //   ),
-          // ),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Icon(
+              Icons.language,
+              color: theme.iconTheme.color,
+            ),
+            title: Text(
+              Translate.get('language'),
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.textTheme.bodyLarge?.color,
+              ),
+            ),
+            trailing: DropdownButton<String>(
+              value: LanguageService.getCurrentLanguage(),
+              items: [
+                const DropdownMenuItem(
+                  value: 'en',
+                  child: Text('English'),
+                ),
+                const DropdownMenuItem(
+                  value: 'he',
+                  child: Text('Hebrew'),
+                ),
+              ],
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  widget.settingsBloc.add(ChangeLanguage(newValue));
+                }
+              },
+            ),
+          ),
+          const SizedBox(height: 12),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Icon(
+              Icons.currency_exchange,
+              color: theme.iconTheme.color,
+            ),
+            title: Text(
+              Translate.get('currency'),
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.textTheme.bodyLarge?.color,
+              ),
+            ),
+            trailing: BlocBuilder<SettingsBloc, SettingsState>(
+              builder: (context, state) {
+                return DropdownButton<String>(
+                  value: CurrencyService.getCurrentCurrency(),
+                  items: [
+                    const DropdownMenuItem(
+                      value: 'USD',
+                      child: Text('USD'),
+                    ),
+                    const DropdownMenuItem(
+                      value: 'NIS',
+                      child: Text('NIS'),
+                    ),
+                  ],
+                  onChanged: (String? newValue) {
+                    if (newValue != null) {
+                      widget.settingsBloc.add(ChangeCurrency(newValue));
+                    }
+                  },
+                );
+              },
+            ),
+          ),
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: Icon(
@@ -75,14 +125,12 @@ class SettingsSection extends StatelessWidget {
               color: theme.iconTheme.color,
             ),
             title: Text(
-              'Terms and Conditions',
+              Translate.get('termsAndConditions'),
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.textTheme.bodyLarge?.color,
               ),
             ),
-
           ),
-
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: Icon(
@@ -90,14 +138,12 @@ class SettingsSection extends StatelessWidget {
               color: theme.iconTheme.color,
             ),
             title: Text(
-              'Feedback Us',
+              Translate.get('feedback'),
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.textTheme.bodyLarge?.color,
               ),
             ),
-
           ),
-
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: Icon(
@@ -105,14 +151,12 @@ class SettingsSection extends StatelessWidget {
               color: theme.iconTheme.color,
             ),
             title: Text(
-              'Report a Problem',
+              Translate.get('reportProblem'),
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.textTheme.bodyLarge?.color,
               ),
             ),
-
           ),
-
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: Icon(
@@ -120,123 +164,33 @@ class SettingsSection extends StatelessWidget {
               color: theme.iconTheme.color,
             ),
             title: Text(
-              'Logout',
+              Translate.get('logout'),
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.textTheme.bodyLarge?.color,
               ),
             ),
             onTap: () {
-              showModalBottomSheet(
+              showDialog(
                 context: context,
-                backgroundColor: Colors.transparent,
-                builder: (context) => Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(20),
+                builder: (context) => AlertDialog(
+                  title: Text(Translate.get('logout')),
+                  content: Text(Translate.get('logoutConfirm')),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(Translate.get('cancel')),
                     ),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(top: 8),
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(2),
-                        ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        widget.onLogout();
+                      },
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.red,
                       ),
-                      const SizedBox(height: 20),
-                      Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: Colors.blue[50],
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.logout_rounded,
-                          color: Colors.blue,
-                          size: 30,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Logout',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Text(
-                          'Are you sure you want to logout from your account?',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                style: TextButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    side: BorderSide(color: Colors.grey[300]!),
-                                  ),
-                                ),
-                                child: Text(
-                                  'Cancel',
-                                  style: TextStyle(
-                                    color: Colors.grey[800],
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  onLogout();
-                                },
-                                style: TextButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
-                                  backgroundColor: AppColors.primaryColor,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Logout',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                    ],
-                  ),
+                      child: Text(Translate.get('logout')),
+                    ),
+                  ],
                 ),
               );
             },
@@ -248,7 +202,7 @@ class SettingsSection extends StatelessWidget {
               color: Colors.red,
             ),
             title: Text(
-              'Delete Account',
+              Translate.get('deleteAccount'),
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: Colors.red,
               ),
@@ -291,9 +245,9 @@ class SettingsSection extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const Text(
-                        'Delete Account',
-                        style: TextStyle(
+                      Text(
+                        Translate.get('deleteAccount'),
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
@@ -302,7 +256,7 @@ class SettingsSection extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: Text(
-                          'Are you sure you want to delete your account? This action cannot be undone.',
+                          Translate.get('confirmDelete'),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.grey[600],
@@ -319,7 +273,8 @@ class SettingsSection extends StatelessWidget {
                               child: TextButton(
                                 onPressed: () => Navigator.pop(context),
                                 style: TextButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 14),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                     side: BorderSide(color: Colors.grey[300]!),
@@ -340,18 +295,19 @@ class SettingsSection extends StatelessWidget {
                               child: TextButton(
                                 onPressed: () {
                                   Navigator.pop(context);
-                                  onDeleteAccount();
+                                  widget.onDeleteAccount();
                                 },
                                 style: TextButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 14),
                                   backgroundColor: Colors.red,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                 ),
-                                child: const Text(
-                                  'Delete',
-                                  style: TextStyle(
+                                child: Text(
+                                  Translate.get('delete'),
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,

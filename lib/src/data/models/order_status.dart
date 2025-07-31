@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import '../../core/translations/translate.dart';
 import '../../presentation/utils/app_colors.dart';
 
 enum OrderStatus {
@@ -13,17 +14,17 @@ enum OrderStatus {
   String toString() {
     switch (this) {
       case OrderStatus.pending:
-        return "Pending";
+        return Translate.get('pending');
       case OrderStatus.preparing:
-        return "Preparing";
+        return Translate.get('preparing');
       case OrderStatus.delivering:
-        return "Delivering";
+        return Translate.get('delivering');
       case OrderStatus.delivered:
-        return "Delivered";
+        return Translate.get('delivered');
       case OrderStatus.canceled:
-        return "Canceled";
+        return Translate.get('cancelled');
       default:
-        return "Pending";
+        return Translate.get('pending');
     }
   }
 

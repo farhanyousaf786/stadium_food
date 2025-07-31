@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,12 +15,14 @@ import 'package:stadium_food/src/presentation/widgets/loading_indicator.dart';
 import 'package:stadium_food/src/presentation/widgets/price_info_widget.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:hive/hive.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-// import 'package:google_ml_kit/google_ml_kit.dart' as ml_kit;
+import 'package:google_ml_kit/google_ml_kit.dart' as ml_kit;
 
 import '../../../data/repositories/order_repository.dart';
 import '../../../data/services/firebase_storage.dart';
+import '../../../data/services/currency_service.dart';
 import '../../utils/app_styles.dart';
 
 class OrderConfirmScreen extends StatefulWidget {
@@ -62,86 +65,144 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
           filled: true,
           hintText: hint,
           labelText: label,
-          labelStyle: const TextStyle(
-            color: AppColors.primaryColor
-          ),
-          hintStyle:
-          CustomTextStyle.size14Weight400Text(
+          labelStyle: const TextStyle(color: AppColors.primaryColor),
+          hintStyle: CustomTextStyle.size14Weight400Text(
             AppColors().secondaryTextColor,
           ),
-          enabledBorder:
-          AppStyles().defaultEnabledBorder,
-          focusedBorder:
-          AppStyles.defaultFocusedBorder(),
+          enabledBorder: AppStyles().defaultEnabledBorder,
+          focusedBorder: AppStyles.defaultFocusedBorder(),
         ),
-
         validator: (value) {
           if (value == null || value.isEmpty) {
-            if (controller == _seatDetailsController) return null; // Optional field
-            return 'Please enter $label';
+            if (controller == _seatDetailsController)
+              return null; // Optional field
+            return 'Please enter ${label.toLowerCase()}';
           }
           return null;
         },
       ),
     );
   }
+
   final _formKey = GlobalKey<FormState>();
   final _rowController = TextEditingController();
   final _seatNoController = TextEditingController();
   final _sectionController = TextEditingController();
   final _seatDetailsController = TextEditingController();
 
-   Map<String, dynamic>? paymentIntent;
+  Map<String, dynamic>? paymentIntent;
   XFile? _image;
-  String imageUrl='';
+  String imageUrl = '';
 
-  // Future<void> _processTicketImage(XFile image) async {
-  //   final inputImage = ml_kit.InputImage.fromFilePath(image.path);
-  //   final textRecognizer = ml_kit.TextRecognizer(script: ml_kit.TextRecognitionScript.latin);
-  //
-  //   try {
-  //     final ml_kit.RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
-  //
-  //     // Process each block of text to find seat information
-  //     for (ml_kit.TextBlock block in recognizedText.blocks) {
-  //       String text = block.text.toLowerCase();
-  //
-  //       // Look for common patterns in ticket text
-  //       if (text.contains('SEC')) {
-  //         _sectionController.text = _extractValue(text, 'SEC');
-  //       }
-  //       if (text.contains('ROW')) {
-  //         _rowController.text = _extractValue(text, 'ROW');
-  //       }
-  //       if (text.contains('SEAT')) {
-  //         _seatNoController.text = _extractValue(text, 'SEAT');
-  //       }
-  //     }
-  //
-  //     setState(() {});
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //         content: Text('Error processing ticket image. Please try again or enter details manually.'),
-  //         backgroundColor: Colors.red,
-  //       ),
-  //     );
-  //   } finally {
-  //     textRecognizer.close();
-  //   }
-  // }
-  //
-  // String _extractValue(String text, String field) {
-  //   // Remove the field name and any common separators
-  //   text = text.replaceAll(field, '').trim();
-  //   text = text.replaceAll(':', '').replaceAll('#', '').trim();
-  //
-  //   // Split by spaces and get the first word (likely the number/value we want)
-  //   final parts = text.split(' ');
-  //   return parts.isNotEmpty ? parts[0].toUpperCase() : '';
-  // }
+  Future<void> _processTicketImage(XFile image) async {
+    final textRecognizer = ml_kit.TextRecognizer(
+      script: ml_kit.TextRecognitionScript.latin,
+    );
 
+    try {
+      final inputImage = ml_kit.InputImage.fromFilePath(image.path);
+      final recognizedText = await textRecognizer.processImage(inputImage);
+      final Map<String, String> extractedInfo = {};
+      final fullText = recognizedText.text.toUpperCase();
+      log('Full text: $fullText');
 
+      // Define patterns for numeric values
+      final sectionPattern = RegExp(r'SEC\s+(\d+)');
+      final rowPattern = RegExp(r'ROW\s+(\d+)');
+      final seatPattern = RegExp(r'SEAT\s+(\d+)');
+
+      // Also look for standalone numbers in specific positions
+      final numbersPattern = RegExp(r'\b(\d+)\b');
+      final numbers =
+          numbersPattern.allMatches(fullText).map((m) => m.group(1)).toList();
+
+      // Try direct number extraction if we find exactly 3 numbers
+      if (numbers.length == 3) {
+        extractedInfo['seat'] = numbers[0] ?? '';
+        extractedInfo['row'] = numbers[1] ?? '';
+        extractedInfo['section'] = numbers[2] ?? '';
+      } else {
+        // Try pattern matching
+        final sectionMatch = sectionPattern.firstMatch(fullText);
+        if (sectionMatch != null) {
+          extractedInfo['section'] = sectionMatch.group(1) ?? '';
+        }
+
+        final rowMatch = rowPattern.firstMatch(fullText);
+        if (rowMatch != null) {
+          extractedInfo['row'] = rowMatch.group(1) ?? '';
+        }
+
+        final seatMatch = seatPattern.firstMatch(fullText);
+        if (seatMatch != null) {
+          extractedInfo['seat'] = seatMatch.group(1) ?? '';
+        }
+      }
+
+      // Extract teams information
+      final losAngelesPattern = RegExp(r'LOS\s+ANGELES\s+TEAM\s+NAME');
+      final minnesotaPattern = RegExp(r'MINNESOTA\s+TEAM\s+NAME');
+      final losAngelesMatch = losAngelesPattern.firstMatch(fullText);
+      final minnesotaMatch = minnesotaPattern.firstMatch(fullText);
+
+      if (losAngelesMatch != null && minnesotaMatch != null) {
+        setState(() => _seatDetailsController.text =
+            'Teams: LOS ANGELES TEAM NAME vs MINNESOTA TEAM NAME');
+      }
+
+      // Extract date and time
+      final datePattern = RegExp(r'SUN-DEC\s+(\d+)');
+      final dateMatch = datePattern.firstMatch(fullText);
+      if (dateMatch != null) {
+        final date = 'SUN DEC ${dateMatch.group(1)}';
+        if (_seatDetailsController.text.isNotEmpty) {
+          setState(() => _seatDetailsController.text += '\nDate: $date');
+        } else {
+          setState(() => _seatDetailsController.text = 'Date: $date');
+        }
+      }
+
+      // Update UI with extracted information
+      setState(() {
+        if (extractedInfo['section']?.isNotEmpty == true) {
+          _sectionController.text = extractedInfo['section']!.trim();
+        }
+        if (extractedInfo['row']?.isNotEmpty == true) {
+          _rowController.text = extractedInfo['row']!.trim();
+        }
+        if (extractedInfo['seat']?.isNotEmpty == true) {
+          _seatNoController.text = extractedInfo['seat']!.trim();
+        }
+      });
+
+      // Show appropriate feedback
+      if (extractedInfo.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(Translate.get('ticketExtractSuccess')),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(Translate.get('noTicketInfoFound')),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error processing ticket: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${Translate.get('ticketExtractError')}: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      textRecognizer.close();
+    }
+  }
 
   // pick image from gallery
   Future<void> _pickImageFromGallery() async {
@@ -151,7 +212,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     );
 
     if (_image != null) {
-     // await _processTicketImage(_image!);
+      await _processTicketImage(_image!);
     }
 
     setState(() {});
@@ -165,21 +226,17 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     );
 
     if (_image != null) {
-     // await _processTicketImage(_image!);
+      await _processTicketImage(_image!);
     }
 
     setState(() {});
-
   }
-
-
 
   @override
   void initState() {
     super.initState();
-
   }
-  
+
   // Show dialog to prompt user to login or register
   void _showAuthDialog(BuildContext context) {
     showDialog(
@@ -206,7 +263,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'Account Required',
+                  Translate.get('accountRequired'),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -214,7 +271,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'You need to be logged in to place an order. Please login or create an account to continue.',
+                  Translate.get('loginOrRegister'),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
@@ -237,8 +294,8 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text(
-                      'Login',
+                    child: Text(
+                      Translate.get('login'),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -255,7 +312,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                     Navigator.pushNamed(context, '/register');
                   },
                   child: Text(
-                    'Create Account',
+                    Translate.get('createAccount'),
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -270,7 +327,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                     Navigator.pop(context); // Go back to cart
                   },
                   child: Text(
-                    'Cancel',
+                    Translate.get('cancel'),
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey,
@@ -294,8 +351,8 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
           Navigator.of(context).pop();
           // show success message
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Order created successfully"),
+            SnackBar(
+              content: Text(Translate.get('orderSuccess')),
               backgroundColor: AppColors.primaryColor,
             ),
           );
@@ -331,73 +388,70 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
           builder: (context, state) {
             return PriceInfoWidget(
               onTap: () async {
-
-
-               // Check if user is logged in
-              final currentUser = FirebaseAuth.instance.currentUser;
-              if (currentUser == null) {
-                // Show login/signup dialog
-                _showAuthDialog(context);
-              } else {
-              
-
-                // Check if image is selected
-                if (_image != null) {
-                  // Show loading
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (context) => const LoadingIndicator(),
-                  );
-
-                  try {
-                    // Upload image to firebase storage
-                    final uploadedImageUrl = await _firebaseStorageService.uploadImage(
-                      "tickets/${DateTime.now().millisecondsSinceEpoch}",
-                      File(_image!.path),
+                // Check if user is logged in
+                final currentUser = FirebaseAuth.instance.currentUser;
+                if (currentUser == null) {
+                  // Show login/signup dialog
+                  _showAuthDialog(context);
+                } else {
+                  // Check if image is selected
+                  if (_image != null) {
+                    // Show loading
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) => const LoadingIndicator(),
                     );
 
-                    // Hide loading
-                    Navigator.of(context).pop();
+                    try {
+                      // Upload image to firebase storage
+                      final uploadedImageUrl =
+                          await _firebaseStorageService.uploadImage(
+                        "tickets/${DateTime.now().millisecondsSinceEpoch}",
+                        File(_image!.path),
+                      );
 
-                    // Create seat info with uploaded image URL
+                      // Hide loading
+                      Navigator.of(context).pop();
+
+                      // Create seat info with uploaded image URL
+                      final seatInfo = {
+                        'ticketImage': uploadedImageUrl,
+                        'row': '',
+                        'seatNo': '',
+                        'section': '',
+                        'seatDetails': '',
+                      };
+
+                      final total = OrderRepository.total;
+                      makePayment(total, seatInfo);
+                    } catch (e) {
+                      // Hide loading
+                      Navigator.of(context).pop();
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content:
+                              Text(Translate.get('imageUploadError')),
+                          backgroundColor: AppColors.errorColor,
+                        ),
+                      );
+                    }
+                  }
+                  // If no image, validate and use text fields
+                  else if (_formKey.currentState!.validate()) {
                     final seatInfo = {
-                      'ticketImage': uploadedImageUrl,
-                      'row': '',
-                      'seatNo': '',
-                      'section': '',
-                      'seatDetails': '',
+                      'ticketImage': '',
+                      'row': _rowController.text,
+                      'seatNo': _seatNoController.text,
+                      'section': _sectionController.text,
+                      'seatDetails': _seatDetailsController.text,
                     };
-                    
+
                     final total = OrderRepository.total;
                     makePayment(total, seatInfo);
-                  } catch (e) {
-                    // Hide loading
-                    Navigator.of(context).pop();
-                    
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Failed to upload image. Please try again.'),
-                        backgroundColor: AppColors.errorColor,
-                      ),
-                    );
                   }
                 }
-                // If no image, validate and use text fields
-                else if (_formKey.currentState!.validate()) {
-                  final seatInfo = {
-                    'ticketImage': '',
-                    'row': _rowController.text,
-                    'seatNo': _seatNoController.text,
-                    'section': _sectionController.text,
-                    'seatDetails': _seatDetailsController.text,
-                  };
-
-                  final total = OrderRepository.total;
-                  makePayment(total, seatInfo);
-                }
-
-              }
               },
             );
           },
@@ -412,12 +466,12 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                   const CustomBackButton(),
                   const SizedBox(height: 20),
                   Text(
-                    "Confirm Order",
+                    Translate.get('orderConfirmTitle'),
                     style: CustomTextStyle.size25Weight600Text(),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    "Please enter your seat details for delivery",
+                    Translate.get('orderConfirmSubtitle'),
                     style: CustomTextStyle.size14Weight400Text(
                       AppColors().secondaryTextColor,
                     ),
@@ -432,13 +486,12 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                             Expanded(
                               child: _buildTextField(
                                 controller: _sectionController,
-                                label: 'Section',
-                                hint: 'e.g. A',
+                                label: Translate.get('sectionLabel'),
+                                hint: Translate.get('sectionHint'),
                                 icon: Icons.category_outlined,
                               ),
                             ),
                             const SizedBox(width: 16),
-
                           ],
                         ),
                         const SizedBox(height: 16),
@@ -447,18 +500,17 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                             Expanded(
                               child: _buildTextField(
                                 controller: _rowController,
-                                label: 'Row',
-                                hint: 'e.g. 5',
+                                label: Translate.get('rowLabel'),
+                                hint: Translate.get('rowHint'),
                                 icon: Icons.view_week_outlined,
-
                               ),
                             ),
                             const SizedBox(width: 16),
                             Expanded(
                               child: _buildTextField(
                                 controller: _seatNoController,
-                                label: 'Seat No.',
-                                hint: 'e.g. 23',
+                                label: Translate.get('seatLabel'),
+                                hint: Translate.get('seatHint'),
                                 icon: Icons.chair_outlined,
                                 keyboardType: TextInputType.number,
                               ),
@@ -468,22 +520,23 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                         const SizedBox(height: 16),
                         _buildTextField(
                           controller: _seatDetailsController,
-                          label: 'Additional Details (Optional)',
-                          hint: 'e.g. Near the stairs',
+                          label: Translate.get('additionalDetailsLabel'),
+                          hint: Translate.get('additionalDetailsHint'),
                           icon: Icons.info_outline,
                           maxLines: 3,
                         ),
 
                         const SizedBox(height: 20),
-                        
+
                         // OR separator
                         Row(
                           children: [
                             const Expanded(child: Divider(thickness: 1)),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
                               child: Text(
-                                'OR',
+                                Translate.get('or'),
                                 style: CustomTextStyle.size14Weight600Text(
                                   AppColors().secondaryTextColor,
                                 ),
@@ -493,192 +546,202 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                           ],
                         ),
                         const SizedBox(height: 20),
-                        
+
                         Text(
-                          'Upload ticket image',
+                          Translate.get('uploadTicketTitle'),
                           style: CustomTextStyle.size14Weight400Text(
                             AppColors().secondaryTextColor,
                           ),
                         ),
                         const SizedBox(height: 16),
-                        
+
                         _image != null
                             ? Center(
-                          child: Container(
-                            width: 250,
-                            height: 250,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              boxShadow: [AppStyles.boxShadow7],
-                              borderRadius: AppStyles.largeBorderRadius,
-                            ),
-                            child: Stack(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: AppStyles.largeBorderRadius,
-                                  child: Image.file(
-                                    File(_image!.path),
-                                    width: 250,
-                                    height: 250,
-                                    fit: BoxFit.cover,
+                                child: Container(
+                                  width: 250,
+                                  height: 250,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    boxShadow: [AppStyles.boxShadow7],
+                                    borderRadius: AppStyles.largeBorderRadius,
                                   ),
-                                ),
-                                Positioned(
-                                  top: 10,
-                                  right: 10,
-                                  child: InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        _image = null;
-                                      });
-                                    },
-                                    child: Container(
-                                      width: 30,
-                                      height: 30,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.5),
+                                  child: Stack(
+                                    children: [
+                                      ClipRRect(
                                         borderRadius:
-                                        AppStyles.largeBorderRadius,
+                                            AppStyles.largeBorderRadius,
+                                        child: Image.file(
+                                          File(_image!.path),
+                                          width: 250,
+                                          height: 250,
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
-                                      child: const Icon(
-                                        Icons.close,
-                                        color: Colors.white,
+                                      Positioned(
+                                        top: 10,
+                                        right: 10,
+                                        child: InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              _image = null;
+                                            });
+                                          },
+                                          child: Container(
+                                            width: 30,
+                                            height: 30,
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  Colors.white.withOpacity(0.5),
+                                              borderRadius: AppStyles
+                                                  .largeBorderRadius,
+                                            ),
+                                            child: const Icon(
+                                              Icons.close,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                    ],
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        )
+                              )
                             : imageUrl != ""
-                            ? Center(
-                          child: Container(
-                            width: 250,
-                            height: 250,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              boxShadow: [AppStyles.boxShadow7],
-                              borderRadius: AppStyles.largeBorderRadius,
-                            ),
-                            child: Stack(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: AppStyles.largeBorderRadius,
-                                  child: Image.network(
-                                    imageUrl,
-                                    width: 250,
-                                    height: 250,
-                                    fit: BoxFit.cover,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                    const Center(
-                                      child: Icon(
-                                        Icons.error,
-                                        color: Colors.red,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  top: 10,
-                                  right: 10,
-                                  child: InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        imageUrl = "";
-                                      });
-                                    },
+                                ? Center(
                                     child: Container(
-                                      width: 30,
-                                      height: 30,
+                                      width: 250,
+                                      height: 250,
                                       decoration: BoxDecoration(
-                                        color:
-                                        Colors.white.withOpacity(0.5),
-                                        borderRadius:
-                                        AppStyles.largeBorderRadius,
-                                      ),
-                                      child: const Icon(
-                                        Icons.close,
                                         color: Colors.white,
+                                        boxShadow: [AppStyles.boxShadow7],
+                                        borderRadius:
+                                            AppStyles.largeBorderRadius,
+                                      ),
+                                      child: Stack(
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius:
+                                                AppStyles.largeBorderRadius,
+                                            child: Image.network(
+                                              imageUrl,
+                                              width: 250,
+                                              height: 250,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (context, error,
+                                                      stackTrace) =>
+                                                  const Center(
+                                                child: Icon(
+                                                  Icons.error,
+                                                  color: Colors.red,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Positioned(
+                                            top: 10,
+                                            right: 10,
+                                            child: InkWell(
+                                              onTap: () {
+                                                setState(() {
+                                                  imageUrl = "";
+                                                });
+                                              },
+                                              child: Container(
+                                                width: 30,
+                                                height: 30,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white
+                                                      .withOpacity(0.5),
+                                                  borderRadius: AppStyles
+                                                      .largeBorderRadius,
+                                                ),
+                                                child: const Icon(
+                                                  Icons.close,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-                            : Row(
-                          children: [
-                            Expanded(
-                              child: Ink(
-                                padding: const EdgeInsets.symmetric(vertical: 20),
-                                decoration: BoxDecoration(
-                                  color: AppColors().cardColor,
-                                  boxShadow: [AppStyles.boxShadow7],
-                                  borderRadius: AppStyles.largeBorderRadius,
-                                ),
-                                child: InkWell(
-                                  onTap: () {
-                                    _pickImageFromGallery();
-                                  },
-                                  borderRadius: AppStyles.largeBorderRadius,
-                                  child: Column(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.center,
+                                  )
+                                : Row(
                                     children: [
-                                      SvgPicture.asset(
-                                        "assets/svg/gallery.svg",
+                                      Expanded(
+                                        child: Ink(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 20),
+                                          decoration: BoxDecoration(
+                                            color: AppColors().cardColor,
+                                            boxShadow: [AppStyles.boxShadow7],
+                                            borderRadius:
+                                                AppStyles.largeBorderRadius,
+                                          ),
+                                          child: InkWell(
+                                            onTap: () {
+                                              _pickImageFromGallery();
+                                            },
+                                            borderRadius:
+                                                AppStyles.largeBorderRadius,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                SvgPicture.asset(
+                                                  "assets/svg/gallery.svg",
+                                                ),
+                                                const SizedBox(height: 10),
+                                                Text(
+                                                  Translate.get('uploadFromGallery'),
+                                                  style: CustomTextStyle
+                                                      .size14Weight400Text(),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
                                       ),
-                                      const SizedBox(height: 10),
-                                      Text(
-                                        "From Gallery",
-                                        style: CustomTextStyle
-                                            .size14Weight400Text(),
+                                      const SizedBox(width: 20),
+                                      // from camera
+                                      Expanded(
+                                        child: Ink(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 20),
+                                          decoration: BoxDecoration(
+                                            color: AppColors().cardColor,
+                                            boxShadow: [AppStyles.boxShadow7],
+                                            borderRadius:
+                                                AppStyles.largeBorderRadius,
+                                          ),
+                                          child: InkWell(
+                                            onTap: () {
+                                              _pickImageFromCamera();
+                                            },
+                                            borderRadius:
+                                                AppStyles.largeBorderRadius,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                SvgPicture.asset(
+                                                  "assets/svg/camera.svg",
+                                                ),
+                                                const SizedBox(height: 10),
+                                                Text(
+                                                  Translate.get('frontCamera'),
+                                                  style: CustomTextStyle
+                                                      .size14Weight400Text(),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
                                       ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 20),
-                            // from camera
-                            Expanded(
-                              child: Ink(
-                                padding: const EdgeInsets.symmetric(vertical: 20),
-                                decoration: BoxDecoration(
-                                  color: AppColors().cardColor,
-                                  boxShadow: [AppStyles.boxShadow7],
-                                  borderRadius: AppStyles.largeBorderRadius,
-                                ),
-                                child: InkWell(
-                                  onTap: () {
-                                    _pickImageFromCamera();
-                                  },
-                                  borderRadius: AppStyles.largeBorderRadius,
-                                  child: Column(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.center,
-                                    children: [
-                                      SvgPicture.asset(
-                                        "assets/svg/camera.svg",
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Text(
-                                        "From Camera",
-                                        style: CustomTextStyle
-                                            .size14Weight400Text(),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
 
-                            const SizedBox(height: 20),
-                          ],
-                        ),
+                                      const SizedBox(height: 20),
+                                    ],
+                                  ),
                       ],
                     ),
                   ),
@@ -692,118 +755,151 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     );
   }
 
-   Future<void> makePayment(double total, Map<String, String> seatInfo) async {
-     try {
-       //STEP 1: Create Payment Intent
-       paymentIntent = await createPaymentIntent(total.toString(), 'USD');
+  Future<void> makePayment(double total, Map<String, String> seatInfo) async {
+    try {
+      // Convert total to USD if needed
+      final currentCurrency = CurrencyService.getCurrentCurrency();
+      double amountInUSD = total;
+      if (currentCurrency != 'USD') {
+        amountInUSD = CurrencyService.convertToUSD(total, currentCurrency);
+      }
 
-       //STEP 2: Initialize Payment Sheet
-       await Stripe.instance
-           .initPaymentSheet(
+      // STEP 1: Create Payment Intent
+      paymentIntent = await createPaymentIntent(
+        amountInUSD.toString(),
+        'USD', // Always use USD for Stripe
+      );
 
-           paymentSheetParameters: SetupPaymentSheetParameters(
-               paymentIntentClientSecret: paymentIntent![
-               'client_secret'], //Gotten from payment intent
-               style: ThemeMode.light,
-               merchantDisplayName: 'Ikay'))
-           .then((value) {});
+      // STEP 2: Initialize Payment Sheet
+      await Stripe.instance
+          .initPaymentSheet(
+            paymentSheetParameters: SetupPaymentSheetParameters(
+              paymentIntentClientSecret: paymentIntent!['client_secret'],
+              style: ThemeMode.dark,
+              merchantDisplayName: 'Stadium Food',
+            ),
+          )
+          .then((value) {});
 
-       //STEP 3: Display Payment sheet
-       displayPaymentSheet(seatInfo);
-     } catch (err) {
-       throw Exception(err);
-     }
-   }
-   Future createPaymentIntent(String amount, String currency) async {
-     try {
-       //Request body
-       Map<String, dynamic> body = {
-         'amount': calculateAmount(amount),
-         'currency': currency,
-       };
+      // STEP 3: Display Payment sheet
+      displayPaymentSheet(seatInfo);
+    } catch (err) {
+      throw Exception(err);
+    }
+  }
 
-       //Make post request to Stripe
-       var response = await http.post(
-         Uri.parse('https://api.stripe.com/v1/payment_intents'),
-         headers: {
-           'Authorization': 'Bearer sk_test_51QvCefKdX3OWUtfrEgTAjqz3l7IUOE1owMd1oiUkw4TIQPYwfPBfiKT1DxaUjN5VcU43hGlfHwpHJ1wCliZe7LC400S8CyD9us',
-           'Content-Type': 'application/x-www-form-urlencoded'
-         },
-         body: body,
-       );
-       return json.decode(response.body);
-     } catch (err) {
-       throw Exception(err.toString());
-     }
-   }
-   String calculateAmount(String amount) {
-     final doubleAmount = double.parse(amount);
-     final intAmount = (doubleAmount * 100).round(); // Rounds to nearest cent
-     return intAmount.toString();
-   }
-   Future<void> displayPaymentSheet(Map<String, String> seatInfo) async {
-     try {
-       await Stripe.instance.presentPaymentSheet().then((value) {
-         BlocProvider.of<OrderBloc>(context).add(
-           CreateOrder(
-             seatInfo: seatInfo,
-           ),
-         );
+  Future createPaymentIntent(String amount, String currency) async {
+    try {
+      Map<String, dynamic> body = {
+        'amount': calculateAmount(amount),
+        'currency': 'USD', // Always use USD
+        'payment_method_types[]': 'card',
+        'description': 'Stadium Food Order',
+        'metadata': {
+          'original_currency': currency,
+          'original_amount': amount,
+        }
+      };
 
-         showDialog(
-             context: context,
-             builder: (_) => const AlertDialog(
-               content: Column(
-                 mainAxisSize: MainAxisSize.min,
-                 children: [
-                   Icon(
-                     Icons.check_circle,
-                     color: Colors.green,
-                     size: 100.0,
-                   ),
-                   SizedBox(height: 10.0),
-                   Text("Payment Successful!"),
-                 ],
-               ),
-             ));
+      var response = await http.post(
+        Uri.parse('https://api.stripe.com/v1/payment_intents'),
+        headers: {
+          'Authorization':
+              'Bearer sk_test_51NlxmGFPMwBwVLKDNEYJxJJXZGOqnTvXQwwNhEWpRRlXZJLZKtQvKEfQQpJbhkVNVHzXzuEPXrTFHFZbYQOXJGQf00Vq7HB0Ys',
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: body,
+      );
+      return json.decode(response.body);
+    } catch (err) {
+      throw Exception(err.toString());
+    }
+  }
 
-         paymentIntent = null;
-         Future.delayed(const Duration(seconds: 1), () {
-           Navigator.of(context, rootNavigator: true).pop(); // Close dialog
-           Navigator.pushNamedAndRemoveUntil(
-             context,
-             "/home",
-                 (route) => false,
-           ); // Go to home screen
-         });
-       }).onError((error, stackTrace) {
-         throw Exception(error);
-       });
-     } on StripeException catch (e) {
-       print('Error is:---> $e');
-       const AlertDialog(
-         content: Column(
-           mainAxisSize: MainAxisSize.min,
-           children: [
-             Row(
-               children: [
-                 Icon(
-                   Icons.cancel,
-                   color: Colors.red,
-                 ),
-                 Text("Payment Failed"),
-               ],
-             ),
-           ],
-         ),
-       );
-     } catch (e) {
-       print('$e');
-     }
-   }
+  String calculateAmount(String amount) {
+    final doubleAmount = double.parse(amount);
+    // Convert to smallest currency unit (cents for USD)
+    final intAmount = (doubleAmount * 100).round();
+    return intAmount.toString();
+  }
+
+  Future<void> displayPaymentSheet(Map<String, String> seatInfo) async {
+    try {
+      await Stripe.instance.presentPaymentSheet().then((value) {
+        // Create order after successful payment
+        BlocProvider.of<OrderBloc>(context).add(
+          CreateOrder(
+            seatInfo: seatInfo,
+          ),
+        );
+
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                  size: 100.0,
+                ),
+                const SizedBox(height: 10.0),
+                Text(
+                  Translate.get('paymentSuccess'),
+                  style: CustomTextStyle.size18Weight600Text(),
+                ),
+                const SizedBox(height: 10.0),
+                Text(
+                  "Amount: ${CurrencyService.getCurrencySymbol(CurrencyService.getCurrentCurrency())}${OrderRepository.total.toStringAsFixed(2)}",
+                  style: CustomTextStyle.size16Weight400Text(),
+                ),
+              ],
+            ),
+          ),
+        );
+
+        paymentIntent = null;
+        Future.delayed(const Duration(seconds: 2), () {
+          Navigator.of(context, rootNavigator: true).pop(); // Close dialog
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            "/home",
+            (route) => false,
+          );
+        });
+      });
+    } catch (e) {
+      print('Error in payment: $e');
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.error_outline,
+                color: Colors.red,
+                size: 100.0,
+              ),
+              const SizedBox(height: 10.0),
+              Text(
+                Translate.get('paymentFailed'),
+                style: CustomTextStyle.size18Weight600Text(),
+              ),
+              const SizedBox(height: 10.0),
+              Text(
+                e.toString(),
+                style: CustomTextStyle.size14Weight400Text(),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+  }
 }
-
-
 
 Future buildDialog(BuildContext context) {
   return showDialog(
@@ -811,7 +907,7 @@ Future buildDialog(BuildContext context) {
     builder: (context) {
       return AlertDialog(
         title: Text(
-          "Select Payment Method",
+          Translate.get('selectPayment'),
           style: CustomTextStyle.size18Weight600Text(),
         ),
         content: Column(

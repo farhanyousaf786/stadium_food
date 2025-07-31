@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:stadium_food/src/bloc/user_profile/user_profile_bloc.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/back_button.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
 import 'package:stadium_food/src/presentation/widgets/loading_indicator.dart';
@@ -97,7 +97,7 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
                     padding:
                         const EdgeInsets.only(bottom: 60, left: 25, right: 25),
                     child: PrimaryButton(
-                      text: "Next",
+                      text: Translate.get('register_process_next'),
                       onTap: () {
                         // validate form
                         if (!_formKey.currentState!.validate()) {
@@ -160,14 +160,14 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
                                   controller: _firstNameController,
                                   validator: (value) {
                                     if (value!.isEmpty) {
-                                      return "First name is required";
+                                      return Translate.get('register_process_error_first_name');
                                     }
                                     return null;
                                   },
                                   decoration: InputDecoration(
                                     fillColor: AppColors().cardColor,
                                     filled: true,
-                                    hintText: "First name",
+                                    hintText: Translate.get('register_process_first_name'),
                                     hintStyle:
                                         CustomTextStyle.size14Weight400Text(
                                       AppColors().secondaryTextColor,
@@ -194,14 +194,14 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
                                   controller: _lastNameController,
                                   validator: (value) {
                                     if (value!.isEmpty) {
-                                      return "Last name is required";
+                                      return Translate.get('register_process_error_last_name');
                                     }
                                     return null;
                                   },
                                   decoration: InputDecoration(
                                     fillColor: AppColors().cardColor,
                                     filled: true,
-                                    hintText: "Last name",
+                                    hintText: Translate.get('register_process_last_name'),
                                     hintStyle:
                                         CustomTextStyle.size14Weight400Text(
                                       AppColors().secondaryTextColor,
@@ -228,7 +228,7 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
                                   controller: _phoneController,
                                   validator: (value) {
                                     if (!validatePhoneNumber(value!)) {
-                                      return "Invalid phone number";
+                                      return Translate.get('register_process_error_phone');
                                     }
                                     return null;
                                   },
@@ -236,7 +236,7 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
                                   decoration: InputDecoration(
                                     fillColor: AppColors().cardColor,
                                     filled: true,
-                                    hintText: "Mobile number",
+                                    hintText: Translate.get('register_process_mobile'),
                                     hintStyle:
                                         CustomTextStyle.size14Weight400Text(
                                       AppColors().secondaryTextColor,

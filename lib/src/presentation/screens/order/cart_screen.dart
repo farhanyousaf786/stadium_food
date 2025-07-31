@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/repositories/order_repository.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/back_button.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
@@ -30,8 +31,8 @@ class CartScreen extends StatelessWidget {
             onTap: () {
               if (OrderRepository.cart.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Cart is empty"),
+                  SnackBar(
+                    content: Text(Translate.get('cartEmpty')),
                     backgroundColor: AppColors.errorColor,
                   ),
                 );
@@ -56,7 +57,7 @@ class CartScreen extends StatelessWidget {
             isFromHome==false?    const CustomBackButton():SizedBox(),
                 const SizedBox(height: 20),
                 Text(
-                  "Cart",
+                  Translate.get('cart'),
                   style: CustomTextStyle.size25Weight600Text(),
                 ),
                 const SizedBox(height: 20),
@@ -77,8 +78,7 @@ class CartScreen extends StatelessWidget {
                           height: 16,
                         ),
                         Text(
-                          "Cart is empty",
-
+                          Translate.get('cartEmpty'),
                           style: CustomTextStyle.size22Weight600Text(),
                         ),
                       ],

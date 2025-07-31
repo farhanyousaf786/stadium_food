@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stadium_food/src/bloc/shop/shop_bloc.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/models/shop.dart';
 import 'package:stadium_food/src/data/models/stadium.dart';
 import 'package:stadium_food/src/presentation/screens/explore/food_list_screen.dart';
@@ -43,7 +44,7 @@ class _ShopListState extends State<ShopList> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Open Restaurants',
+                Translate.get('openRestaurants'),
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -55,7 +56,7 @@ class _ShopListState extends State<ShopList> {
                 child: Row(
                   children: [
                     Text(
-                      'See All',
+                      Translate.get('seeAll'),
                       style: TextStyle(
                         fontSize: 14,
                         color: AppColors.primaryColor,
@@ -85,8 +86,8 @@ class _ShopListState extends State<ShopList> {
                 _shops = state.shops;
 
                 if (_shops.isEmpty) {
-                  return const Center(
-                    child: Text('No shops available in this stadium'),
+                  return Center(
+                    child: Text(Translate.get('noShopsAvailable')),
                   );
                 }
 
@@ -221,7 +222,7 @@ class _ShopListState extends State<ShopList> {
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    'Floor ${shop.floor}',
+                                    '${Translate.get('floor')} ${shop.floor}',
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: Colors.grey[700],
@@ -235,7 +236,7 @@ class _ShopListState extends State<ShopList> {
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    'Gate ${shop.gate}',
+                                    '${Translate.get('gate')} ${shop.gate}',
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: Colors.grey[700],

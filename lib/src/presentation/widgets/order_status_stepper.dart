@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/models/order_status.dart';
 import 'package:stadium_food/src/core/constants/colors.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
@@ -24,27 +25,27 @@ class OrderStatusStepper extends StatelessWidget {
           _buildTimelineItem(
             context,
             OrderStatus.pending,
-            'Order received',
+            Translate.get('orderReceived'),
             orderTime != null ? _formatTime(orderTime!) : '',
             isFirst: true,
           ),
           _buildTimelineItem(
             context,
             OrderStatus.preparing,
-            'Preparing',
+            Translate.get('preparing'),
             orderTime != null ? _formatTime(orderTime!.add(const Duration(minutes: 10))) : '',
           ),
           _buildTimelineItem(
             context,
             OrderStatus.delivering,
-            'On the way',
+            Translate.get('onTheWay'),
             orderTime != null ? _formatTime(orderTime!.add(const Duration(minutes: 20))) : '',
             showTrackingButton: false,
           ),
           _buildTimelineItem(
             context,
             OrderStatus.delivered,
-            'Delivered',
+            Translate.get('delivered'),
             orderTime != null ? _formatTime(orderTime!.add(const Duration(minutes: 30))) : '',
             isLast: true,
           ),
@@ -148,7 +149,7 @@ class OrderStatusStepper extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'TRACKING',
+                          Translate.get('tracking'),
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 12,
@@ -200,9 +201,11 @@ class OrderStatusStepper extends StatelessWidget {
   }
 
   String _getMonthName(int month) {
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    final months = [
+      Translate.get('jan'), Translate.get('feb'), Translate.get('mar'),
+      Translate.get('apr'), Translate.get('may'), Translate.get('jun'),
+      Translate.get('jul'), Translate.get('aug'), Translate.get('sep'),
+      Translate.get('oct'), Translate.get('nov'), Translate.get('dec')
     ];
     return months[month - 1];
   }

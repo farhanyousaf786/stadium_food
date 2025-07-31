@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stadium_food/src/bloc/menu/menu_bloc.dart';
 import 'package:stadium_food/src/bloc/shop/shop_bloc.dart';
 import 'package:stadium_food/src/bloc/stadium/stadium_bloc.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/models/stadium.dart';
 import 'package:stadium_food/src/data/models/user.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
@@ -45,7 +46,7 @@ class _TopBarState extends State<TopBar> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _selectedStadiumName =
-          prefs.getString('selected_stadium_name') ?? 'Select Stadium';
+          prefs.getString('selected_stadium_name') ?? Translate.get('chooseStadium');
     });
   }
 
@@ -53,11 +54,11 @@ class _TopBarState extends State<TopBar> {
     final hour = DateTime.now().hour;
     setState(() {
       if (hour < 12) {
-        _greeting = 'Good Morning';
+        _greeting = Translate.get('goodMorning');
       } else if (hour < 17) {
-        _greeting = 'Good Afternoon';
+        _greeting = Translate.get('goodAfternoon');
       } else {
-        _greeting = 'Good Evening';
+        _greeting = Translate.get('goodEvening');
       }
     });
   }
@@ -100,7 +101,7 @@ class _TopBarState extends State<TopBar> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Selected Stadium',
+                          Translate.get('selectedStadium'),
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
@@ -111,7 +112,7 @@ class _TopBarState extends State<TopBar> {
                           children: [
                             BlocBuilder<StadiumBloc, StadiumState>(
                               builder: (context, state) {
-                                String displayName = _selectedStadiumName ?? 'Choose a Stadium';
+                                String displayName = _selectedStadiumName ?? Translate.get('chooseStadium');
                                 
                                 if (state is StadiumSelected) {
                                   displayName = state.stadium.name;
@@ -177,14 +178,14 @@ class _TopBarState extends State<TopBar> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                _user != null ? '$_greeting, ${_user!.firstName}!' : '$_greeting, Guest!',
+                _user != null ? '$_greeting, ${_user!.firstName}!' : '$_greeting, ${Translate.get('guest')}!',
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w600,
                 ),
               ),
               Text(
-                'What would you like to eat today?',
+                Translate.get('whatToEat'),
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w400,

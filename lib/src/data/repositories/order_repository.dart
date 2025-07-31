@@ -92,7 +92,7 @@ class OrderRepository {
 
   // delivery fee
   static double get deliveryFee {
-    return 10;
+    return 2;
   }
 
   // discount

@@ -3,14 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stadium_food/src/bloc/profile/profile_bloc.dart';
 import 'package:stadium_food/src/bloc/settings/settings_bloc.dart';
 import 'package:stadium_food/src/core/constants/colors.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/models/user.dart';
-import 'package:stadium_food/src/presentation/widgets/items/food_item.dart';
-import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:stadium_food/src/presentation/widgets/loading_indicator.dart';
 
 import '../../../../bloc/order/order_bloc.dart';
 import '../../../../data/models/order.dart';
 import '../../../../data/models/order_status.dart';
+import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
+import 'package:stadium_food/src/presentation/widgets/items/food_item.dart';
 import 'widgets/settings_section.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -116,9 +117,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         child: Column(
           children: [
-            const Text(
-              "You are currently browsing as a guest",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            Text(
+              Translate.get('guestUser'),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
@@ -133,14 +134,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8)),
               ),
-              child: const Text("Login"),
+              child: Text(Translate.get('login')),
             ),
             const SizedBox(height: 8),
             TextButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/register');
               },
-              child: const Text("Create Account"),
+              child: Text(Translate.get('register')),
             ),
           ],
         ),
@@ -153,59 +154,67 @@ class _ProfileScreenState extends State<ProfileScreen> {
       settingsBloc: BlocProvider.of<SettingsBloc>(context),
       isDarkMode: Theme.of(context).brightness == Brightness.dark,
       onLogout: () {
-
         BlocProvider.of<SettingsBloc>(context).add(Logout());
       },
       onDeleteAccount: () {
-
         BlocProvider.of<SettingsBloc>(context).add(DeleteAccount());
-
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<SettingsBloc, SettingsState>(
-      listener: (context, state) async {
-        if (state is LogoutInProgress || state is AccountDeletionInProgress) {
-          showDialog(
-            context: context,
-            builder: (context) => const LoadingIndicator(),
-          );
-        } else if (state is LogoutSuccess) {
-          Navigator.pop(context);
-          await Navigator.pushNamedAndRemoveUntil(
-            context,
-            "/register",
-            (route) => false,
-          );
-        } else if (state is AccountDeletionSuccess) {
-          Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Account deleted successfully')),
-          );
-          await Navigator.pushNamedAndRemoveUntil(
-            context,
-            "/register",
-            (route) => false,
-          );
-        } else if (state is AccountDeletionFailure) {
-          Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text('Failed to delete account: ${state.message}')),
-          );
-        }
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<SettingsBloc, SettingsState>(
+          listenWhen: (previous, current) => 
+            current is LogoutInProgress || 
+            current is AccountDeletionInProgress || 
+            current is LogoutSuccess || 
+            current is AccountDeletionSuccess,
+          listener: (context, state) async {
+            if (state is LogoutInProgress || state is AccountDeletionInProgress) {
+              showDialog(
+                context: context,
+                builder: (context) => const LoadingIndicator(),
+              );
+            } else if (state is LogoutSuccess) {
+              Navigator.pop(context);
+              await Navigator.pushNamedAndRemoveUntil(
+                context,
+                "/register",
+                (route) => false,
+              );
+            } else if (state is AccountDeletionSuccess) {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(Translate.get('accountDeletedSuccess'))),
+              );
+              await Navigator.pushNamedAndRemoveUntil(
+                context,
+                "/register",
+                (route) => false,
+              );
+            }
+          },
+        ),
+        BlocListener<SettingsBloc, SettingsState>(
+          listenWhen: (previous, current) => current is LanguageChanged,
+          listener: (context, state) {
+            if (state is LanguageChanged) {
+              setState(() {}); // Rebuild screen to update translations
+            }
+          },
+        ),
+      ],
       child: Scaffold(
         backgroundColor: AppColors.bgColor,
         body: SafeArea(
           child: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -259,7 +268,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       Text(
                                         _user != null
                                             ? _user!.fullName
-                                            : 'Guest User',
+                                            : Translate.get('guestUser'),
                                         style:
                                             CustomTextStyle.size18Weight600Text(
                                           Theme.of(context)
@@ -272,7 +281,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       Text(
                                         _user != null
                                             ? _user!.email
-                                            : 'Sign in to access your profile',
+                                            : Translate.get('signInPrompt'),
                                         style:
                                             CustomTextStyle.size14Weight400Text(
                                           Theme.of(context)
@@ -292,41 +301,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               builder: (context, stateOrder) {
                                 if (stateOrder is OrdersFetching) {
                                   return Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      _buildStatsItem('...', 'Active'),
-                                      _buildStatsItem('...', 'Cancelled'),
-                                      _buildStatsItem('...', 'Complete'),
+                                      _buildStatsItem(
+                                          '...', Translate.get('activeOrders')),
+                                      _buildStatsItem('...',
+                                          Translate.get('cancelledOrders')),
+                                      _buildStatsItem('...',
+                                          Translate.get('completedOrders')),
                                     ],
                                   );
                                 } else if (stateOrder is OrdersFetched) {
                                   return Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       _buildStatsItem(
-                                          filterOrders(
-                                              stateOrder.orders, 'active'),
-                                          'Active'),
+                                          filterOrders(stateOrder.orders,
+                                              'activeOrders'),
+                                          Translate.get('activeOrders')),
                                       _buildStatsItem(
                                           filterOrders(stateOrder.orders,
-                                              'completed'),
-                                          'Cancelled'),
+                                              'completedOrders'),
+                                          Translate.get('completedOrders')),
                                       _buildStatsItem(
                                           filterOrders(stateOrder.orders,
-                                              'cancelled'),
-                                          'Complete'),
+                                              'cancelledOrders'),
+                                          Translate.get('cancelledOrders')),
                                     ],
                                   );
                                 }
                                 return Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    _buildStatsItem('...', 'Active'),
-                                    _buildStatsItem('...', 'Cancelled'),
-                                    _buildStatsItem('...', 'Complete'),
+                                    _buildStatsItem(
+                                        '...', Translate.get('activeOrders')),
+                                    _buildStatsItem('...',
+                                        Translate.get('cancelledOrders')),
+                                    _buildStatsItem('...',
+                                        Translate.get('completedOrders')),
                                   ],
                                 );
                               },
@@ -339,7 +351,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                       // Settings Section
                       Text(
-                        'Settings',
+                        Translate.get('settings'),
                         style: CustomTextStyle.size18Weight600Text(
                           Theme.of(context).primaryColor,
                         ),
@@ -350,7 +362,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                       // Favorite Foods Section
                       Text(
-                        'Favorite Foods',
+                        Translate.get('favoritesFoods'),
                         style: CustomTextStyle.size18Weight600Text(
                           Theme.of(context).primaryColor,
                         ),
@@ -386,7 +398,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       ),
                                       const SizedBox(height: 12),
                                       Text(
-                                        'No favorite foods yet',
+                                        Translate.get('noFavorites'),
                                         style:
                                             CustomTextStyle.size16Weight400Text(
                                           Theme.of(context)
@@ -439,7 +451,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   String filterOrders(List<Order> orders, String tabKey) {
     switch (tabKey) {
-      case 'active':
+      case 'activeOrders':
         return orders
             .where((o) =>
                 o.status == OrderStatus.pending ||
@@ -447,12 +459,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 o.status == OrderStatus.delivering)
             .length
             .toString();
-      case 'completed':
+      case 'completedOrders':
         return orders
             .where((o) => o.status == OrderStatus.delivered)
             .length
             .toString();
-      case 'cancelled':
+      case 'cancelledOrders':
         return orders
             .where((o) => o.status == OrderStatus.canceled)
             .length

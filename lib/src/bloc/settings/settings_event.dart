@@ -6,8 +6,6 @@ abstract class SettingsEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
-
-// Toggle theme between light and dark mode
 class ToggleTheme extends SettingsEvent {}
 
 // Log out the user
@@ -15,3 +13,21 @@ class Logout extends SettingsEvent {}
 
 // Delete/Deactivate user account
 class DeleteAccount extends SettingsEvent {}
+
+class ChangeLanguage extends SettingsEvent {
+  final String language;
+
+  const ChangeLanguage(this.language);
+
+  @override
+  List<Object> get props => [language];
+}
+
+class ChangeCurrency extends SettingsEvent {
+  final String currency;
+
+  const ChangeCurrency(this.currency);
+
+  @override
+  List<Object> get props => [currency];
+}

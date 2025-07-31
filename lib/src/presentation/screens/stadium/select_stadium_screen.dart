@@ -4,6 +4,7 @@ import 'package:stadium_food/src/bloc/stadium/stadium_bloc.dart';
 import 'package:stadium_food/src/data/models/stadium.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/widgets/stadium_shimmer.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 
 class SelectStadiumScreen extends StatefulWidget {
   const SelectStadiumScreen({super.key});
@@ -24,9 +25,9 @@ class _SelectStadiumScreenState extends State<SelectStadiumScreen> {
   Future<void> _saveSelectedStadium(Stadium stadium) async {
     // Use StadiumBloc to handle stadium selection
     context.read<StadiumBloc>().add(SelectStadium(stadium));
-    
+
     if (!mounted) return;
-    
+
     // Navigate to home screen instead of popping
     Navigator.of(context).pushReplacementNamed('/home');
   }
@@ -63,18 +64,18 @@ class _SelectStadiumScreenState extends State<SelectStadiumScreen> {
         children: [
           const SizedBox(height: 20),
           Text(
-            'Select Stadium',
+            Translate.get('select_stadium_title'),
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Choose your preferred stadium to explore food options',
+            Translate.get('select_stadium_description'),
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Colors.grey[600],
-            ),
+                  color: Colors.grey[600],
+                ),
           ),
         ],
       ),
@@ -106,10 +107,11 @@ class _SelectStadiumScreenState extends State<SelectStadiumScreen> {
           }
         },
         decoration: InputDecoration(
-          hintText: 'Search stadiums...',
+          hintText: Translate.get('select_stadium_search'),
           prefixIcon: const Icon(Icons.search, color: Colors.grey),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
           hintStyle: TextStyle(color: Colors.grey[400]),
         ),
       ),
@@ -126,7 +128,7 @@ class _SelectStadiumScreenState extends State<SelectStadiumScreen> {
         if (state is StadiumError) {
           return Center(
             child: Text(
-              'Error loading stadiums: ${state.message}',
+              Translate.get('select_stadium_error').replaceAll('{0}', state.message),
               style: const TextStyle(color: Colors.red),
             ),
           );
@@ -134,8 +136,8 @@ class _SelectStadiumScreenState extends State<SelectStadiumScreen> {
 
         if (state is StadiumsLoaded) {
           if (state.stadiums.isEmpty) {
-            return const Center(
-              child: Text('No stadiums found'),
+            return Center(
+              child: Text(Translate.get('select_stadium_empty')),
             );
           }
 
@@ -184,7 +186,8 @@ class _SelectStadiumScreenState extends State<SelectStadiumScreen> {
                   return Container(
                     height: 200,
                     color: Colors.grey[300],
-                    child: const Icon(Icons.stadium, size: 50, color: Colors.grey),
+                    child:
+                        const Icon(Icons.stadium, size: 50, color: Colors.grey),
                   );
                 },
               ),

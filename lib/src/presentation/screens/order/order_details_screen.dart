@@ -143,7 +143,8 @@ class OrderDetailsScreen extends StatelessWidget {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                                content: Text(Translate.get('shopOwnerNotFound'))),
+                                content:
+                                    Text(Translate.get('shopOwnerNotFound'))),
                           );
                         }
                         return;

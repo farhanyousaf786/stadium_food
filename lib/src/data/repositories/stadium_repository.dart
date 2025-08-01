@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:translator/translator.dart';
 import '../models/stadium.dart';
 
 class StadiumRepository {

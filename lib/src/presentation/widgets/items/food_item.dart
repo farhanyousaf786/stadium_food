@@ -5,7 +5,6 @@ import 'package:stadium_food/src/data/models/food.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 
-
 class FoodItem extends StatelessWidget {
   final Food food;
   final VoidCallback? onTap;
@@ -30,7 +29,8 @@ class FoodItem extends StatelessWidget {
             Expanded(
               flex: 5,
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(12)),
                 child: AspectRatio(
                   aspectRatio: 1.5,
                   child: food.images.isEmpty
@@ -81,7 +81,6 @@ class FoodItem extends StatelessWidget {
                           height: 16,
                           width: 16,
                           "assets/svg/star-gold.svg",
-
                         ),
                         const SizedBox(width: 4),
                         Text(
@@ -120,8 +119,6 @@ class FoodItem extends StatelessWidget {
     );
   }
 }
-
-
 
 class FoodItemShimmer extends StatelessWidget {
   const FoodItemShimmer({super.key});

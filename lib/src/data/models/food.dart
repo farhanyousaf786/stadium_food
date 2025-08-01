@@ -56,31 +56,50 @@ class Food extends Equatable {
   factory Food.fromMap(String id, Map<String, dynamic> map) {
     return Food(
       id: id,
-      allergens: (map['allergens'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+      allergens: (map['allergens'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
       category: map['category'] ?? '',
       createdAt: (map['createdAt'] as Timestamp).toDate(),
       customization: (map['customization'] as Map<String, dynamic>?) ?? {},
       description: map['description'] ?? '',
-      extras: (map['extras'] as List<dynamic>?)?.map((x) => Map<String, dynamic>.from(x)).toList() ?? [],
-      images: (map['images'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+      extras: (map['extras'] as List<dynamic>?)
+              ?.map((x) => Map<String, dynamic>.from(x))
+              .toList() ??
+          [],
+      images: (map['images'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
       isAvailable: map['isAvailable'] ?? true,
       name: map['name'] ?? '',
       nutritionalInfo: (map['nutritionalInfo'] as Map<String, dynamic>?) ?? {},
       preparationTime: map['preparationTime'] ?? 15,
       price: (map['price'] ?? 0).toDouble(),
-      sauces: (map['sauces'] as List<dynamic>?)?.map((x) => Map<String, dynamic>.from(x)).toList() ?? [],
+      sauces: (map['sauces'] as List<dynamic>?)
+              ?.map((x) => Map<String, dynamic>.from(x))
+              .toList() ??
+          [],
       shopId: map['shopId'] ?? '',
       stadiumId: map['stadiumId'] ?? '',
-      sizes: (map['sizes'] as List<dynamic>?)?.map((x) => Map<String, dynamic>.from(x)).toList() ?? [],
-      toppings: (map['toppings'] as List<dynamic>?)?.map((x) => Map<String, dynamic>.from(x)).toList() ?? [],
+      sizes: (map['sizes'] as List<dynamic>?)
+              ?.map((x) => Map<String, dynamic>.from(x))
+              .toList() ??
+          [],
+      toppings: (map['toppings'] as List<dynamic>?)
+              ?.map((x) => Map<String, dynamic>.from(x))
+              .toList() ??
+          [],
       updatedAt: (map['updatedAt'] as Timestamp).toDate(),
       foodType: (map['foodType'] as Map<String, dynamic>?)?.map(
-        (key, value) => MapEntry(key, value as bool),
-      ) ?? {
-        'halal': false,
-        'kosher': false,
-        'vegan': false,
-      },
+            (key, value) => MapEntry(key, value as bool),
+          ) ??
+          {
+            'halal': false,
+            'kosher': false,
+            'vegan': false,
+          },
       quantity: map['quantity'] ?? 0,
     );
   }
@@ -115,7 +134,8 @@ class Food extends Equatable {
     final box = Hive.box('myBox');
     final favorites = box.get('favoriteFoods') as List<dynamic>?;
     if (favorites == null || favorites.isEmpty) return false;
-    DocumentReference ref = FirebaseFirestore.instance.doc('/stadiums/$stadiumId/shops/$shopId/menuItems/$id');
+    DocumentReference ref = FirebaseFirestore.instance
+        .doc('/stadiums/$stadiumId/shops/$shopId/menuItems/$id');
     return favorites.contains(ref);
   }
 

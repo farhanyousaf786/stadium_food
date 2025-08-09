@@ -18,7 +18,7 @@ import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:hive/hive.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:google_ml_kit/google_ml_kit.dart' as ml_kit;
+
 
 import '../../../data/repositories/order_repository.dart';
 import '../../../data/services/firebase_storage.dart';
@@ -94,115 +94,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
   XFile? _image;
   String imageUrl = '';
 
-  Future<void> _processTicketImage(XFile image) async {
-    final textRecognizer = ml_kit.TextRecognizer(
-      script: ml_kit.TextRecognitionScript.latin,
-    );
 
-    try {
-      final inputImage = ml_kit.InputImage.fromFilePath(image.path);
-      final recognizedText = await textRecognizer.processImage(inputImage);
-      final Map<String, String> extractedInfo = {};
-      final fullText = recognizedText.text.toUpperCase();
-      log('Full text: $fullText');
-
-      // Define patterns for numeric values
-      final sectionPattern = RegExp(r'SEC\s+(\d+)');
-      final rowPattern = RegExp(r'ROW\s+(\d+)');
-      final seatPattern = RegExp(r'SEAT\s+(\d+)');
-
-      // Also look for standalone numbers in specific positions
-      final numbersPattern = RegExp(r'\b(\d+)\b');
-      final numbers =
-          numbersPattern.allMatches(fullText).map((m) => m.group(1)).toList();
-
-      // Try direct number extraction if we find exactly 3 numbers
-      if (numbers.length == 3) {
-        extractedInfo['seat'] = numbers[0] ?? '';
-        extractedInfo['row'] = numbers[1] ?? '';
-        extractedInfo['section'] = numbers[2] ?? '';
-      } else {
-        // Try pattern matching
-        final sectionMatch = sectionPattern.firstMatch(fullText);
-        if (sectionMatch != null) {
-          extractedInfo['section'] = sectionMatch.group(1) ?? '';
-        }
-
-        final rowMatch = rowPattern.firstMatch(fullText);
-        if (rowMatch != null) {
-          extractedInfo['row'] = rowMatch.group(1) ?? '';
-        }
-
-        final seatMatch = seatPattern.firstMatch(fullText);
-        if (seatMatch != null) {
-          extractedInfo['seat'] = seatMatch.group(1) ?? '';
-        }
-      }
-
-      // Extract teams information
-      final losAngelesPattern = RegExp(r'LOS\s+ANGELES\s+TEAM\s+NAME');
-      final minnesotaPattern = RegExp(r'MINNESOTA\s+TEAM\s+NAME');
-      final losAngelesMatch = losAngelesPattern.firstMatch(fullText);
-      final minnesotaMatch = minnesotaPattern.firstMatch(fullText);
-
-      if (losAngelesMatch != null && minnesotaMatch != null) {
-        setState(() => _seatDetailsController.text =
-            'Teams: LOS ANGELES TEAM NAME vs MINNESOTA TEAM NAME');
-      }
-
-      // Extract date and time
-      final datePattern = RegExp(r'SUN-DEC\s+(\d+)');
-      final dateMatch = datePattern.firstMatch(fullText);
-      if (dateMatch != null) {
-        final date = 'SUN DEC ${dateMatch.group(1)}';
-        if (_seatDetailsController.text.isNotEmpty) {
-          setState(() => _seatDetailsController.text += '\nDate: $date');
-        } else {
-          setState(() => _seatDetailsController.text = 'Date: $date');
-        }
-      }
-
-      // Update UI with extracted information
-      setState(() {
-        if (extractedInfo['section']?.isNotEmpty == true) {
-          _sectionController.text = extractedInfo['section']!.trim();
-        }
-        if (extractedInfo['row']?.isNotEmpty == true) {
-          _rowController.text = extractedInfo['row']!.trim();
-        }
-        if (extractedInfo['seat']?.isNotEmpty == true) {
-          _seatNoController.text = extractedInfo['seat']!.trim();
-        }
-      });
-
-      // Show appropriate feedback
-      if (extractedInfo.isNotEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(Translate.get('ticketExtractSuccess')),
-            backgroundColor: Colors.green,
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(Translate.get('noTicketInfoFound')),
-            backgroundColor: Colors.orange,
-          ),
-        );
-      }
-    } catch (e) {
-      print('Error processing ticket: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${Translate.get('ticketExtractError')}: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } finally {
-      textRecognizer.close();
-    }
-  }
 
   // pick image from gallery
   Future<void> _pickImageFromGallery() async {
@@ -212,7 +104,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     );
 
     if (_image != null) {
-      await _processTicketImage(_image!);
+     // await _processTicketImage(_image!);
     }
 
     setState(() {});
@@ -226,7 +118,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     );
 
     if (_image != null) {
-      await _processTicketImage(_image!);
+    //  await _processTicketImage(_image!);
     }
 
     setState(() {});

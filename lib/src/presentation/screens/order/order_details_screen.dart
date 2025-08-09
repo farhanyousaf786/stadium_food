@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/models/order.dart';
 import 'package:stadium_food/src/data/models/order_status.dart';
@@ -22,105 +23,7 @@ class OrderDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bgColor,
-      // bottomNavigationBar: Container(
-      //   height: 163,
-      //   margin: const EdgeInsets.all(20),
-      //   decoration: BoxDecoration(
-      //     gradient: LinearGradient(
-      //       colors: AppColors.primaryGradient,
-      //       begin: Alignment.topLeft,
-      //       end: Alignment.bottomRight,
-      //     ),
-      //     borderRadius: AppStyles.largeBorderRadius,
-      //     boxShadow: [AppStyles.boxShadow7],
-      //   ),
-      //   child: Stack(
-      //     children: [
-      //       Align(
-      //         alignment: Alignment.topRight,
-      //         child: SvgPicture.asset(
-      //           'assets/svg/pattern-card.svg',
-      //         ),
-      //       ),
-      //       Padding(
-      //         padding: const EdgeInsets.all(20),
-      //         child: Column(
-      //           children: [
-      //             Row(
-      //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //               children: [
-      //                 Text(
-      //                   'Subtotal',
-      //                   style: CustomTextStyle.size16Weight400Text(
-      //                     Colors.white,
-      //                   ),
-      //                 ),
-      //                 Text(
-      //                   '\$${order.subtotal}',
-      //                   style: CustomTextStyle.size16Weight400Text(
-      //                     Colors.white,
-      //                   ),
-      //                 ),
-      //               ],
-      //             ),
-      //             Row(
-      //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //               children: [
-      //                 Text(
-      //                   'Handling & Delivery ',
-      //                   style: CustomTextStyle.size16Weight400Text(
-      //                     Colors.white,
-      //                   ),
-      //                 ),
-      //                 Text(
-      //                   '\$${order.deliveryFee}',
-      //                   style: CustomTextStyle.size16Weight400Text(
-      //                     Colors.white,
-      //                   ),
-      //                 ),
-      //               ],
-      //             ),
-      //             Row(
-      //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //               children: [
-      //                 Text(
-      //                   'Discount',
-      //                   style: CustomTextStyle.size16Weight400Text(
-      //                     Colors.white,
-      //                   ),
-      //                 ),
-      //                 Text(
-      //                   '\$${order.discount}',
-      //                   style: CustomTextStyle.size16Weight400Text(
-      //                     Colors.white,
-      //                   ),
-      //                 ),
-      //               ],
-      //             ),
-      //             const SizedBox(height: 20),
-      //             Row(
-      //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //               children: [
-      //                 Text(
-      //                   'Total',
-      //                   style: CustomTextStyle.size22Weight600Text(
-      //                     Colors.white,
-      //                   ),
-      //                 ),
-      //                 Text(
-      //                   '\$${order.total.toStringAsFixed(2)}',
-      //                   style: CustomTextStyle.size22Weight600Text(
-      //                     Colors.white,
-      //                   ),
-      //                 ),
-      //               ],
-      //             ),
-      //           ],
-      //         ),
-      //       ),
-      //     ],
-      //   ),
-      // ),
+
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -184,7 +87,28 @@ class OrderDetailsScreen extends StatelessWidget {
                 "${Translate.get('order')} #${order.id}",
                 style: CustomTextStyle.size22Weight600Text(),
               ),
+              // --- QR Code Section ---
               const SizedBox(height: 20),
+              Center(
+                child: QrImageView(
+                  data: order.orderCode ?? '', // the orderCode from your model
+                  version: QrVersions.auto,
+                  size: 160,
+                  backgroundColor: Colors.white,
+                  eyeStyle: const QrEyeStyle(
+                    color: Colors.black,
+                    eyeShape: QrEyeShape.square,
+                  ),
+                  dataModuleStyle: const QrDataModuleStyle(
+                    color: Colors.black,
+                    dataModuleShape: QrDataModuleShape.square,
+                  ),
+                ),
+              ),
+              // --- End QR Code Section ---
+
+              const SizedBox(height: 20),
+
               OrderStatusStepper(
                 status: order.status,
                 orderTime: order.createdAt?.toDate(),

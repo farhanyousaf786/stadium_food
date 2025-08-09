@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.1'
+        classpath 'com.android.tools.build:gradle:8.12.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -20,7 +20,6 @@ allprojects {
     configurations.all {
         resolutionStrategy {
             force 'com.google.firebase:firebase-messaging:24.1.1'
-            // Optional: You can also try excluding firebase-iid completely if needed
             exclude group: 'com.google.firebase', module: 'firebase-iid'
         }
     }

@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:stadium_food/src/data/models/food.dart';
 import 'package:stadium_food/src/data/models/order_status.dart';
 
-// ignore: must_be_immutable
+
 class Order extends Equatable {
   final List<Food> cart;
   final double subtotal;
@@ -19,6 +19,8 @@ class Order extends Equatable {
   final Timestamp? createdAt;
   final Timestamp? deliveryTime;
   final Map<String, dynamic> seatInfo;
+  final String? deliveryUserId;
+  final String orderCode;
 
   String? id;
 
@@ -37,6 +39,8 @@ class Order extends Equatable {
     required this.createdAt,
     this.deliveryTime,
     required this.seatInfo,
+    this.deliveryUserId,
+    required this.orderCode,
   });
 
   factory Order.fromMap(String id, Map<String, dynamic> map) {
@@ -60,6 +64,8 @@ class Order extends Equatable {
       createdAt: map['createdAt'] as Timestamp?,
       deliveryTime: map['deliveryTime'] as Timestamp?,
       seatInfo: map['seatInfo'] ?? {},
+      deliveryUserId: map['deliveryUserId'],
+      orderCode: map['orderCode'] ?? '',
     );
     order.id = id;
     return order;
@@ -86,6 +92,8 @@ class Order extends Equatable {
       'createdAt': createdAt,
       'deliveryTime': deliveryTime,
       'seatInfo': seatInfo,
+      'deliveryUserId': deliveryUserId,
+      'orderCode': orderCode,
     };
   }
 
@@ -105,5 +113,7 @@ class Order extends Equatable {
     status,
     createdAt,
     seatInfo,
+    deliveryUserId,
+    orderCode,
   ];
 }

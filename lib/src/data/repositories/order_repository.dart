@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:stadium_food/src/data/models/order.dart' as model;
 import 'package:stadium_food/src/data/models/order_status.dart';
@@ -118,6 +120,8 @@ class OrderRepository {
       stadiumId: cart[0].stadiumId ?? '',
       shopId: cart[0].shopId ?? '',
       orderId: DateTime.now().millisecondsSinceEpoch.toString(),
+      orderCode: getRandomSixDigitNumber().toString(),
+      deliveryUserId: null,
       userInfo: {
         'userEmail': box.get('email') ?? '',
         'userName': box.get('firstName') ?? '',
@@ -158,7 +162,10 @@ class OrderRepository {
 
     return order;
   }
-
+  int getRandomSixDigitNumber() {
+    final random = Random();
+    return 100000 + random.nextInt(900000); // ensures it's always 6 digits
+  }
 
   Future<List<model.Order>> fetchOrders() async {
     try {

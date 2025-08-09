@@ -424,7 +424,12 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                       };
 
                       final total = OrderRepository.total;
-                      makePayment(total, seatInfo);
+                    //  makePayment(total, seatInfo);
+                      BlocProvider.of<OrderBloc>(context).add(
+                        CreateOrder(
+                          seatInfo: seatInfo,
+                        ),
+                      );
                     } catch (e) {
                       // Hide loading
                       Navigator.of(context).pop();
@@ -449,7 +454,12 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                     };
 
                     final total = OrderRepository.total;
-                    makePayment(total, seatInfo);
+                 //   makePayment(total, seatInfo);
+                    BlocProvider.of<OrderBloc>(context).add(
+                      CreateOrder(
+                        seatInfo: seatInfo,
+                      ),
+                    );
                   }
                 }
               },
@@ -776,7 +786,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
             paymentSheetParameters: SetupPaymentSheetParameters(
               paymentIntentClientSecret: paymentIntent!['client_secret'],
               style: ThemeMode.dark,
-              merchantDisplayName: 'Stadium Food',
+              merchantDisplayName: 'Fan Munch',
             ),
           )
           .then((value) {});
@@ -794,7 +804,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
         'amount': calculateAmount(amount),
         'currency': 'USD', // Always use USD
         'payment_method_types[]': 'card',
-        'description': 'Stadium Food Order',
+        'description': 'Fan Munch Order',
         'metadata': {
           'original_currency': currency,
           'original_amount': amount,

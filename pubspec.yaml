@@ -56,6 +56,7 @@ dependencies:
   flutter_stripe: ^11.5.0
   googleapis_auth: ^2.0.0
   http: ^1.4.0
+  qr_flutter: ^4.1.0
 
 
   firebase_messaging: ^15.2.7
@@ -67,9 +68,7 @@ dependencies:
   translator: ^1.0.3+1
 
 dev_dependencies:
-  shared_preferences: ^2.2.2
-  flutter_launcher_icons: ^0.14.4
-  google_ml_kit: ^0.20.0
+
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
@@ -88,16 +87,5 @@ flutter:
         - asset: assets/fonts/SF-Pro-Text-Bold.otf
           weight: 700
 
-flutter_launcher_icons:
-  android: "launcher_icon"
-  ios: true
-  web:
-    generate: true
-    image_path: "assets/icon/app_icon.png"
 
-  image_path: "assets/icon/app_icon.png"
-  min_sdk_android: 21
-  remove_alpha_ios: true
-# flutter pub get
-# flutter pub run flutter_launcher_icons
 

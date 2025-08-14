@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,12 +17,11 @@ import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:hive/hive.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-
-
 import '../../../data/repositories/order_repository.dart';
 import '../../../data/services/firebase_storage.dart';
 import '../../../data/services/currency_service.dart';
 import '../../utils/app_styles.dart';
+
 
 class OrderConfirmScreen extends StatefulWidget {
   const OrderConfirmScreen({super.key});

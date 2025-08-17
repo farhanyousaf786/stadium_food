@@ -62,7 +62,7 @@ class PriceInfoWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        Translate.get('handlingDelivery'),
+                        Translate.get('handlingAndDelivery'),
                         style: CustomTextStyle.size16Weight400Text(
                           Colors.white,
                         ),

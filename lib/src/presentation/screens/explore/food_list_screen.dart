@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/presentation/widgets/shimmer_widgets.dart';
 import '../../../bloc/food/food_bloc.dart';
@@ -8,7 +7,6 @@ import '../../../data/models/food.dart';
 import '../../../data/models/shop.dart';
 import '../../../data/models/stadium.dart';
 import '../../widgets/buttons/back_button.dart';
-import '../../widgets/items/food_item.dart';
 import '../../utils/custom_text_style.dart';
 import '../../utils/app_colors.dart';
 import '../../widgets/formatted_price_text.dart';
@@ -24,7 +22,6 @@ class FoodListScreen extends StatefulWidget {
 }
 
 class _FoodListScreenState extends State<FoodListScreen> {
-  final ScrollController _scrollController = ScrollController();
   final List<Food> _foods = [];
   List<Food> _filteredFoods = [];
   final TextEditingController _searchController = TextEditingController();
@@ -45,24 +42,7 @@ class _FoodListScreenState extends State<FoodListScreen> {
     context.read<FoodBloc>().add(LoadFoods(
           shopId: widget.shop.id,
           stadiumId: widget.stadium.id,
-          limit: 20,
-          lastDocument: null,
         ));
-
-    _scrollController.addListener(_onScroll);
-  }
-
-  void _onScroll() {
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200) {
-      // Load more foods if needed
-      context.read<FoodBloc>().add(FetchMoreFoods(
-            shopId: widget.shop.id,
-            stadiumId: widget.stadium.id,
-            limit: 10,
-            lastDocument: null,
-          ));
-    }
   }
 
   void _filterFoods(String query) {
@@ -115,15 +95,6 @@ class _FoodListScreenState extends State<FoodListScreen> {
             _foods.addAll(state.foods);
             _filteredFoods = _foods;
             _updateCategories(_foods);
-          });
-        } else if (state is FoodMoreFetched) {
-          setState(() {
-            for (var food in state.foods) {
-              if (!_foods.contains(food)) {
-                _foods.add(food);
-              }
-            }
-            _filteredFoods = _foods;
           });
         }
       },
@@ -266,8 +237,7 @@ class _FoodListScreenState extends State<FoodListScreen> {
                   Expanded(
                     child: BlocBuilder<FoodBloc, FoodState>(
                       builder: (context, state) {
-                        if (state is FoodFetching ||
-                            state is FoodMoreFetching) {
+                        if (state is FoodFetching) {
                           return const Center(
                             child: FoodListShimmer(),
                           );
@@ -292,7 +262,6 @@ class _FoodListScreenState extends State<FoodListScreen> {
                         }
 
                         return ListView.builder(
-                          controller: _scrollController,
                           padding: const EdgeInsets.symmetric(horizontal: 8),
                           itemCount: _filteredFoods.length,
                           itemBuilder: (context, index) {
@@ -452,7 +421,6 @@ class _FoodListScreenState extends State<FoodListScreen> {
 
   @override
   void dispose() {
-    _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
   }

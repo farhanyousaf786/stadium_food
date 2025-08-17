@@ -6,11 +6,11 @@ class CurrencyService {
   static const Map<String, double> _rates = {
     'USD': 1.0, // Base currency
     'NIS':
-        3.75, // NIS to USD rate (approximate, you may want to use an API for live rates)
+        1,
   };
 
   static String getCurrentCurrency() {
-    return Hive.box(_boxName).get(_currencyKey, defaultValue: 'USD');
+    return Hive.box(_boxName).get(_currencyKey, defaultValue: 'NIS');
   }
 
   static void setCurrency(String currency) {

@@ -9,19 +9,14 @@ class FoodFetching extends FoodState {}
 
 class FoodFetched extends FoodState {
   final List<Food> foods;
-  final DocumentSnapshot? lastDocument;
 
-  FoodFetched({required this.foods, required this.lastDocument});
+
+  FoodFetched({required this.foods});
 }
 
-class FoodMoreFetched extends FoodState {
-  final List<Food> foods;
-  final DocumentSnapshot? lastDocument;
 
-  FoodMoreFetched({required this.foods, required this.lastDocument});
-}
 
-class FoodMoreFetching extends FoodState {}
+
 
 class FoodError extends FoodState {
   final String message;

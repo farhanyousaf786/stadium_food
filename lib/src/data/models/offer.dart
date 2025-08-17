@@ -21,7 +21,7 @@ class Offer extends Equatable {
   final double price;
   final double discountPercentage;
   final List<Map<String, dynamic>> sauces;
-  final String shopId;
+  final List<String> shopIds;
   final String stadiumId;
   final List<Map<String, dynamic>> sizes;
   final List<Map<String, dynamic>> toppings;
@@ -48,7 +48,7 @@ class Offer extends Equatable {
     required this.price,
     required this.discountPercentage,
     required this.sauces,
-    required this.shopId,
+    required this.shopIds,
     required this.stadiumId,
     required this.sizes,
     required this.toppings,
@@ -75,7 +75,7 @@ class Offer extends Equatable {
       price: (map['price'] ?? 0).toDouble(),
       discountPercentage: (map['discountPercentage'] ?? 0).toDouble(),
       sauces: (map['sauces'] as List<dynamic>?)?.map((x) => Map<String, dynamic>.from(x)).toList() ?? [],
-      shopId: map['shopId'] ?? '',
+      shopIds: List<String>.from(map['shopIds'] ?? []),
       stadiumId: map['stadiumId'] ?? '',
       sizes: (map['sizes'] as List<dynamic>?)?.map((x) => Map<String, dynamic>.from(x)).toList() ?? [],
       toppings: (map['toppings'] as List<dynamic>?)?.map((x) => Map<String, dynamic>.from(x)).toList() ?? [],
@@ -109,7 +109,7 @@ class Offer extends Equatable {
       'price': price,
       'discountPercentage': discountPercentage,
       'sauces': sauces,
-      'shopId': shopId,
+      'shopIds': shopIds,
       'stadiumId': stadiumId,
       'sizes': sizes,
       'toppings': toppings,
@@ -123,9 +123,12 @@ class Offer extends Equatable {
     final box = Hive.box('myBox');
     final favorites = box.get('favoriteFoods') as List<dynamic>?;
     if (favorites == null || favorites.isEmpty) return false;
-    DocumentReference ref = FirebaseFirestore.instance.doc('/stadiums/$stadiumId/shops/$shopId/menuItems/$id');
+    DocumentReference ref = FirebaseFirestore.instance.doc('/stadiums/$stadiumId/shops/${shopIds.first}/menuItems/$id');
     return favorites.contains(ref);
   }
+
+  // Backward compatibility getter
+  String get shopId => shopIds.isNotEmpty ? shopIds.first : '';
 
   @override
   List<Object> get props => [name, createdAt];

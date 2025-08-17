@@ -35,7 +35,7 @@ Future<void> main() async {
   );
   await Hive.initFlutter();
   Hive.registerAdapter(FirestoreDocumentReferenceAdapter());
-  Hive.registerAdapter(RestaurantAdapter());
+//  Hive.registerAdapter(RestaurantAdapter());
   Hive.registerAdapter(FoodAdapter());
   await Hive.openBox('myBox');
 

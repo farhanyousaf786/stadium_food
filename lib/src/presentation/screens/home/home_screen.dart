@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:stadium_food/src/bloc/food/food_bloc.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
-import 'package:stadium_food/src/data/models/order_status.dart';
 import 'package:stadium_food/src/bloc/theme/theme_bloc.dart';
 import 'package:stadium_food/src/data/models/food.dart';
+import 'package:stadium_food/src/data/models/order_status.dart';
 import 'package:stadium_food/src/data/models/restaurant.dart';
 import 'package:stadium_food/src/data/repositories/order_repository.dart';
 import 'package:stadium_food/src/presentation/screens/home/profile_page/profile_screen.dart';
 import 'package:stadium_food/src/presentation/screens/order/cart_screen.dart';
 import 'package:stadium_food/src/presentation/screens/order/order_list_screen.dart';
-import 'package:stadium_food/src/presentation/widgets/items/food_item.dart';
-import 'package:stadium_food/src/presentation/widgets/items/restaurant_item.dart';
-import 'package:stadium_food/src/presentation/widgets/search_filter_widget.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_styles.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'dashboard/dashboard_screen.dart';
 
@@ -82,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     selectedIcon: SvgPicture.asset(
                       "assets/svg/home_new.svg",
                     ),
-                    label: "Home",
+                    label: Translate.get('home'),
                   ),
                   NavigationDestination(
                     icon: BlocBuilder<OrderBloc, OrderState>(
@@ -138,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       },
                     ),
-                    label: "Orders",
+                    label: Translate.get('orders'),
                   ),
                   NavigationDestination(
                     icon: BlocBuilder<OrderBloc, OrderState>(
@@ -180,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       },
                     ),
-                    label: "Cart",
+                    label: Translate.get('cart'),
                   ),
                   NavigationDestination(
                     icon: Opacity(
@@ -192,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     selectedIcon: SvgPicture.asset(
                       "assets/svg/profile.svg",
                     ),
-                    label: "Profile",
+                    label: Translate.get('profile'),
                   ),
                 ],
               ),

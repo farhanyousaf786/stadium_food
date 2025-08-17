@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:stadium_food/src/core/constants/colors.dart';
+import 'package:stadium_food/src/services/tip_service.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/repositories/order_repository.dart';
 import 'package:stadium_food/src/data/services/currency_service.dart';
@@ -10,8 +11,11 @@ import 'package:stadium_food/src/presentation/widgets/buttons/back_button.dart';
 import 'package:stadium_food/src/presentation/widgets/formatted_price_text.dart';
 
 class TipScreen extends StatefulWidget {
+  final String? orderId;
+
   const TipScreen({
     super.key,
+    this.orderId,
   });
 
   @override
@@ -22,15 +26,22 @@ class _TipScreenState extends State<TipScreen> {
   late double _selectedTipPercentage;
   late double _tipAmount;
   final List<double> _tipPercentages = [6, 10, 14, 18];
-  late double _orderTotal;
+   double _orderTotal=0.0;
   final TextEditingController _customTipController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _selectedTipPercentage = 10; // Default to 10%
-    _orderTotal = OrderRepository.total;
+    _initializeTotal();
+  }
+
+  Future<void> _initializeTotal() async {
+    _orderTotal = widget.orderId != null
+        ? await OrderRepository.getOrderTotal(widget.orderId!)
+        : OrderRepository.total;
     _calculateTip();
+    if (mounted) setState(() {});
   }
 
   void _calculateTip() {
@@ -93,8 +104,7 @@ class _TipScreenState extends State<TipScreen> {
                   ),
                   children: [
                     TextSpan(
-                      text:
-                          '${Translate.get('tipDescription')} ',
+                      text: '${Translate.get('tipDescription')} ',
                     ),
                     WidgetSpan(
                       child: FormattedPriceText(
@@ -233,8 +243,8 @@ class _TipScreenState extends State<TipScreen> {
                                             ScaffoldMessenger.of(context)
                                                 .showSnackBar(
                                               SnackBar(
-                                                content: Text(
-                                                    Translate.get('invalidTipAmount')),
+                                                content: Text(Translate.get(
+                                                    'invalidTipAmount')),
                                               ),
                                             );
                                           }
@@ -321,16 +331,22 @@ class _TipScreenState extends State<TipScreen> {
                     width: double.infinity,
                     height: 56,
                     child: ElevatedButton(
-                      onPressed: () {
-                        // Update tip in repository and bloc
-                        context
-                            .read<OrderBloc>()
-                            .add(UpdateTipEvent(_tipAmount));
-
-                        Navigator.pushNamed(
-                          context,
-                          '/order/confirm',
-                        );
+                      onPressed: () async {
+                        if (widget.orderId != null) {
+                          // Update existing order tip
+                          final tipService = TipService();
+                          await tipService.updateTip(widget.orderId!, _tipAmount);
+                          Navigator.pop(context);
+                        } else {
+                          // New order tip
+                          context
+                              .read<OrderBloc>()
+                              .add(UpdateTipEvent(_tipAmount));
+                          Navigator.pushNamed(
+                            context,
+                            '/order/confirm',
+                          );
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primaryColor,
@@ -353,11 +369,20 @@ class _TipScreenState extends State<TipScreen> {
                     width: double.infinity,
                     height: 56,
                     child: TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(
-                          context,
-                          '/order/confirm',
-                        );
+                      onPressed: () async {
+                        if (widget.orderId != null) {
+
+                          Navigator.pop(context);
+                        } else {
+                          // Skip tip for new order
+                          context
+                              .read<OrderBloc>()
+                              .add(UpdateTipEvent(0));
+                          Navigator.pushNamed(
+                            context,
+                            '/order/confirm',
+                          );
+                        }
                       },
                       style: TextButton.styleFrom(
                         shape: RoundedRectangleBorder(

@@ -5,6 +5,8 @@ class Shop {
   final String name;
   final String description;
   final String location;
+  final double latitude;
+  final double longitude;
   final String floor;
   final String gate;
   final String shopUserFcmToken;
@@ -19,6 +21,8 @@ class Shop {
     required this.name,
     required this.description,
     required this.location,
+    required this.latitude,
+    required this.longitude,
     required this.floor,
     required this.gate,
     required this.stadiumId,
@@ -35,6 +39,8 @@ class Shop {
       name: map['name'] ?? '',
       description: map['description'] ?? '',
       location: map['location'] ?? '',
+      latitude: (map['latitude'] ?? 0.0).toDouble(),
+      longitude: (map['longitude'] ?? 0.0).toDouble(),
       floor: map['floor'] ?? '',
       gate: map['gate'] ?? '',
       stadiumId: map['stadiumId'] ?? '',

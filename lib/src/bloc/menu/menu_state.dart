@@ -8,11 +8,11 @@ class MenuLoading extends MenuState {}
 
 class MenuLoaded extends MenuState {
   final List<Food> foods;
-  final DocumentSnapshot? lastDocument;
+
 
   MenuLoaded({
     required this.foods,
-    required this.lastDocument,
+
   });
 }
 

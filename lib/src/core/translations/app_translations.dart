@@ -11,13 +11,29 @@ class AppTranslations {
 
   static const Map<String, Map<String, String>> translations = {
     'en': {
-      // Privacy Policy Screen
+      'home': 'Home',
+      // Image Upload
+      'uploadTicket': 'Upload Ticket Image',
+      'gallery': 'Gallery',
+      'camera': 'Camera',
+      'imageUploadError': 'Failed to upload image. Please try again.',
+      // Order Confirmation Form
+      'entranceLabel': 'Entrance',
+      'entranceHint': 'Enter entrance number/name',
+      'additionalDetailsLabel': 'Additional Details',
+      'additionalDetailsHint': 'Any additional information about your seat',
+      'areaLabel': 'Area',
+      'areaHint': 'Enter area name/number',
+      'standLabel': 'Stand',
+      'standHint': 'Enter stand name/number',
+
+      // Privacy Policy
       'privacy_policy_title': 'Privacy Policy',
-      'privacy_policy_main_title': 'Stadium Food App Privacy Policy',
+      'privacy_policy_main_title': 'Fan Munch App Privacy Policy',
       'privacy_policy_last_updated': 'Last Updated: July 8, 2025',
       'privacy_policy_understand': 'I Understand',
       'privacy_policy_section_1_title': '1. Introduction',
-      'privacy_policy_section_1_text': 'Welcome to the Stadium Food App. We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile application and services.',
+      'privacy_policy_section_1_text': 'Welcome to the Fan Munch App. We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile application and services.',
       'privacy_policy_section_2_title': '2. Information We Collect',
       'privacy_policy_section_2_intro': 'We collect information that you provide directly to us, including:',
       'privacy_policy_section_2_bullet_1': 'Personal Information: Name, email address, phone number, and profile image',
@@ -154,7 +170,13 @@ class AppTranslations {
       'seatLabel': 'Seat',
       'seatHint': 'Enter your seat number',
       'sectionLabel': 'Section',
-      'sectionHint': 'Enter your section number',
+      'locationError': 'Could not get your location. Please try again.',
+      'locationPermissionRequired': 'Location Permission Required',
+      'locationPermissionMessage': 'We need your location to find the nearest shop. Please enable location services in your device settings.',
+      'locationServiceDisabled': 'Location services are disabled. Please enable them in your device settings.',
+      'openSettings': 'Open Settings',
+
+      'feedbackUs': 'Feedback',
       'detailsLabel': 'Additional Details',
       'detailsHint': 'Any special requests or notes (optional)',
       'uploadTicketTitle': 'Upload Ticket',
@@ -165,7 +187,7 @@ class AppTranslations {
       'uploadFromGallery': 'Choose from Gallery',
       'ticketExtractSuccess': 'Ticket information extracted successfully',
       'ticketExtractError': 'Error processing ticket',
-      'imageUploadError': 'Failed to upload image. Please try again.',
+
       'orderSuccess': 'Order created successfully',
       'paymentSuccess': 'Payment Successful!',
       'paymentFailed': 'Payment Failed',
@@ -324,6 +346,17 @@ class AppTranslations {
       'customerRetentionRate': 'Customer Retention Rate',
     },
     'he': {
+      'home': 'בַּיִת',
+      // Order Confirmation Form
+      'entranceLabel': 'כניסה',
+      'entranceHint': 'הכנס מספר/שם כניסה',
+      'additionalDetailsLabel': 'פרטים נוספים',
+      'additionalDetailsHint': 'מידע נוסף על המושב שלך',
+      'areaLabel': 'אזור',
+      'areaHint': 'הכנס שם/מספר אזור',
+      'standLabel': 'יציע',
+      'standHint': 'הכנס שם/מספר יציע',
+
       // Privacy Policy Screen
       'privacy_policy_title': 'מדיניות פרטיות',
       'privacy_policy_main_title': 'מדיניות הפרטיות של אפליקציית Stadium Food',
@@ -462,6 +495,7 @@ class AppTranslations {
       'preparationTime': 'דקות',
       'description': 'תיאור',
       'addTip': 'הוסף טיפ',
+      'feedbackUs': 'מָשׁוֹב',
       'tipDescription':
           '100% מהטיפ שלך מגיע לשליח שלך. הטיפים מבוססים על סך ההזמנה שלך',
       'beforeDiscounts': 'לפני הנחות ומבצעים.',
@@ -540,7 +574,16 @@ class AppTranslations {
       'currency': 'מטבע',
       'profile': 'פרופיל',
 
+
+
+      // Image Upload
+      'uploadTicket': 'העלה תמונת כרטיס',
+      'gallery': 'גלריה',
+      'camera': 'מצלמה',
+
+
       // Auth
+
       'register': 'הרשמה',
       'email': 'אימייל',
       'password': 'סיסמה',

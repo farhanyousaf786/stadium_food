@@ -11,6 +11,7 @@ class Order extends Equatable {
   final double discount;
   final double total;
   final double tipAmount;
+  final bool isTipAdded;
   final Map<String, dynamic> userInfo;
   final String stadiumId;
   final String shopId;
@@ -31,6 +32,7 @@ class Order extends Equatable {
     required this.discount,
     required this.total,
     required this.tipAmount,
+    required this.isTipAdded,
     required this.userInfo,
     required this.stadiumId,
     required this.shopId,
@@ -56,6 +58,7 @@ class Order extends Equatable {
       discount: (map['discount'] ?? 0) * 1.0,
       total: (map['total'] ?? 0) * 1.0,
       tipAmount: (map['tipAmount'] ?? 0) * 1.0,
+      isTipAdded: map['isTipAdded'] ?? false,
       userInfo: map['userInfo'] ?? {},
       stadiumId: map['stadiumId'] ?? '',
       shopId: map['shopId'] ?? '',
@@ -83,6 +86,7 @@ class Order extends Equatable {
       'discount': discount,
       'total': total,
       'tipAmount': tipAmount,
+      'isTipAdded': isTipAdded,
       'userInfo': userInfo,
 
       'stadiumId': stadiumId,
@@ -106,6 +110,7 @@ class Order extends Equatable {
     discount,
     total,
     tipAmount,
+    isTipAdded,
     userInfo,
     stadiumId,
     shopId,

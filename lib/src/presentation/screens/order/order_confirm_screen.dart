@@ -1,8 +1,7 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -10,6 +9,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:http/http.dart' as http;
+import 'package:geolocator/geolocator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/back_button.dart';
 import 'package:stadium_food/src/presentation/widgets/loading_indicator.dart';
 import 'package:stadium_food/src/presentation/widgets/price_info_widget.dart';
@@ -17,8 +18,6 @@ import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:hive/hive.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-
 
 import '../../../data/repositories/order_repository.dart';
 import '../../../data/services/firebase_storage.dart';
@@ -87,14 +86,69 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
   final _formKey = GlobalKey<FormState>();
   final _rowController = TextEditingController();
   final _seatNoController = TextEditingController();
-  final _sectionController = TextEditingController();
+  final _standController = TextEditingController();
+  final _areaController = TextEditingController();
+  final _entranceController = TextEditingController();
   final _seatDetailsController = TextEditingController();
 
   Map<String, dynamic>? paymentIntent;
   XFile? _image;
   String imageUrl = '';
 
+  Future<void> _processTicketImage(XFile image) async {
+    final apiKey = 'AIzaSyAFZnhuiVzNJZeq5lmzw2-jgdeWQ3BxXaM';
 
+    // Convert image to base64
+    final base64Image = base64Encode(await File(image.path).readAsBytes());
+
+    // API URL
+    final url = Uri.parse(
+        'https://vision.googleapis.com/v1/images:annotate?key=$apiKey');
+
+    // Request body
+    final body = jsonEncode({
+      "requests": [
+        {
+          "image": {"content": base64Image},
+          "features": [
+            {
+              "type": "TEXT_DETECTION"
+            } // You can also try DOCUMENT_TEXT_DETECTION
+          ]
+        }
+      ]
+    });
+
+    // Send request
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      final text = data['responses'][0]['fullTextAnnotation']?['text'] ?? '';
+      print("Extracted Text:\n$text");
+      String cleanText = text
+          .replaceAll('\n', ' ') // Replace newlines with space
+          .replaceAll(RegExp(r'[^a-zA-Z0-9\s]'), '') // Remove special chars
+          .toLowerCase();
+
+      final seatRegex = RegExp(
+        r"seat\s+\w{1,3}",
+        caseSensitive: false,
+      );
+      final seatMatch = seatRegex.firstMatch(cleanText);
+      if (seatMatch != null) {
+        print("Seat Number: ${seatMatch.group(2)}");
+      } else {
+        print("Seat not found");
+      }
+    } else {
+      print("Error: ${response.body}");
+    }
+  }
 
   // pick image from gallery
   Future<void> _pickImageFromGallery() async {
@@ -104,7 +158,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     );
 
     if (_image != null) {
-     // await _processTicketImage(_image!);
+      await _processTicketImage(_image!);
     }
 
     setState(() {});
@@ -118,7 +172,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     );
 
     if (_image != null) {
-    //  await _processTicketImage(_image!);
+      await _processTicketImage(_image!);
     }
 
     setState(() {});
@@ -248,11 +302,12 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
               backgroundColor: AppColors.primaryColor,
             ),
           );
-          // Navigator.of(context).pushNamedAndRemoveUntil(
-          //   "/order/review",
-          //   arguments: state.order,
-          //   (route) => false,
-          // );
+          // Navigate to order list screen
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/order-list',
+            (route) => false,
+          );
         } else if (state is OrderCreatingError) {
           // remove loading
           Navigator.of(context).pop();
@@ -311,12 +366,13 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                         'ticketImage': uploadedImageUrl,
                         'row': '',
                         'seatNo': '',
-                        'section': '',
+                        'stand': '',
+                        'entrance': '',
+                        'area': '',
                         'seatDetails': '',
                       };
 
-                      final total = OrderRepository.total;
-                    //  makePayment(total, seatInfo);
+                      //  makePayment(OrderRepository.total, seatInfo);
                       BlocProvider.of<OrderBloc>(context).add(
                         CreateOrder(
                           seatInfo: seatInfo,
@@ -328,8 +384,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
 
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content:
-                              Text(Translate.get('imageUploadError')),
+                          content: Text(Translate.get('imageUploadError')),
                           backgroundColor: AppColors.errorColor,
                         ),
                       );
@@ -341,12 +396,13 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                       'ticketImage': '',
                       'row': _rowController.text,
                       'seatNo': _seatNoController.text,
-                      'section': _sectionController.text,
+                      'area': _areaController.text,
+                      'entrance': _entranceController.text,
+                      'stand': _standController.text,
                       'seatDetails': _seatDetailsController.text,
                     };
 
-                    final total = OrderRepository.total;
-                 //   makePayment(total, seatInfo);
+                    //   makePayment(OrderRepository.total, seatInfo);
                     BlocProvider.of<OrderBloc>(context).add(
                       CreateOrder(
                         seatInfo: seatInfo,
@@ -366,10 +422,10 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const CustomBackButton(),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
                   Text(
                     Translate.get('orderConfirmTitle'),
-                    style: CustomTextStyle.size25Weight600Text(),
+                    style: CustomTextStyle.size18Weight600Text(),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -383,72 +439,6 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _buildTextField(
-                                controller: _sectionController,
-                                label: Translate.get('sectionLabel'),
-                                hint: Translate.get('sectionHint'),
-                                icon: Icons.category_outlined,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _buildTextField(
-                                controller: _rowController,
-                                label: Translate.get('rowLabel'),
-                                hint: Translate.get('rowHint'),
-                                icon: Icons.view_week_outlined,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: _buildTextField(
-                                controller: _seatNoController,
-                                label: Translate.get('seatLabel'),
-                                hint: Translate.get('seatHint'),
-                                icon: Icons.chair_outlined,
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        _buildTextField(
-                          controller: _seatDetailsController,
-                          label: Translate.get('additionalDetailsLabel'),
-                          hint: Translate.get('additionalDetailsHint'),
-                          icon: Icons.info_outline,
-                          maxLines: 3,
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        // OR separator
-                        Row(
-                          children: [
-                            const Expanded(child: Divider(thickness: 1)),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                              child: Text(
-                                Translate.get('or'),
-                                style: CustomTextStyle.size14Weight600Text(
-                                  AppColors().secondaryTextColor,
-                                ),
-                              ),
-                            ),
-                            const Expanded(child: Divider(thickness: 1)),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-
                         Text(
                           Translate.get('uploadTicketTitle'),
                           style: CustomTextStyle.size14Weight400Text(
@@ -494,8 +484,8 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                             decoration: BoxDecoration(
                                               color:
                                                   Colors.white.withOpacity(0.5),
-                                              borderRadius: AppStyles
-                                                  .largeBorderRadius,
+                                              borderRadius:
+                                                  AppStyles.largeBorderRadius,
                                             ),
                                             child: const Icon(
                                               Icons.close,
@@ -595,7 +585,8 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                                 ),
                                                 const SizedBox(height: 10),
                                                 Text(
-                                                  Translate.get('uploadFromGallery'),
+                                                  Translate.get(
+                                                      'uploadFromGallery'),
                                                   style: CustomTextStyle
                                                       .size14Weight400Text(),
                                                 ),
@@ -644,6 +635,88 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                       const SizedBox(height: 20),
                                     ],
                                   ),
+                        const SizedBox(height: 20),
+
+                        // OR separator
+                        Row(
+                          children: [
+                            const Expanded(child: Divider(thickness: 1)),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              child: Text(
+                                Translate.get('or'),
+                                style: CustomTextStyle.size14Weight600Text(
+                                  AppColors().secondaryTextColor,
+                                ),
+                              ),
+                            ),
+                            const Expanded(child: Divider(thickness: 1)),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildTextField(
+                                controller: _seatNoController,
+                                label: Translate.get('seatLabel'),
+                                hint: Translate.get('seatHint'),
+                                icon: Icons.chair_outlined,
+                                keyboardType: TextInputType.number,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: _buildTextField(
+                                controller: _standController,
+                                label: Translate.get('standLabel'),
+                                hint: Translate.get('standHint'),
+                                icon: Icons.chair_rounded,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildTextField(
+                                controller: _rowController,
+                                label: Translate.get('rowLabel'),
+                                hint: Translate.get('rowHint'),
+                                icon: Icons.view_week_outlined,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: _buildTextField(
+                                controller: _entranceController,
+                                label: Translate.get('entranceLabel'),
+                                hint: Translate.get('entranceHint'),
+                                icon: Icons.info_outline,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        _buildTextField(
+                          controller: _areaController,
+                          label: Translate.get('areaLabel'),
+                          hint: Translate.get('areaHint'),
+                          icon: Icons.category_outlined,
+                        ),
+
+                        const SizedBox(height: 16),
+                        _buildTextField(
+                          controller: _seatDetailsController,
+                          label: Translate.get('additionalDetailsLabel'),
+                          hint: Translate.get('additionalDetailsHint'),
+                          icon: Icons.info_outline,
+                          maxLines: 3,
+                        ),
+
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),

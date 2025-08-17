@@ -1,6 +1,7 @@
 import UIKit
 import Flutter
 import FirebaseCore
+import GoogleMaps
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -10,6 +11,7 @@ import FirebaseCore
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     FirebaseApp.configure()
+    GMSServices.provideAPIKey("AIzaSyCk0dB043MPcJDKDqq_Uf-jJUuQK2mjXiI")
 
 //    FlutterLocalNotificationsPlugin.setPluginRegistrantCallback { registry in
 //      GeneratedPluginRegistrant.register(with: registry)

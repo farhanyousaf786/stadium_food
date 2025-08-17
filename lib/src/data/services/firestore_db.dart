@@ -31,45 +31,29 @@ class FirestoreDatabase {
 
 
   Future<QuerySnapshot> getStadiumMenuWithPagination(
-
-
       String stadiumId,
       String shopId,
       String collectionName,
-      int limit,
-      DocumentSnapshot? documentSnapshot,
       ) async {
-    if (documentSnapshot == null) {
       return await _firebaseFirestore
-          .collection(collectionName).where('stadiumId',isEqualTo: stadiumId)
-          .limit(limit)
+          .collection(collectionName)
+          .where('stadiumId', isEqualTo: stadiumId)
+          .where('shopIds', arrayContains: shopId )
           .get();
-    } else {
-      return await _firebaseFirestore
-          .collection(collectionName).where('stadiumId',isEqualTo: stadiumId)
-          .limit(limit)
-          .startAfterDocument(documentSnapshot)
-          .get();
-    }
   }
 
   Future<QuerySnapshot> getRootMenuItems(
       String stadiumId,
-      int limit,
-      DocumentSnapshot? documentSnapshot,
+
       ) async {
     final query = _firebaseFirestore
         .collection('menuItems')
-        .where('stadiumId', isEqualTo: stadiumId)
-        .limit(limit);
+        .where('stadiumId', isEqualTo: stadiumId);
 
-    if (documentSnapshot == null) {
+
+
       return await query.get();
-    } else {
-      return await query
-          .startAfterDocument(documentSnapshot)
-          .get();
-    }
+
   }
 
   Future<DocumentSnapshot> getDocument(

@@ -186,7 +186,7 @@ class _OrderListScreenState extends State<OrderListScreen>
             PrimaryButton(
               iconData: Icons.shopping_bag,
               text: Translate.get('continueShopping'),
-              onTap: () => Navigator.pushNamed(context, "/foods"),
+              onTap: () => Navigator.pushNamed(context, "/home"),
             ),
           ],
         ),

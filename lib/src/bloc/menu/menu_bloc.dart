@@ -57,7 +57,7 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
       }).toList();
     }
 
-    emit(MenuLoaded(foods: filteredFoods, lastDocument: null));
+    emit(MenuLoaded(foods: filteredFoods));
   }
 
   MenuBloc() : super(MenuInitial()) {
@@ -66,13 +66,12 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
       try {
         Map<String, dynamic> map = await menuRepository.fetchStadiumMenu(
           event.stadiumId,
-          event.limit,
-          event.lastDocument,
+
         );
         _allFoods = map["menuItems"] as List<Food>;
         emit(MenuLoaded(
           foods: _allFoods,
-          lastDocument: map["lastDocument"] as DocumentSnapshot?,
+
         ));
       } catch (e) {
         debugPrint(e.toString());

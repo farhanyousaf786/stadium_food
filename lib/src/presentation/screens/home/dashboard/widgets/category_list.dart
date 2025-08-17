@@ -49,37 +49,13 @@ class _CategoryListState extends State<CategoryList> {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                Translate.get('allCategories'),
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.grayColor,
-                ),
-              ),
-              TextButton(
-                onPressed: () {},
-                child: Row(
-                  children: [
-                    Text(
-                      Translate.get('seeAll'),
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.primaryColor,
-                      ),
-                    ),
-                    Icon(
-                      Icons.chevron_right,
-                      size: 20,
-                      color: AppColors.primaryColor,
-                    ),
-                  ],
-                ),
-              ),
-            ],
+          child: Text(
+            Translate.get('allCategories'),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.grayColor,
+            ),
           ),
         ),
         const SizedBox(height: 16),

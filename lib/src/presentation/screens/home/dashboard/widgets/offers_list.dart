@@ -91,7 +91,7 @@ class _OffersListState extends State<OffersList> {
                           price:
                               discountedPrice, // Use the calculated discounted price
                           sauces: offer.sauces,
-                          shopId: offer.shopId,
+                          shopIds: [offer.shopId],
                           stadiumId: offer.stadiumId,
                           sizes: offer.sizes,
                           toppings: offer.toppings,

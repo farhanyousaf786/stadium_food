@@ -149,8 +149,8 @@ class _ShopListState extends State<ShopList> {
                                 top: Radius.circular(16),
                               ),
                               child: Image.network(
-                                'https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-                                height: 120,
+                                'https://media.istockphoto.com/id/612008886/vector/baseball-game.jpg?s=612x612&w=0&k=20&c=7KrxNdxWx30xj9q01XkfYQQ3QIhWc73ADDSG8enGPpA=',
+                                height: 150,
                                 width: double.infinity,
                                 fit: BoxFit.cover,
                               ),

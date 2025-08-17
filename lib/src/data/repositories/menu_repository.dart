@@ -6,9 +6,9 @@ class MenuRepository {
   final FirestoreDatabase _db = FirestoreDatabase();
 
   Future<Map<String, Object?>> fetchStadiumMenu(
-      String stadiumId, int limit, DocumentSnapshot? lastDocument) async {
+      String stadiumId) async {
     QuerySnapshot menuCollection =
-        await _db.getRootMenuItems(stadiumId, limit, lastDocument);
+        await _db.getRootMenuItems(stadiumId);
 
     List<Food> foods = [];
     for (var snapshot in menuCollection.docs) {

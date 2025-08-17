@@ -4,15 +4,21 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/models/order.dart';
+import 'package:stadium_food/src/services/store_url_service.dart';
 import 'package:stadium_food/src/data/models/order_status.dart';
+import 'package:stadium_food/src/presentation/screens/tip/tip_screen.dart';
 import 'package:stadium_food/src/data/models/shopuser.dart';
 import 'package:stadium_food/src/presentation/screens/chat/chat_details_screen.dart';
+import 'package:stadium_food/src/presentation/screens/order/track_delivery_screen.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/back_button.dart';
 import 'package:stadium_food/src/presentation/widgets/image_placeholder.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:stadium_food/src/presentation/widgets/order_status_stepper.dart';
+
+import '../../../data/services/currency_service.dart';
+import '../../widgets/buttons/primary_button.dart';
 
 class OrderDetailsScreen extends StatelessWidget {
   final Order order;
@@ -21,9 +27,10 @@ class OrderDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentCurrency = CurrencyService.getCurrentCurrency();
+    final symbol = CurrencyService.getCurrencySymbol(currentCurrency);
     return Scaffold(
       backgroundColor: AppColors.bgColor,
-
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -34,52 +41,55 @@ class OrderDetailsScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const CustomBackButton(),
-                  InkWell(
-                    onTap: () async {
-                      final querySnapshot = await FirebaseFirestore.instance
-                          .collection('users')
-                          .where('shopsId', arrayContains: order.shopId)
-                          .limit(1)
-                          .get();
+                  order.status.index != 3
+                      ? InkWell(
+                          onTap: () async {
+                            final querySnapshot = await FirebaseFirestore
+                                .instance
+                                .collection('users')
+                                .where('shopsId', arrayContains: order.shopId)
+                                .limit(1)
+                                .get();
 
-                      if (querySnapshot.docs.isEmpty) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                                content:
-                                    Text(Translate.get('shopOwnerNotFound'))),
-                          );
-                        }
-                        return;
-                      }
+                            if (querySnapshot.docs.isEmpty) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          Translate.get('shopOwnerNotFound'))),
+                                );
+                              }
+                              return;
+                            }
 
-                      final shopUser =
-                          ShopUser.fromMap(querySnapshot.docs.first.data());
-                      if (context.mounted) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ChatDetailsScreen(
-                              otherUser: shopUser,
+                            final shopUser = ShopUser.fromMap(
+                                querySnapshot.docs.first.data());
+                            if (context.mounted) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ChatDetailsScreen(
+                                    otherUser: shopUser,
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          borderRadius: AppStyles.defaultBorderRadius,
+                          child: Container(
+                            width: 45,
+                            height: 45,
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryColor.withOpacity(0.1),
+                              borderRadius: AppStyles.defaultBorderRadius,
+                            ),
+                            child: SvgPicture.asset(
+                              "assets/svg/chat.svg",
                             ),
                           ),
-                        );
-                      }
-                    },
-                    borderRadius: AppStyles.defaultBorderRadius,
-                    child: Container(
-                      width: 45,
-                      height: 45,
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryColor.withOpacity(0.1),
-                        borderRadius: AppStyles.defaultBorderRadius,
-                      ),
-                      child: SvgPicture.asset(
-                        "assets/svg/chat.svg",
-                      ),
-                    ),
-                  )
+                        )
+                      : SizedBox(),
                 ],
               ),
               const SizedBox(height: 20),
@@ -88,23 +98,27 @@ class OrderDetailsScreen extends StatelessWidget {
                 style: CustomTextStyle.size22Weight600Text(),
               ),
               // --- QR Code Section ---
-              const SizedBox(height: 20),
-              Center(
-                child: QrImageView(
-                  data: order.orderCode ?? '', // the orderCode from your model
-                  version: QrVersions.auto,
-                  size: 160,
-                  backgroundColor: Colors.white,
-                  eyeStyle: const QrEyeStyle(
-                    color: Colors.black,
-                    eyeShape: QrEyeShape.square,
-                  ),
-                  dataModuleStyle: const QrDataModuleStyle(
-                    color: Colors.black,
-                    dataModuleShape: QrDataModuleShape.square,
-                  ),
-                ),
-              ),
+              order.status.index != 3 ? const SizedBox(height: 20) : SizedBox(),
+
+              order.status.index != 3
+                  ? Center(
+                      child: QrImageView(
+                        data: order.orderCode ??
+                            '',
+                        version: QrVersions.auto,
+                        size: 160,
+                        backgroundColor: Colors.white,
+                        eyeStyle: const QrEyeStyle(
+                          color: Colors.black,
+                          eyeShape: QrEyeShape.square,
+                        ),
+                        dataModuleStyle: const QrDataModuleStyle(
+                          color: Colors.black,
+                          dataModuleShape: QrDataModuleShape.square,
+                        ),
+                      ),
+                    )
+                  : SizedBox(),
               // --- End QR Code Section ---
 
               const SizedBox(height: 20),
@@ -114,7 +128,43 @@ class OrderDetailsScreen extends StatelessWidget {
                 orderTime: order.createdAt?.toDate(),
                 deliveryTime: order.deliveryTime?.toDate(),
               ),
+
               const SizedBox(height: 20),
+              if (order.status == OrderStatus.delivered) ...[
+                Row(
+                  children: [
+                    if (!order.isTipAdded)
+                      Expanded(
+                        child: PrimaryButton(
+                          onTap: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    TipScreen(orderId: order.id),
+                              ),
+                            );
+                          },
+                          text: Translate.get('addTip'),
+                        ),
+                      ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Expanded(
+                      child: PrimaryButton(
+                        onTap: () {
+                          StoreUrlService.openStoreReview();
+                        },
+                        text: Translate.get('feedbackUs'),
+                      ),
+                    ),
+                  ],
+                )
+              ],
+
+              const SizedBox(height: 20),
+
               Text(
                 Translate.get('items'),
                 style: CustomTextStyle.size18Weight600Text(),
@@ -203,7 +253,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        '\$${item.price.toStringAsFixed(2)}',
+                                        '$symbol${item.price.toStringAsFixed(2)}',
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,

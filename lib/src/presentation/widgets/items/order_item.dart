@@ -5,12 +5,16 @@ import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../data/services/currency_service.dart';
+
 class OrderItem extends StatelessWidget {
   final Order order;
   const OrderItem({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {
+    final currentCurrency = CurrencyService.getCurrentCurrency();
+    final symbol = CurrencyService.getCurrencySymbol(currentCurrency);
     return Ink(
       decoration: BoxDecoration(
         borderRadius: AppStyles.largeBorderRadius,
@@ -51,7 +55,7 @@ class OrderItem extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "\$${order.total.toStringAsFixed(2)}",
+                    "$symbol${order.total.toStringAsFixed(2)}",
                     style: const TextStyle(
                       fontSize: 18,
                       color: AppColors.primaryColor,

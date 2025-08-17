@@ -58,7 +58,7 @@ class OfferSlider extends StatelessWidget {
                     preparationTime: offer.preparationTime,
                     price: discountedPrice,
                     sauces: offer.sauces,
-                    shopId: offer.shopId,
+                    shopIds: [offer.shopId],
                     stadiumId: offer.stadiumId,
                     sizes: offer.sizes,
                     toppings: offer.toppings,

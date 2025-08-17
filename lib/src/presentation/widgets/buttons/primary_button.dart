@@ -19,11 +19,7 @@ class PrimaryButton extends StatelessWidget {
     return Ink(
       decoration: const BoxDecoration(
         color: AppColors.primaryDarkColor,
-        // gradient: LinearGradient(
-        //   colors: AppColors.primaryGradient,
-        //   begin: Alignment.topLeft,
-        //   end: Alignment.bottomRight,
-        // ),
+
         borderRadius: BorderRadius.all(Radius.circular(5)),
       ),
       child: InkWell(

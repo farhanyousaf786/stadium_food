@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:stadium_food/src/data/models/order.dart' as model;
 import 'package:stadium_food/src/data/models/order_status.dart';
-import 'package:stadium_food/src/data/models/payment_method.dart';
 import 'package:stadium_food/src/data/models/user.dart';
 import 'package:stadium_food/src/data/repositories/shop_repository.dart';
 import 'package:stadium_food/src/data/services/firestore_db.dart';
@@ -14,6 +13,7 @@ import 'package:stadium_food/src/services/notification_class.dart';
 import '../models/food.dart';
 
 class OrderRepository {
+  static String? selectedShopId;
   final FirestoreDatabase _db = FirestoreDatabase();
   static final List<Food> cart = [];
 
@@ -22,6 +22,17 @@ class OrderRepository {
 
   static double get tip => _tip;
   static set tip(double value) => _tip = value;
+
+  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  static Future<double> getOrderTotal(String orderId) async {
+    final doc = await _firestore.collection('orders').doc(orderId).get();
+    if (doc.exists) {
+      final data = doc.data();
+      return (data?['total'] as num?)?.toDouble() ?? 0.0;
+    }
+    return 0.0;
+  }
 
   // load cart from hive
   static void loadCart() {
@@ -42,8 +53,8 @@ class OrderRepository {
   void addToCart(Food food) {
     // If cart is not empty, check if new item is from same shop
     if (cart.isNotEmpty) {
-      String currentShopId = cart[0].shopId;
-      String newShopId = food.shopId;
+      String currentShopId = cart[0].shopIds.first;
+      String newShopId = food.shopIds.first;
 
       // If from different shop, clear cart and reset quantities
       if (currentShopId != newShopId) {
@@ -115,10 +126,11 @@ class OrderRepository {
       discount: discount,
       total: total + tip,
       tipAmount: tip,
+      isTipAdded: tip > 0,
       createdAt: Timestamp.now(),
       status: OrderStatus.pending,
-      stadiumId: cart[0].stadiumId ?? '',
-      shopId: cart[0].shopId ?? '',
+      stadiumId: cart[0].stadiumId,
+      shopId: selectedShopId ?? cart[0].shopIds.first,
       orderId: DateTime.now().millisecondsSinceEpoch.toString(),
       orderCode: getRandomSixDigitNumber().toString(),
       deliveryUserId: null,
@@ -132,7 +144,9 @@ class OrderRepository {
         'ticketImage': seatInfo['ticketImage'] ?? '',
         'row': seatInfo['row'] ?? '',
         'seatNo': seatInfo['seatNo'] ?? '',
-        'section': seatInfo['section'] ?? '',
+        'area': seatInfo['area'] ?? '',
+        'entrance': seatInfo['entrance'] ?? '',
+        'stand': seatInfo['stand'] ?? '',
         'seatDetails': seatInfo['seatDetails'] ?? '',
       },
     );
@@ -143,25 +157,25 @@ class OrderRepository {
       order.toMap(),
     );
 
-    try{
-      final User user = User.fromHive();
-      var shopInfo =
-      await ShopRepository().fetchShop(cart[0].stadiumId, cart[0].shopId);
-      NotificationServiceClass().sendNotification(shopInfo.shopUserFcmToken,
-          'Order Received', 'You received a new order from ${user.fullName}');
-
-    }catch (e) {
-      if (kDebugMode) {
-        print("Error occurred: $e");
-      }
-    }
-
+    // try{
+    //   final User user = User.fromHive();
+    //   var shopInfo =
+    //   await ShopRepository().findNearestShop(cart[0].stadiumId, cart[0].shopIds);
+    //   NotificationServiceClass().sendNotification(shopInfo.shopUserFcmToken,
+    //       'Order Received', 'You received a new order from ${user.fullName}');
+    //
+    // }catch (e) {
+    //   if (kDebugMode) {
+    //     print("Error occurred: $e");
+    //   }
+    // }
 
     cart.clear();
     updateHive();
 
     return order;
   }
+
   int getRandomSixDigitNumber() {
     final random = Random();
     return 100000 + random.nextInt(900000); // ensures it's always 6 digits
@@ -174,7 +188,8 @@ class OrderRepository {
         throw Exception('User ID not found. Please login again.');
       }
 
-      final snapshot = await _db.firestore.collection('orders')
+      final snapshot = await _db.firestore
+          .collection('orders')
           .where('userId', isEqualTo: userID)
           .orderBy('createdAt', descending: true)
           .get();
@@ -188,7 +203,6 @@ class OrderRepository {
     }
   }
 
-
   Stream<List<model.Order>> streamOrders() {
     final userID = box.get('id');
     debugPrint('Current userID: $userID');
@@ -196,7 +210,8 @@ class OrderRepository {
       return Stream.error('User ID not found. Please login again.');
     }
 
-    return _db.firestore.collection('orders')
+    return _db.firestore
+        .collection('orders')
         .where('userInfo.userId', isEqualTo: userID)
         .orderBy('createdAt', descending: true)
         .snapshots()
@@ -204,8 +219,8 @@ class OrderRepository {
             .map((doc) => model.Order.fromMap(doc.id, doc.data()))
             .toList())
         .handleError((error) {
-          debugPrint('Error streaming orders: ${error.toString()}');
-          throw error;
-        });
+      debugPrint('Error streaming orders: ${error.toString()}');
+      throw error;
+    });
   }
 }

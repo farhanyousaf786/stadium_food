@@ -85,7 +85,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                           BlocProvider.of<ProfileBloc>(context).add(
                             ToggleFavoriteFood(
                               foodId: widget.food.id,
-                              shopId: widget.food.shopId,
+                              shopId: widget.food.shopIds.first,
                               stadiumId: widget.food.stadiumId,
                             ),
                           );
@@ -114,16 +114,24 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
             ],
           ),
         ),
-        body: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              leading: const CustomBackButton(),
-              expandedHeight: MediaQuery.of(context).size.height * 0.4,
-              flexibleSpace: Stack(
-                children: [
-                  FlexibleSpaceBar(
-                    background: widget.food.images.isNotEmpty
-                        ? Image.network(
+        body: SafeArea(
+          child: CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                backgroundColor: AppColors.bgColor,
+                leading: Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: const CustomBackButton(),
+                ),
+
+                expandedHeight: MediaQuery.of(context).size.height * 0.4,
+                flexibleSpace: FlexibleSpaceBar(
+
+                  background: widget.food.images.isNotEmpty
+                      ? Container(
+                          color: AppColors.bgColor,
+                          padding: EdgeInsets.all(10),
+                          child: Image.network(
                             widget.food.images.first,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) =>
@@ -131,227 +139,218 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                               iconData: Icons.fastfood,
                               iconSize: 100,
                             ),
-                          )
-                        : ImagePlaceholder(
-                            iconData: Icons.fastfood,
-                            iconSize: 100,
                           ),
-                  ),
-                  //Border radius
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      height: 20,
-                      decoration: BoxDecoration(
-                        color: AppColors().backgroundColor,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(50),
-                          topRight: Radius.circular(50),
+                        )
+                      : ImagePlaceholder(
+                          iconData: Icons.fastfood,
+                          iconSize: 100,
                         ),
-                        border: Border.all(
-                          width: 0,
-                          color: Theme.of(context).scaffoldBackgroundColor,
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Container(
-                color: AppColors().backgroundColor,
-                padding: const EdgeInsets.fromLTRB(
-                  20,
-                  0,
-                  20,
-                  40,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            widget.food.name,
-                            style: CustomTextStyle.size27Weight600Text(),
-                          ),
-                        ),
-                        FormattedPriceText(
-                          amount: widget.food.price,
-                          style: CustomTextStyle.size22Weight600Text(
-                            AppColors.primaryColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+              ),
+              SliverToBoxAdapter(
+                child: Container(
+                  color: AppColors().backgroundColor,
+                  padding: const EdgeInsets.fromLTRB(
+                    20,
+                    0,
+                    20,
+                    40,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SvgPicture.asset(
-                            "assets/svg/star.svg",
+                          Expanded(
+                            child: Text(
+                              widget.food.name,
+                              style: CustomTextStyle.size27Weight600Text(),
+                            ),
                           ),
-                          const SizedBox(width: 10),
-                          BlocBuilder<TestimonialBloc, TestimonialState>(
-                            builder: (context, state) {
-                              return Text(
-                                rating > 0
-                                    ? "${rating.toStringAsFixed(2)} ${Translate.get('rating')}"
-                                    : Translate.get('noRatings'),
-                                style: CustomTextStyle.size14Weight400Text(
-                                  AppColors().secondaryTextColor,
-                                ),
-                              );
-                            },
+                          FormattedPriceText(
+                            amount: widget.food.price,
+                            style: CustomTextStyle.size22Weight600Text(
+                              AppColors.primaryColor,
+                            ),
                           ),
-                          const SizedBox(width: 25),
-                          SvgPicture.asset(
-                            "assets/svg/shopping-bag.svg",
-                          ),
-                          const SizedBox(width: 10),
-                          BlocBuilder<FoodBloc, FoodState>(
-                            builder: (context, state) {
-                              if (state is OrderCountFetching) {
-                                return const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: AppColors.primaryColor,
-                                  ),
-                                );
-                              } else if (state is OrderCountFetched) {
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              "assets/svg/star.svg",
+                            ),
+                            const SizedBox(width: 10),
+                            BlocBuilder<TestimonialBloc, TestimonialState>(
+                              builder: (context, state) {
                                 return Text(
-                                  "${state.count} ${Translate.get('orderCount')}",
+                                  rating > 0
+                                      ? "${rating.toStringAsFixed(2)} ${Translate.get('rating')}"
+                                      : Translate.get('noRatings'),
                                   style: CustomTextStyle.size14Weight400Text(
                                     AppColors().secondaryTextColor,
                                   ),
                                 );
-                              }
-                              return Text(
-                                "0 ${Translate.get('orderCount')}",
+                              },
+                            ),
+                            const SizedBox(width: 25),
+                            SvgPicture.asset(
+                              "assets/svg/shopping-bag.svg",
+                            ),
+                            const SizedBox(width: 10),
+                            BlocBuilder<FoodBloc, FoodState>(
+                              builder: (context, state) {
+                                if (state is OrderCountFetching) {
+                                  return const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: AppColors.primaryColor,
+                                    ),
+                                  );
+                                } else if (state is OrderCountFetched) {
+                                  return Text(
+                                    "${state.count} ${Translate.get('orderCount')}",
+                                    style: CustomTextStyle.size14Weight400Text(
+                                      AppColors().secondaryTextColor,
+                                    ),
+                                  );
+                                }
+                                return Text(
+                                  "0 ${Translate.get('orderCount')}",
+                                  style: CustomTextStyle.size14Weight400Text(
+                                    AppColors().secondaryTextColor,
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      Text(
+                        Translate.get('description'),
+                      ),
+                      Text(
+                        widget.food.description.isNotEmpty
+                            ? widget.food.description
+                            : Translate.get('noDescriptionAvailable'),
+                        style: CustomTextStyle.size14Weight400Text(
+                          widget.food.description.isNotEmpty
+                              ? null
+                              : AppColors().secondaryTextColor,
+                        ),
+                        textAlign: widget.food.description.isNotEmpty
+                            ? TextAlign.left
+                            : TextAlign.center,
+                      ),
+                      const SizedBox(height: 20),
+
+                      // allergens
+                      widget.food.allergens.isNotEmpty?  Text(
+                        Translate.get('allergens'),
+                        style: CustomTextStyle.size18Weight600Text(),
+                      ):SizedBox(),
+                      widget.food.allergens.isNotEmpty?  const SizedBox(height: 10):SizedBox(),
+                      widget.food.allergens.isNotEmpty
+                          ? ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: widget.food.allergens.length,
+                              padding: const EdgeInsets.all(0),
+                              itemBuilder: (context, index) {
+                                return Row(
+                                  children: [
+                                    const SizedBox(width: 20),
+                                    const BulletPoint(),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      widget.food.allergens[index],
+                                      style:
+                                          CustomTextStyle.size14Weight400Text(),
+                                    ),
+                                  ],
+                                );
+                              },
+                            )
+                          : SizedBox(),
+                      // Center(
+                      //         child: Text(
+                      //           Translate.get('noIngredientsAvailable'),
+                      //           style: CustomTextStyle.size14Weight400Text(
+                      //             AppColors().secondaryTextColor,
+                      //           ),
+                      //         ),
+                      //       ),
+
+
+                      // testimonials
+
+                      BlocBuilder<TestimonialBloc, TestimonialState>(
+                        builder: (context, state) {
+                          if (state is TestimonialLoading) {
+                            return const Center(
+                              child: CircularProgressIndicator(
+                                  color: AppColors.primaryColor),
+                            );
+                          }
+
+                          if (testimonials.isEmpty) {
+
+                            return SizedBox();
+                              Center(
+                              child: Text(
+                                Translate.get('noTestimonialsAvailable'),
                                 style: CustomTextStyle.size14Weight400Text(
                                   AppColors().secondaryTextColor,
                                 ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    Text(
-                      Translate.get('description'),
-                    ),
-                    Text(
-                      widget.food.description.isNotEmpty
-                          ? widget.food.description
-                          : Translate.get('noDescriptionAvailable'),
-                      style: CustomTextStyle.size14Weight400Text(
-                        widget.food.description.isNotEmpty
-                            ? null
-                            : AppColors().secondaryTextColor,
-                      ),
-                      textAlign: widget.food.description.isNotEmpty
-                          ? TextAlign.left
-                          : TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-
-                    // allergens
-                    Text(
-                      Translate.get('allergens'),
-                      style: CustomTextStyle.size18Weight600Text(),
-                    ),
-                    const SizedBox(height: 10),
-                    widget.food.allergens.isNotEmpty
-                        ? ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: widget.food.allergens.length,
-                            padding: const EdgeInsets.all(0),
-                            itemBuilder: (context, index) {
-                              return Row(
-                                children: [
-                                  const SizedBox(width: 20),
-                                  const BulletPoint(),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    widget.food.allergens[index],
-                                    style:
-                                        CustomTextStyle.size14Weight400Text(),
-                                  ),
-                                ],
-                              );
-                            },
-                          )
-                        : Center(
-                            child: Text(
-                              Translate.get('noIngredientsAvailable'),
-                              style: CustomTextStyle.size14Weight400Text(
-                                AppColors().secondaryTextColor,
                               ),
-                            ),
-                          ),
-                    const SizedBox(height: 20),
-
-                    // testimonials
-                    Text(
-                      Translate.get('testimonials'),
-                      style: CustomTextStyle.size18Weight600Text(),
-                    ),
-                    const SizedBox(height: 20),
-                    BlocBuilder<TestimonialBloc, TestimonialState>(
-                      builder: (context, state) {
-                        if (state is TestimonialLoading) {
-                          return const Center(
-                            child: CircularProgressIndicator(
-                                color: AppColors.primaryColor),
-                          );
-                        }
-
-                        if (testimonials.isEmpty) {
-                          return Center(
-                            child: Text(
-                              Translate.get('noTestimonialsAvailable'),
-                              style: CustomTextStyle.size14Weight400Text(
-                                AppColors().secondaryTextColor,
-                              ),
-                            ),
-                          );
-                        }
-
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: testimonials.length,
-                          padding: const EdgeInsets.all(0),
-                          itemBuilder: (context, index) {
-                            return TestimonialItem(
-                              testimonial: testimonials[index],
                             );
-                          },
-                        );
-                      },
-                    ),
-                  ],
+                          }
+
+                          return Column(
+                            children: [
+                              const SizedBox(height: 20),
+                              Text(
+                                Translate.get('testimonials'),
+                                style: CustomTextStyle.size18Weight600Text(),
+                              ),
+                              const SizedBox(height: 20),
+                              ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: testimonials.length,
+                                padding: const EdgeInsets.all(0),
+                                itemBuilder: (context, index) {
+                                  return TestimonialItem(
+                                    testimonial: testimonials[index],
+                                  );
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -11,6 +11,7 @@ import 'package:stadium_food/src/presentation/screens/auth/register_success_scre
 import 'package:stadium_food/src/presentation/screens/auth/upload_photo_screen.dart';
 import 'package:stadium_food/src/presentation/screens/chat/chat_details_screen.dart';
 import 'package:stadium_food/src/presentation/screens/explore/food_details_screen.dart';
+import 'package:stadium_food/src/presentation/screens/explore/food_list_screen.dart';
 
 import 'package:stadium_food/src/presentation/screens/home/home_screen.dart';
 import 'package:stadium_food/src/presentation/screens/home/notification_screen.dart';
@@ -106,10 +107,11 @@ class AppRouter {
           builder: (_) => const TipScreen(),
         );
 
-      // case '/foods':
-      //   return MaterialPageRoute(
-      //     builder: (_) => const FoodListScreen(),
-      //   );
+      case '/order-list':
+        return MaterialPageRoute(
+          builder: (_) => const OrderListScreen(),
+        );
+
 
       case '/foods/detail':
         return MaterialPageRoute(

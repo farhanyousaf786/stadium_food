@@ -43,3 +43,17 @@ class OrderFetchingError extends OrderState {
 
   OrderFetchingError(this.message);
 }
+
+class SingleOrderFetching extends OrderState {}
+
+class SingleOrderFetched extends OrderState {
+  final Order order;
+
+  SingleOrderFetched(this.order);
+}
+
+class SingleOrderError extends OrderState {
+  final String message;
+
+  SingleOrderError(this.message);
+}

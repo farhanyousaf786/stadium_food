@@ -39,3 +39,9 @@ class UpdateTipEvent extends OrderEvent {
 
   UpdateTipEvent(this.tipAmount);
 }
+
+class FetchOrderById extends OrderEvent {
+  final String orderId;
+
+  FetchOrderById(this.orderId);
+}

@@ -12,6 +12,7 @@ class ShopUser extends Equatable {
   final String fcmToken;
   String userId;
   final List<String> shopsId;
+  final List<dynamic>? location;
 
   ShopUser({
     required this.email,
@@ -20,7 +21,7 @@ class ShopUser extends Equatable {
     required this.shopsId,
     this.image,
     required this.fcmToken,
-
+    this.location,
   });
 
   factory ShopUser.fromMap(Map<String, dynamic> map) {
@@ -31,6 +32,7 @@ class ShopUser extends Equatable {
       image: map['image'],
       fcmToken: map['fcmToken'],
       shopsId: (map['shopsId'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+      location: map['location'] as List<dynamic>?,
     );
   }
 
@@ -42,6 +44,7 @@ class ShopUser extends Equatable {
       'image': image,
       'shopsId': shopsId,
       'fcmToken': fcmToken,
+      'location': location,
     };
   }
 
@@ -54,6 +57,7 @@ class ShopUser extends Equatable {
         image,
         userId,
         fcmToken,
-    shopsId,
+        shopsId,
+        location,
       ];
 }

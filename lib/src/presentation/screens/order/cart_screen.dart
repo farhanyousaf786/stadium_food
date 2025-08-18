@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../services/location_service.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
@@ -12,14 +13,38 @@ import 'package:stadium_food/src/presentation/widgets/dialogs/location_permissio
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
-import 'package:stadium_food/src/services/location_service.dart';
 
-class CartScreen extends StatelessWidget {
-
+class CartScreen extends StatefulWidget {
   final bool isFromHome;
-   const CartScreen(  {super.key, required this.isFromHome});
+
+  const CartScreen({super.key, required this.isFromHome});
+
+  @override
+  State<CartScreen> createState() => _CartScreenState();
+}
+
+class _CartScreenState extends State<CartScreen> {
+  final LocationService _locationService = LocationService();
 
 
+  @override
+  void initState() {
+    super.initState();
+
+  }
+
+  Future<String?> _loadNearbyData() async {
+    try {
+      final userId = await _locationService.getNearestDeliveryUser(5000); // 5km radius
+         return userId;
+
+    } catch (e) {
+
+      debugPrint('Error loading nearby data: $e');
+      return null;
+    }
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +53,13 @@ class CartScreen extends StatelessWidget {
 
   Future<void> _findNearestShopAndNavigate(BuildContext context) async {
     await LocationService.checkLocationPermission();
+       final nearestDeliveryUserId= await _loadNearbyData();
     final nearestShop = await ShopRepository().findNearestShop(
       OrderRepository.cart[0].stadiumId,
       OrderRepository.cart[0].shopIds
     );
+
+    OrderRepository.selectedDeliveryUerId = nearestDeliveryUserId;
     OrderRepository.selectedShopId = nearestShop.id;
     if (context.mounted) {
       Navigator.pushNamed(context, "/tip");
@@ -113,7 +141,7 @@ class CartScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-            isFromHome==false?    const CustomBackButton():SizedBox(),
+            widget.isFromHome==false?    const CustomBackButton():SizedBox(),
                 const SizedBox(height: 20),
                 Text(
                   Translate.get('cart'),
@@ -143,6 +171,7 @@ class CartScreen extends StatelessWidget {
                       ],
                     ),
                   ),
+
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),

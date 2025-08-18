@@ -59,6 +59,19 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         },
       );
     });
+
+    on<FetchOrderById>((event, emit) async {
+      emit(SingleOrderFetching());
+      await emit.forEach<Order>(
+        orderRepository.streamOrderById(event.orderId),
+        onData: (order) => SingleOrderFetched(order),
+        onError: (error, stackTrace) {
+          debugPrint(error.toString());
+          debugPrint(stackTrace.toString());
+          return SingleOrderError(error.toString());
+        },
+      );
+    });
     on<UpdateTipEvent>((event, emit) {
       emit(OrderInitial());
       OrderRepository.tip = event.tipAmount;

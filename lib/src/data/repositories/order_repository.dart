@@ -14,6 +14,7 @@ import '../models/food.dart';
 
 class OrderRepository {
   static String? selectedShopId;
+  static String? selectedDeliveryUerId;
   final FirestoreDatabase _db = FirestoreDatabase();
   static final List<Food> cart = [];
 
@@ -133,7 +134,8 @@ class OrderRepository {
       shopId: selectedShopId ?? cart[0].shopIds.first,
       orderId: DateTime.now().millisecondsSinceEpoch.toString(),
       orderCode: getRandomSixDigitNumber().toString(),
-      deliveryUserId: null,
+      location: null,
+      deliveryUserId: selectedDeliveryUerId,
       userInfo: {
         'userEmail': box.get('email') ?? '',
         'userName': box.get('firstName') ?? '',
@@ -220,6 +222,18 @@ class OrderRepository {
             .toList())
         .handleError((error) {
       debugPrint('Error streaming orders: ${error.toString()}');
+      throw error;
+    });
+  }
+
+  Stream<model.Order> streamOrderById(String orderId) {
+    return _db.firestore
+        .collection('orders')
+        .doc(orderId)
+        .snapshots()
+        .map((doc) => model.Order.fromMap(doc.id, doc.data()!))
+        .handleError((error) {
+      debugPrint('Error streaming order: ${error.toString()}');
       throw error;
     });
   }

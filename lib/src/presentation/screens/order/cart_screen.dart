@@ -35,8 +35,8 @@ class _CartScreenState extends State<CartScreen> {
 
   Future<String?> _loadNearbyData() async {
     try {
-      final userId = await _locationService.getNearestDeliveryUser(5000); // 5km radius
-         return userId;
+      final userId = await _locationService.getNearestDeliveryUser(); 
+      return userId;
 
     } catch (e) {
 

@@ -39,7 +39,7 @@ class LocationService {
     return Geolocator.distanceBetween(lat1, lon1, lat2, lon2);
   }
 
-  Future<String?> getNearestDeliveryUser(double maxDistance) async {
+  Future<String?> getNearestDeliveryUser() async {
     final position = await getCurrentLocation();
     final deliveryUsers = await FirebaseFirestore.instance
         .collection('deliveryUsers')
@@ -57,7 +57,6 @@ class LocationService {
       
       final GeoPoint location = userData['location'];
 
-
       final distance = calculateDistance(
         position.latitude,
         position.longitude,
@@ -65,7 +64,7 @@ class LocationService {
         location.longitude,
       );
 
-      if (distance <= maxDistance && distance < minDistance) {
+      if (distance < minDistance) {
         minDistance = distance;
         nearestUserId = doc.id;
       }

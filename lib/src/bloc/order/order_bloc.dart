@@ -10,6 +10,7 @@ part 'order_state.dart';
 
 class OrderBloc extends Bloc<OrderEvent, OrderState> {
   final OrderRepository orderRepository = OrderRepository();
+  StreamSubscription? _ordersSubscription;
 
   OrderBloc() : super(OrderInitial()) {
     on<OrderEvent>((event, emit) {});
@@ -38,7 +39,6 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       try {
         Order order = await orderRepository.createOrder(
           event.seatInfo,
-
         );
         emit(OrderCreated(order));
       } catch (e, s) {
@@ -49,15 +49,19 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     });
     on<FetchOrders>((event, emit) async {
       emit(OrdersFetching());
-      await emit.forEach<List<Order>>(
-        orderRepository.streamOrders(),
-        onData: (orders) => OrdersFetched(orders),
-        onError: (error, stackTrace) {
-          debugPrint(error.toString());
-          debugPrint(stackTrace.toString());
-          return OrderFetchingError(error.toString());
-        },
-      );
+      await _ordersSubscription?.cancel();
+      _ordersSubscription = orderRepository.streamOrders().listen(
+            (orders) => add(_UpdateOrders(orders)),
+            onError: (error) => add(_OrderError(error.toString())),
+          );
+    });
+
+    on<_UpdateOrders>((event, emit) {
+      emit(OrdersFetched(event.orders));
+    });
+
+    on<_OrderError>((event, emit) {
+      emit(OrderFetchingError(event.message));
     });
 
     on<FetchOrderById>((event, emit) async {
@@ -81,6 +85,18 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
   @override
   Future<void> close() async {
+    await _ordersSubscription?.cancel();
     return super.close();
   }
+}
+
+// Private events for internal bloc usage
+class _UpdateOrders extends OrderEvent {
+  final List<Order> orders;
+  _UpdateOrders(this.orders);
+}
+
+class _OrderError extends OrderEvent {
+  final String message;
+  _OrderError(this.message);
 }

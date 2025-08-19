@@ -27,7 +27,9 @@ class _OrderListScreenState extends State<OrderListScreen>
   @override
   void initState() {
     super.initState();
+
     BlocProvider.of<OrderBloc>(context).add(FetchOrders());
+
     _tabController = TabController(length: 3, vsync: this);
   }
 
@@ -40,10 +42,12 @@ class _OrderListScreenState extends State<OrderListScreen>
   List<Order> filterOrders(List<Order> orders, String tabKey) {
     switch (tabKey) {
       case 'active':
-        return orders.where((o) =>
-        o.status == OrderStatus.pending ||
-            o.status == OrderStatus.preparing ||
-            o.status == OrderStatus.delivering).toList();
+        return orders
+            .where((o) =>
+                o.status == OrderStatus.pending ||
+                o.status == OrderStatus.preparing ||
+                o.status == OrderStatus.delivering)
+            .toList();
       case 'completed':
         return orders.where((o) => o.status == OrderStatus.delivered).toList();
       case 'cancelled':
@@ -56,7 +60,7 @@ class _OrderListScreenState extends State<OrderListScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:AppColors.bgColor,
+      backgroundColor: AppColors.bgColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 30, 20, 0),
@@ -87,8 +91,10 @@ class _OrderListScreenState extends State<OrderListScreen>
                         controller: _tabController,
                         children: [
                           _buildOrderList(filterOrders(state.orders, 'active')),
-                          _buildOrderList(filterOrders(state.orders, 'completed')),
-                          _buildOrderList(filterOrders(state.orders, 'cancelled')),
+                          _buildOrderList(
+                              filterOrders(state.orders, 'completed')),
+                          _buildOrderList(
+                              filterOrders(state.orders, 'cancelled')),
                         ],
                       );
                     } else if (state is OrderFetchingError) {
@@ -117,7 +123,8 @@ class _OrderListScreenState extends State<OrderListScreen>
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(Translate.get('orders'), style: CustomTextStyle.size25Weight600Text()),
+        Text(Translate.get('orders'),
+            style: CustomTextStyle.size25Weight600Text()),
         InkWell(
           onTap: () => Navigator.pushNamed(context, "/cart"),
           borderRadius: AppStyles.defaultBorderRadius,
@@ -156,7 +163,7 @@ class _OrderListScreenState extends State<OrderListScreen>
     return Column(
       children: List.generate(
         3,
-            (index) => const Column(
+        (index) => const Column(
           children: [
             OrderItemShimmer(),
             SizedBox(height: 20),
@@ -181,7 +188,8 @@ class _OrderListScreenState extends State<OrderListScreen>
             const SizedBox(
               height: 16,
             ),
-            Text(Translate.get('noOrdersFound'), style: CustomTextStyle.size22Weight600Text()),
+            Text(Translate.get('noOrdersFound'),
+                style: CustomTextStyle.size22Weight600Text()),
             const SizedBox(height: 20),
             PrimaryButton(
               iconData: Icons.shopping_bag,
@@ -205,4 +213,3 @@ class _OrderListScreenState extends State<OrderListScreen>
     );
   }
 }
-

@@ -135,7 +135,7 @@ class OrderRepository {
       orderId: DateTime.now().millisecondsSinceEpoch.toString(),
       orderCode: getRandomSixDigitNumber().toString(),
       location: null,
-      deliveryUserId: selectedDeliveryUerId,
+      deliveryUserId: selectedDeliveryUerId ,
       userInfo: {
         'userEmail': box.get('email') ?? '',
         'userName': box.get('firstName') ?? '',

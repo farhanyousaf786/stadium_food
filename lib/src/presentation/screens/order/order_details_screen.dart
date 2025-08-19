@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:stadium_food/src/bloc/order/order_bloc.dart';
+import 'package:stadium_food/src/bloc/order_detail/order_detail_bloc.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/models/order.dart';
 import 'package:stadium_food/src/services/store_url_service.dart';
@@ -12,17 +12,15 @@ import 'package:stadium_food/src/data/models/order_status.dart';
 import 'package:stadium_food/src/presentation/screens/tip/tip_screen.dart';
 import 'package:stadium_food/src/data/models/shopuser.dart';
 import 'package:stadium_food/src/presentation/screens/chat/chat_details_screen.dart';
-import 'package:stadium_food/src/presentation/screens/order/track_delivery_screen.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/back_button.dart';
-import 'package:stadium_food/src/presentation/widgets/image_placeholder.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:stadium_food/src/presentation/widgets/order_status_stepper.dart';
-
 import '../../../data/services/currency_service.dart';
 import '../../../services/location_service.dart';
 import '../../widgets/buttons/primary_button.dart';
+import '../../widgets/delivery_distance_tracker.dart';
 
 class OrderDetailsScreen extends StatefulWidget {
   final Order order;
@@ -41,7 +39,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   void initState() {
     super.initState();
     if (widget.order.id != null) {
-      context.read<OrderBloc>().add(FetchOrderById(widget.order.id!));
+      context.read<OrderDetailBloc>().add(FetchOrderDetail(widget.order.id!));
     }
     _getCurrentLocation();
   }
@@ -62,15 +60,19 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     final currentCurrency = CurrencyService.getCurrentCurrency();
     final symbol = CurrencyService.getCurrencySymbol(currentCurrency);
     
-    return BlocBuilder<OrderBloc, OrderState>(
+    return BlocBuilder<OrderDetailBloc, OrderDetailState>(
       builder: (context, state) {
-        if (state is SingleOrderFetching) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (state is SingleOrderError) {
-          return Center(child: Text(state.message));
+        if (state is OrderDetailLoading) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        } else if (state is OrderDetailError) {
+          return Scaffold(
+            body: Center(child: Text(state.message)),
+          );
         }
         
-        final order = state is SingleOrderFetched ? state.order : widget.order;
+        final order = state is OrderDetailLoaded ? state.order : widget.order;
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       body: SafeArea(
@@ -144,14 +146,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                   ),
                   if (order.location != null && _currentPosition != null) ...[  
                     const SizedBox(height: 8),
-                    Text(
-                      "${Translate.get('distance')}: ${_locationService.calculateDistance(
+                    DeliveryDistanceTracker(
+                      distance: _locationService.calculateDistance(
                         _currentPosition!.latitude,
                         _currentPosition!.longitude,
                         order.location!.latitude,
                         order.location!.longitude,
-                      ).toStringAsFixed(0)} ${Translate.get('meters')}",
-                      style: CustomTextStyle.size16Weight400Text(),
+                      ),
+                      isDelivered: order.status == OrderStatus.delivered,
                     ),
                   ],
                 ],
@@ -162,8 +164,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               order.status.index != 3
                   ? Center(
                       child: QrImageView(
-                        data: order.orderCode ??
-                            '',
+                        data: order.orderCode ?? 'No Code',
                         version: QrVersions.auto,
                         size: 160,
                         backgroundColor: Colors.white,

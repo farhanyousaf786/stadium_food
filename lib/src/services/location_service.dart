@@ -55,14 +55,14 @@ class LocationService {
       final userData = doc.data();
       if (userData['location'] == null) continue;
       
-      final List<dynamic> location = userData['location'];
-      if (location.length != 2) continue;
+      final GeoPoint location = userData['location'];
+
 
       final distance = calculateDistance(
         position.latitude,
         position.longitude,
-        location[0],
-        location[1],
+        location.latitude,
+        location.longitude,
       );
 
       if (distance <= maxDistance && distance < minDistance) {

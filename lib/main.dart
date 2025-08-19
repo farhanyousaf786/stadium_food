@@ -12,6 +12,7 @@ import 'package:stadium_food/src/bloc/login/login_bloc.dart';
 import 'package:stadium_food/src/bloc/menu/menu_bloc.dart';
 import 'package:stadium_food/src/bloc/offer/offer_bloc.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
+import 'package:stadium_food/src/bloc/order_detail/order_detail_bloc.dart';
 import 'package:stadium_food/src/bloc/profile/profile_bloc.dart';
 import 'package:stadium_food/src/bloc/register/register_bloc.dart';
 
@@ -62,6 +63,9 @@ Future<void> main() async {
         ),
         BlocProvider(
           create: (context) => OrderBloc(),
+        ),
+        BlocProvider(
+          create: (context) => OrderDetailBloc(),
         ),
         BlocProvider(
           create: (context) => TestimonialBloc(),

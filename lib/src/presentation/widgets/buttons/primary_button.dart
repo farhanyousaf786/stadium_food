@@ -19,7 +19,6 @@ class PrimaryButton extends StatelessWidget {
     return Ink(
       decoration: const BoxDecoration(
         color: AppColors.primaryDarkColor,
-
         borderRadius: BorderRadius.all(Radius.circular(5)),
       ),
       child: InkWell(
@@ -46,7 +45,9 @@ class PrimaryButton extends StatelessWidget {
                       iconData,
                       color: Colors.white,
                     ),
-                    const SizedBox(width: 10,),
+                    const SizedBox(
+                      width: 10,
+                    ),
                     Text(
                       text,
                       textAlign: TextAlign.center,

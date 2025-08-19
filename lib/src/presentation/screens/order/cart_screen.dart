@@ -13,6 +13,7 @@ import 'package:stadium_food/src/presentation/widgets/dialogs/location_permissio
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CartScreen extends StatefulWidget {
   final bool isFromHome;
@@ -26,24 +27,19 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   final LocationService _locationService = LocationService();
 
-
   @override
   void initState() {
     super.initState();
-
   }
 
   Future<String?> _loadNearbyData() async {
     try {
-      final userId = await _locationService.getNearestDeliveryUser(); 
+      final userId = await _locationService.getNearestDeliveryUser();
       return userId;
-
     } catch (e) {
-
       debugPrint('Error loading nearby data: $e');
       return null;
     }
-
   }
 
   @override
@@ -53,14 +49,15 @@ class _CartScreenState extends State<CartScreen> {
 
   Future<void> _findNearestShopAndNavigate(BuildContext context) async {
     await LocationService.checkLocationPermission();
-       final nearestDeliveryUserId= await _loadNearbyData();
+    final position = await _locationService.getCurrentLocation();
+    final nearestDeliveryUserId = await _loadNearbyData();
     final nearestShop = await ShopRepository().findNearestShop(
-      OrderRepository.cart[0].stadiumId,
-      OrderRepository.cart[0].shopIds
-    );
+        OrderRepository.cart[0].stadiumId, OrderRepository.cart[0].shopIds);
 
     OrderRepository.selectedDeliveryUerId = nearestDeliveryUserId;
     OrderRepository.selectedShopId = nearestShop.id;
+    OrderRepository.customerLocation =
+        GeoPoint(position.latitude, position.longitude);
     if (context.mounted) {
       Navigator.pushNamed(context, "/tip");
     }
@@ -104,34 +101,32 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Widget _buildScreen(BuildContext context) {
-
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       bottomNavigationBar: BlocBuilder<OrderBloc, OrderState>(
         builder: (context, state) {
-          return OrderRepository.cart.isNotEmpty? PriceInfoWidget(
-            onTap: () async {
-              if (OrderRepository.cart.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(Translate.get('cartEmpty')),
-                    backgroundColor: AppColors.errorColor,
-                  ),
-                );
-                return;
-              }
-              
+          return OrderRepository.cart.isNotEmpty
+              ? PriceInfoWidget(
+                  onTap: () async {
+                    if (OrderRepository.cart.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(Translate.get('cartEmpty')),
+                          backgroundColor: AppColors.errorColor,
+                        ),
+                      );
+                      return;
+                    }
 
-
-                              // Find nearest shop before proceeding
-              try {
-                await _findNearestShopAndNavigate(context);
-              } catch (e) {
-                await _handleLocationError(context, e);
-              }
-
-            },
-          ):SizedBox();
+                    // Find nearest shop before proceeding
+                    try {
+                      await _findNearestShopAndNavigate(context);
+                    } catch (e) {
+                      await _handleLocationError(context, e);
+                    }
+                  },
+                )
+              : SizedBox();
         },
       ),
       body: SafeArea(
@@ -141,7 +136,9 @@ class _CartScreenState extends State<CartScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-            widget.isFromHome==false?    const CustomBackButton():SizedBox(),
+                widget.isFromHome == false
+                    ? const CustomBackButton()
+                    : SizedBox(),
                 const SizedBox(height: 20),
                 Text(
                   Translate.get('cart'),
@@ -157,7 +154,7 @@ class _CartScreenState extends State<CartScreen> {
                       children: [
                         SvgPicture.asset(
                           "assets/svg/cart.svg",
-                           color: AppColors.starEmptyColor,
+                          color: AppColors.starEmptyColor,
                           height: 100,
                           width: 100,
                         ),
@@ -171,7 +168,6 @@ class _CartScreenState extends State<CartScreen> {
                       ],
                     ),
                   ),
-
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),

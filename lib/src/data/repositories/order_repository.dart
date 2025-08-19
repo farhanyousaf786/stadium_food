@@ -15,6 +15,7 @@ import '../models/food.dart';
 class OrderRepository {
   static String? selectedShopId;
   static String? selectedDeliveryUerId;
+  static GeoPoint? customerLocation;
   final FirestoreDatabase _db = FirestoreDatabase();
   static final List<Food> cart = [];
 
@@ -135,42 +136,48 @@ class OrderRepository {
       orderId: DateTime.now().millisecondsSinceEpoch.toString(),
       orderCode: getRandomSixDigitNumber().toString(),
       location: null,
-      deliveryUserId: selectedDeliveryUerId ,
+      customerLocation: customerLocation,
+      deliveryUserId: selectedDeliveryUerId,
       userInfo: {
         'userEmail': box.get('email') ?? '',
         'userName': box.get('firstName') ?? '',
         'userPhoneNo': box.get('phone') ?? '',
         'userId': box.get('id') ?? '',
       },
-      seatInfo: {
-        'ticketImage': seatInfo['ticketImage'] ?? '',
-        'row': seatInfo['row'] ?? '',
-        'seatNo': seatInfo['seatNo'] ?? '',
-        'area': seatInfo['area'] ?? '',
-        'entrance': seatInfo['entrance'] ?? '',
-        'stand': seatInfo['stand'] ?? '',
-        'seatDetails': seatInfo['seatDetails'] ?? '',
-      },
+      seatInfo: seatInfo,
     );
 
-    // firestore
+    // Save order to firestore
     await _db.addDocument(
       'orders',
       order.toMap(),
     );
 
-    // try{
-    //   final User user = User.fromHive();
-    //   var shopInfo =
-    //   await ShopRepository().findNearestShop(cart[0].stadiumId, cart[0].shopIds);
-    //   NotificationServiceClass().sendNotification(shopInfo.shopUserFcmToken,
-    //       'Order Received', 'You received a new order from ${user.fullName}');
-    //
-    // }catch (e) {
-    //   if (kDebugMode) {
-    //     print("Error occurred: $e");
-    //   }
-    // }
+    // Send notification to delivery user
+    try {
+      if (selectedDeliveryUerId != null) {
+        final deliveryUserDoc = await _firestore
+            .collection('deliveryUsers')
+            .doc(selectedDeliveryUerId)
+            .get();
+            
+        if (deliveryUserDoc.exists) {
+          final fcmToken = deliveryUserDoc.data()?['fcmToken'];
+          if (fcmToken != null) {
+            final userName = box.get('firstName') ?? 'Customer';
+            await NotificationServiceClass().sendNotification(
+              fcmToken,
+              'New Order Received',
+              'You have a new order from $userName at ${order.seatInfo['stand']} ${order.seatInfo['area']}',
+            );
+          }
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error sending notification: $e");
+      }
+    }
 
     cart.clear();
     updateHive();

@@ -53,7 +53,7 @@ class DeliveryDistanceTracker extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${distance.toStringAsFixed(0)} ${Translate.get('meters')} ${isDelivered ? Translate.get('completed') : Translate.get('away')}',
+                      '${distance.toStringAsFixed(0)} ${Translate.get('metersAway')}',
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],

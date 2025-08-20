@@ -92,7 +92,7 @@ class _TopBarState extends State<TopBar> {
                         // Refresh menu items and shops
                         context.read<MenuBloc>().add(LoadStadiumMenu(
                           stadiumId: stadium.id,
-                          limit: 10,
+
                         ));
                         context.read<ShopBloc>().add(LoadShops(stadium.id));
                       }

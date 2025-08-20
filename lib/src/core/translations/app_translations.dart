@@ -11,13 +11,6 @@ class AppTranslations {
 
   static const Map<String, Map<String, String>> translations = {
     'en': {
-      'home': 'Home',
-      // Image Upload
-      'uploadTicket': 'Upload Ticket Image',
-      'gallery': 'Gallery',
-      'camera': 'Camera',
-      'imageUploadError': 'Failed to upload image. Please try again.',
-      // Order Confirmation Form
       'entranceLabel': 'Entrance',
       'entranceHint': 'Enter entrance number/name',
       'additionalDetailsLabel': 'Additional Details',
@@ -26,328 +19,631 @@ class AppTranslations {
       'areaHint': 'Enter area name/number',
       'standLabel': 'Stand',
       'standHint': 'Enter stand name/number',
+      'home' : 'Home',
 
-      // Privacy Policy
       'privacy_policy_title': 'Privacy Policy',
-      'privacy_policy_main_title': 'Fan Munch App Privacy Policy',
+
+      'privacy_policy_main_title': 'Fan munch App Privacy Policy',
+
       'privacy_policy_last_updated': 'Last Updated: July 8, 2025',
+
       'privacy_policy_understand': 'I Understand',
+
       'privacy_policy_section_1_title': '1. Introduction',
-      'privacy_policy_section_1_text': 'Welcome to the Fan Munch App. We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile application and services.',
+
+      'privacy_policy_section_1_text': 'Welcome to the FanMunch App. We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile application and services.',
+
       'privacy_policy_section_2_title': '2. Information We Collect',
+
       'privacy_policy_section_2_intro': 'We collect information that you provide directly to us, including:',
+
       'privacy_policy_section_2_bullet_1': 'Personal Information: Name, email address, phone number, and profile image',
+
       'privacy_policy_section_2_bullet_2': 'Account Information: Login credentials and user preferences',
+
       'privacy_policy_section_2_bullet_3': 'Transaction Information: Order history, payment details, and delivery addresses',
+
       'privacy_policy_section_2_bullet_4': 'Location Information: Stadium selection and device location for delivery services',
+
       'privacy_policy_section_2_bullet_5': 'Device Information: Device type, operating system, and unique device identifiers',
+
       'privacy_policy_section_3_title': '3. How We Use Your Information',
+
       'privacy_policy_section_3_intro': 'We use the information we collect to:',
+
       'privacy_policy_section_3_bullet_1': 'Provide, maintain, and improve our services',
+
       'privacy_policy_section_3_bullet_2': 'Process transactions and send related information',
+
       'privacy_policy_section_3_bullet_3': 'Send you technical notices, updates, and support messages',
+
       'privacy_policy_section_3_bullet_4': 'Respond to your comments, questions, and customer service requests',
+
       'privacy_policy_section_3_bullet_5': 'Personalize your experience and provide content recommendations',
+
       'privacy_policy_section_3_bullet_6': 'Monitor and analyze trends, usage, and activities in connection with our services',
+
       'privacy_policy_section_4_title': '4. Sharing Your Information',
+
       'privacy_policy_section_4_intro': 'We may share your information with:',
+
       'privacy_policy_section_4_bullet_1': 'Stadium vendors and food providers to fulfill your orders',
+
       'privacy_policy_section_4_bullet_2': 'Service providers who perform services on our behalf',
+
       'privacy_policy_section_4_bullet_3': 'Professional advisors, such as lawyers and accountants',
+
       'privacy_policy_section_4_bullet_4': 'Law enforcement or other governmental authorities when required by law',
+
       'privacy_policy_section_5_title': '5. Your Choices',
+
       'privacy_policy_section_5_intro': 'You can control your information through:',
+
       'privacy_policy_section_5_bullet_1': 'Account Settings: Update or delete your profile information',
+
       'privacy_policy_section_5_bullet_2': 'Marketing Communications: Opt-out of promotional emails',
+
       'privacy_policy_section_5_bullet_3': 'Location Information: Control location permissions through your device settings',
+
       'privacy_policy_section_5_bullet_4': 'Account Deletion: Request to delete your account by contacting support',
+
       'privacy_policy_section_6_title': '6. Data Security',
+
       'privacy_policy_section_6_text': 'We implement appropriate technical and organizational measures to protect the security of your personal information. However, no electronic transmission or storage technology is completely secure, so we cannot guarantee the absolute security of your data.',
+
       'privacy_policy_section_7_title': '7. Children\'s Privacy',
+
       'privacy_policy_section_7_text': 'Our services are not intended for children under 13 years of age, and we do not knowingly collect personal information from children under 13.',
+
       'privacy_policy_section_8_title': '8. Changes to This Privacy Policy',
+
       'privacy_policy_section_8_text': 'We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date.',
+
       'privacy_policy_section_9_title': '9. Contact Us',
+
       'privacy_policy_section_9_text': 'If you have any questions about this Privacy Policy, please contact us at:',
+
       'privacy_policy_section_9_email': 'Email: switch2future@gmail.com',
 
+
+
       // Upload Photo Screen
+
       'upload_photo_title': 'Upload Your Profile \nPhoto',
+
       'upload_photo_description': 'This data will be displayed in your account \nprofile for security',
+
       'upload_photo_from_gallery': 'From Gallery',
+
       'upload_photo_from_camera': 'From Camera',
+
       'upload_photo_next': 'Next',
 
+
+
       // Register Success Screen
+
       'register_success_title': 'Congratulations!',
+
       'register_success_description': 'Your Profile Is Ready To Use',
+
       'register_success_continue': 'Continue',
 
+
+
       // Register Process Screen
+
       'register_process_title': 'Complete Your Profile',
+
       'register_process_first_name': 'First name',
+
       'register_process_last_name': 'Last name',
+
       'register_process_mobile': 'Mobile number',
+
       'register_process_next': 'Next',
+
       'register_process_error_first_name': 'First name is required',
+
       'register_process_error_last_name': 'Last name is required',
+
       'register_process_error_phone': 'Invalid phone number',
 
+
+
       // Register Screen
+
       'register_title': 'Sign Up For Free',
+
       'register_email_hint': 'Email',
+
       'register_password_hint': 'Password',
+
       'register_privacy_policy': 'I agree to the Privacy Policy',
+
       'register_login_link': 'Already have an account?',
+
       'register_button': 'Create Account',
+
       'register_error_email_required': 'Email is required',
+
       'register_error_password_required': 'Password is required',
+
       'register_error_privacy_policy': 'You must accept the Privacy Policy',
 
+
+
       // Forgot Password Screen
+
       'forgot_password_title': 'Forgot Password?',
+
       'forgot_password_description': 'Enter your email address to reset password',
+
       'forgot_password_email_hint': 'Email',
+
       'forgot_password_send_button': 'Send',
 
+
+
       // Login Screen
+
       'login_title': 'Login To Your Account',
+
       'login_email_hint': 'Email',
+
       'login_password_hint': 'Password',
+
       'login_privacy_policy': 'I agree to the Privacy Policy',
+
       'login_forgot_password': 'Forgot Password?',
+
       'login_button': 'Login',
+
       'login_error_email_required': 'Email is required',
+
       'login_error_password_required': 'Password is required',
+
       'login_error_privacy_policy': 'You must accept the Privacy Policy',
 
+
+
       // Onboarding Screens
+
       'onboarding_first_title': 'Tap, Sit, \nEnjoy',
+
       'onboarding_first_description': 'Order from your phone and get everything you need \nwithout ever leaving your seat. Enjoy!',
+
       'onboarding_second_title': 'Skip the lines. Never \nMiss a Moment.',
+
       'onboarding_second_description': 'Enjoy food, drinks and merch delivered right to your seat - so \nyou can stay in the action, not the line.',
+
       'onboarding_button_next': 'Next',
 
+
+
       // Select Stadium Screen
+
       'select_stadium_title': 'Select Stadium',
+
       'select_stadium_description': 'Choose your preferred stadium to explore food options',
+
       'select_stadium_search': 'Search stadiums...',
+
       'select_stadium_empty': 'No stadiums found',
+
       'select_stadium_error': 'Error loading stadiums: {0}',
 
+
+
       // Goal Screen
+
       'goal_screen_main_title': 'Tap. Sit. Enjoy.',
+
       'goal_screen_description': 'Enjoy food, drinks and merch delivered right to your seat - so you can stay in the action, not the line.',
+
       'goal_screen_title': 'Skip the lines. Never Miss a Moment.',
+
       'goal_screen_button': "Let's Go!",
 
-      // General
-      'settings': 'Settings',
-      'searchFood': 'Search food...',
-      'filterByType': 'Filter by Type',
-      'halal': 'Halal',
-      'kosher': 'Kosher',
-      'vegan': 'Vegan',
-      'preparationTime': 'min',
-      'description': 'Description',
-      'addTip': 'Add a tip',
-      'tipDescription':
-          '100% of your tip goes to your courier. Tips are based on your order total of',
-      'beforeDiscounts': 'before any discounts or promotions.',
-      'tipButton': 'Add Tip',
-      'skipButton': 'Skip',
-      'tipAmount': 'Tip Amount',
-      'customTip': 'Custom Tip',
-      'enterCustomTip': 'Enter custom tip amount',
-      'confirmTip': 'Confirm',
-      'cancelTip': 'Cancel',
-      'invalidTipAmount': 'Please enter a valid tip amount',
-      'orderConfirmTitle': 'Confirm Your Order',
-      'orderConfirmSubtitle':
-          'Please provide your seat information to complete the order',
-      'rowLabel': 'Row',
-      'rowHint': 'Enter your row number',
-      'seatLabel': 'Seat',
-      'seatHint': 'Enter your seat number',
-      'sectionLabel': 'Section',
-      'locationError': 'Could not get your location. Please try again.',
-      'locationPermissionRequired': 'Location Permission Required',
-      'locationPermissionMessage': 'We need your location to find the nearest shop. Please enable location services in your device settings.',
-      'locationServiceDisabled': 'Location services are disabled. Please enable them in your device settings.',
-      'openSettings': 'Open Settings',
 
-      'feedbackUs': 'Feedback',
+
+      // General
+
+      'settings': 'Settings',
+
+      'searchFood': 'Search food...',
+
+      'filterByType': 'Filter by Type',
+
+      'halal': 'Halal',
+
+      'kosher': 'Kosher',
+
+      'vegan': 'Vegan',
+
+      'preparationTime': 'min',
+
+      'description': 'Description',
+
+      'addTip': 'Add a tip',
+
+      'tipDescription':
+
+      '100% of your tip goes to your courier. Tips are based on your order total of',
+
+      'beforeDiscounts': 'before any discounts or promotions.',
+
+      'tipButton': 'Add Tip',
+
+      'skipButton': 'Skip',
+
+      'tipAmount': 'Tip Amount',
+
+      'customTip': 'Custom Tip',
+
+      'enterCustomTip': 'Enter custom tip amount',
+
+      'confirmTip': 'Confirm',
+
+      'cancelTip': 'Cancel',
+
+      'invalidTipAmount': 'Please enter a valid tip amount',
+
+      'orderConfirmTitle': 'Confirm Your Order',
+
+      'orderConfirmSubtitle':
+
+      'Please provide your seat information to complete the order',
+
+      'rowLabel': 'Row',
+
+      'rowHint': 'Enter your row number',
+
+      'seatLabel': 'Seat',
+
+      'seatHint': 'Enter your seat number',
+
+      'sectionLabel': 'Section',
+
+      'sectionHint': 'Enter your section number',
+
       'detailsLabel': 'Additional Details',
+
       'detailsHint': 'Any special requests or notes (optional)',
+
       'uploadTicketTitle': 'Upload Ticket',
+
       'uploadTicketDesc':
-          'Upload your ticket image to automatically fill seat details',
+
+      'Upload your ticket image to automatically fill seat details',
+
       'uploadFromCamera': 'Take Photo',
+
       'frontCamera': 'Front Camera',
+
       'uploadFromGallery': 'Choose from Gallery',
+
       'ticketExtractSuccess': 'Ticket information extracted successfully',
+
       'ticketExtractError': 'Error processing ticket',
 
+      'imageUploadError': 'Failed to upload image. Please try again.',
+
       'orderSuccess': 'Order created successfully',
+
       'paymentSuccess': 'Payment Successful!',
+
       'paymentFailed': 'Payment Failed',
+
       'selectPayment': 'Select Payment Method',
+
       'accountRequired': 'Account Required',
+
       'loginOrRegister':
-          'You need to be logged in to place an order. Please login or create an account to continue.',
+
+      'You need to be logged in to place an order. Please login or create an account to continue.',
+
       'login': 'Login',
+
       'createAccount': 'Create Account',
+
       'cancel': 'Cancel',
+
       'or': 'OR',
+
       'noTicketInfoFound':
-          'No ticket information found. Please try again or enter details manually.',
+
+      'No ticket information found. Please try again or enter details manually.',
+
       'reviews': 'Reviews',
+
       'addToCart': 'Add to Cart',
+
       'orderCount': 'Orders',
+
       'noRatings': 'No ratings yet',
+
       'noDescriptionAvailable': 'No description available',
+
       'allergens': 'Allergens',
+
       'noIngredientsAvailable': 'No ingredients available',
+
       'testimonials': 'Testimonials',
+
       'noTestimonialsAvailable': 'No testimonials available',
+
       'failedToLoadTestimonials': 'Failed to load testimonials',
+
       'apply': 'Apply',
+
       'reset': 'Reset',
+
       'noFoodFound': 'No food items found',
+
       'loadingFood': 'Loading food items...',
+
       'openRestaurants': 'Open Restaurants',
+
       'noShopsAvailable': 'No shops available in this stadium',
+
       'floor': 'Floor',
+
       'gate': 'Gate',
+
       'searchForFood': 'Search for food...',
+
       'selectedStadium': 'Selected Stadium',
+
       'chooseStadium': 'Choose a Stadium',
+
       'goodMorning': 'Good Morning',
+
       'goodAfternoon': 'Good Afternoon',
+
       'goodEvening': 'Good Evening',
+
       'guest': 'Guest',
+
       'whatToEat': 'What would you like to eat today?',
+
       'allCategories': 'All Categories',
+
       'seeAll': 'See All',
+
       'popularMenu': 'Popular Menu',
+
       'noMenuItems': 'No menu items available for this stadium',
+
       'language': 'Language',
+
       'currency': 'Currency',
+
       'profile': 'Profile',
 
+
+
       // Months
+
       'jan': 'Jan',
+
       'feb': 'Feb',
+
       'mar': 'Mar',
+
       'apr': 'Apr',
+
       'may': 'May',
+
       'jun': 'Jun',
+
       'jul': 'Jul',
+
       'aug': 'Aug',
+
       'sep': 'Sep',
+
       'oct': 'Oct',
+
       'nov': 'Nov',
+
       'dec': 'Dec',
 
+
+
       // Auth
+
       'register': 'Register',
+
       'email': 'Email',
+
       'password': 'Password',
 
+
+
       // Food Related
+
       'menu': 'Menu',
+
       'items': 'Items',
+
       'quantity': 'Qty',
+
       'subtotal': 'Subtotal',
+
       'handlingAndDelivery': 'Handling & Delivery',
+
       'tip': 'Tip',
+
       'discount': 'Discount',
+
       'total': 'Total',
+
       'placeOrder': 'Place Order',
+
       'orders': 'Orders',
+
       'cart': 'Cart',
+
       'cartEmpty': 'Cart is empty',
+
       'favorites': 'Favorites',
+
       'favoritesFoods': 'Favorite Foods',
 
+
+
       'removeFromCart': 'Remove from Cart',
+
       // Food Categories
+
       'all': 'All',
+
       'snacksStreetFood': 'Snacks & Street Food',
+
       'saladsSoups': 'Salads & Soups',
+
       'pizzaPastaBurgers': 'Pizza, Pasta & Burgers',
+
       'grillBbq': 'Grill & BBQ',
+
       'seafood': 'Seafood',
+
       'vegetarianVegan': 'Vegetarian / Vegan',
+
       'dessertsSweets': 'Desserts & Sweets',
+
       'drinksBeverages': 'Drinks & Beverages',
+
       'kidsMenu': 'Kids Menu',
+
       'combosDeals': 'Combos & Deals',
+
       'traditionalLocal': 'Traditional / Local Specials',
+
       'trendingChef': 'Trending / Chef\'s Specials',
+
       'appetizers': 'Appetizers',
 
+
+
       // Order Status
+
       'orderStatus': 'Order Status',
+
       'order': 'Order',
+
       'orderReceived': 'Order received',
+
       'onTheWay': 'On the way',
+
       'tracking': 'TRACKING',
+
       'dateNotAvailable': 'Date not available',
+
       'noOrdersFound': 'No orders found',
+
       'continueShopping': 'Continue Shopping',
+
       'active': 'Active',
+
       'completed': 'Completed',
+
       'cancelled': 'Cancelled',
+
       'pending': 'Pending',
+
       'preparing': 'Preparing',
+
       'delivering': 'Delivering',
+
       'delivered': 'Delivered',
+
       'orderStatusStepper': 'Order Status Stepper',
+
       'orderStatusStepperPreparing': 'Preparing',
+
       'orderStatusStepperOnTheWay': 'On the way',
+
       'orderStatusStepperDelivering': 'Delivering',
+
       'orderStatusStepperDelivered': 'Delivered',
 
+
+
       // Profile
+
       'editProfile': 'Edit Profile',
+
       'deleteAccount': 'Delete Account',
+
       'termsAndConditions': 'Terms and Conditions',
+
       'feedback': 'Feedback',
+
       'guestUser': 'Guest User',
 
+
+
       // Messages
+
       'shopOwnerNotFound': 'Shop owner not found',
+
       'confirmLogout': 'Are you sure you want to logout?',
+
       'confirmDelete':
-          'Are you sure you want to delete your account? This action cannot be undone.',
+
+      'Are you sure you want to delete your account? This action cannot be undone.',
+
       'noFavorites': 'No favorite foods yet',
+
       'noOrders': 'No orders yet',
+
       'activeOrders': 'Active',
+
       'completedOrders': 'Completed',
+
       'cancelledOrders': 'Cancelled',
+
       'delete': 'Delete',
+
       'signInPrompt': 'Sign in to access your profile',
+
       'accountDeletedSuccess': 'Account deleted successfully',
+
       'reportProblem': 'Report a Problem',
+
       'logout': 'Logout',
+
       'logoutConfirm': 'Are you sure you want to logout?',
+
       // Dashboard
+
       'dashboard': 'Dashboard',
+
       'stadiums': 'Stadiums',
+
       'ordersOverview': 'Orders Overview',
+
       'menuOverview': 'Menu Overview',
+
       'salesOverview': 'Sales Overview',
+
       'topSellingItems': 'Top Selling Items',
+
       'topSellingCategories': 'Top Selling Categories',
+
       'totalRevenue': 'Total Revenue',
+
       'totalOrders': 'Total Orders',
+
       'averageOrderValue': 'Average Order Value',
+
       'customerRetentionRate': 'Customer Retention Rate',
+
     },
+
     'he': {
-      'home': 'בַּיִת',
-      // Order Confirmation Form
       'entranceLabel': 'כניסה',
       'entranceHint': 'הכנס מספר/שם כניסה',
       'additionalDetailsLabel': 'פרטים נוספים',
@@ -357,309 +653,596 @@ class AppTranslations {
       'standLabel': 'יציע',
       'standHint': 'הכנס שם/מספר יציע',
 
+
+      'home' : 'בַּיִת',
       // Privacy Policy Screen
+
       'privacy_policy_title': 'מדיניות פרטיות',
+
       'privacy_policy_main_title': 'מדיניות הפרטיות של אפליקציית Stadium Food',
+
       'privacy_policy_last_updated': 'עודכן לאחרונה: 8 ביולי 2025',
+
       'privacy_policy_understand': 'הבנתי',
+
       'privacy_policy_section_1_title': '1. מבוא',
+
       'privacy_policy_section_1_text': 'ברוכים הבאים לאפליקציית Stadium Food. אנו מחויבים להגן על המידע האישי שלך ועל זכותך לפרטיות. מדיניות פרטיות זו מסבירה כיצד אנו אוספים, משתמשים, חושפים ומגנים על המידע שלך בעת השימוש באפליקציה ובשירותים שלנו.',
+
       'privacy_policy_section_2_title': '2. מידע שאנו אוספים',
+
       'privacy_policy_section_2_intro': 'אנו אוספים מידע שאתה מספק לנו ישירות, כולל:',
+
       'privacy_policy_section_2_bullet_1': 'מידע אישי: שם, כתובת דואר אלקטרוני, מספר טלפון ותמונת פרופיל',
+
       'privacy_policy_section_2_bullet_2': 'מידע חשבון: פרטי התחברות והעדפות משתמש',
+
       'privacy_policy_section_2_bullet_3': 'מידע עסקאות: היסטוריית הזמנות, פרטי תשלום וכתובות למשלוח',
+
       'privacy_policy_section_2_bullet_4': 'מידע מיקום: בחירת אצטדיון ומיקום מכשיר לשירותי משלוח',
+
       'privacy_policy_section_2_bullet_5': 'מידע מכשיר: סוג מכשיר, מערכת הפעלה ומזהי מכשיר ייחודיים',
+
       'privacy_policy_section_3_title': '3. כיצד אנו משתמשים במידע שלך',
+
       'privacy_policy_section_3_intro': 'אנו משתמשים במידע שאנו אוספים כדי:',
+
       'privacy_policy_section_3_bullet_1': 'לספק, לתחזק ולשפר את השירותים שלנו',
+
       'privacy_policy_section_3_bullet_2': 'לעבד עסקאות ולשלוח מידע קשור',
+
       'privacy_policy_section_3_bullet_3': 'לשלוח לך הודעות טכניות, עדכונים והודעות תמיכה',
+
       'privacy_policy_section_3_bullet_4': 'להגיב לתגובות, שאלות ובקשות שירות לקוחות שלך',
+
       'privacy_policy_section_3_bullet_5': 'להתאים אישית את החוויה שלך ולספק המלצות תוכן',
+
       'privacy_policy_section_3_bullet_6': 'לנטר ולנתח מגמות, שימוש ופעילויות בקשר לשירותים שלנו',
+
       'privacy_policy_section_4_title': '4. שיתוף המידע שלך',
+
       'privacy_policy_section_4_intro': 'אנו עשויים לשתף את המידע שלך עם:',
+
       'privacy_policy_section_4_bullet_1': 'ספקי אצטדיון וספקי מזון כדי למלא את ההזמנות שלך',
+
       'privacy_policy_section_4_bullet_2': 'ספקי שירות המבצעים שירותים מטעמנו',
+
       'privacy_policy_section_4_bullet_3': 'יועצים מקצועיים, כגון עורכי דין ורואי חשבון',
+
       'privacy_policy_section_4_bullet_4': 'רשויות אכיפת חוק או רשויות ממשלתיות אחרות כנדרש על פי חוק',
+
       'privacy_policy_section_5_title': '5. הבחירות שלך',
+
       'privacy_policy_section_5_intro': 'אתה יכול לשלוט במידע שלך באמצעות:',
+
       'privacy_policy_section_5_bullet_1': 'הגדרות חשבון: עדכן או מחק את פרטי הפרופיל שלך',
+
       'privacy_policy_section_5_bullet_2': 'תקשורת שיווקית: בטל הרשמה לדואר אלקטרוני פרסומי',
+
       'privacy_policy_section_5_bullet_3': 'מידע מיקום: שלוט בהרשאות מיקום דרך הגדרות המכשיר שלך',
+
       'privacy_policy_section_5_bullet_4': 'מחיקת חשבון: בקש למחוק את חשבונך על ידי יצירת קשר עם התמיכה',
+
       'privacy_policy_section_6_title': '6. אבטחת מידע',
+
       'privacy_policy_section_6_text': 'אנו מיישמים אמצעים טכניים וארגוניים מתאימים כדי להגן על אבטחת המידע האישי שלך. עם זאת, אף טכנולוגיית שידור או אחסון אינה מאובטחת לחלוטין, לכן איננו יכולים להבטיח את האבטחה המוחלטת של הנתונים שלך.',
+
       'privacy_policy_section_7_title': '7. פרטיות ילדים',
+
       'privacy_policy_section_7_text': 'השירותים שלנו אינם מיועדים לילדים מתחת לגיל 13, ואיננו אוספים ביודעין מידע אישי מילדים מתחת לגיל 13.',
+
       'privacy_policy_section_8_title': '8. שינויים במדיניות פרטיות זו',
+
       'privacy_policy_section_8_text': 'אנו עשויים לעדכן מדיניות פרטיות זו מעת לעת. נודיע לך על כל שינוי על ידי פרסום מדיניות הפרטיות החדשה בדף זה ועדכון תאריך "עודכן לאחרונה".',
+
       'privacy_policy_section_9_title': '9. צור קשר',
+
       'privacy_policy_section_9_text': 'אם יש לך שאלות לגבי מדיניות פרטיות זו, אנא צור איתנו קשר ב:',
+
       'privacy_policy_section_9_email': 'דואר אלקטרוני: switch2future@gmail.com',
 
+
+
       // Upload Photo Screen
+
       'upload_photo_title': 'העלה את תמונת \nהפרופיל שלך',
+
       'upload_photo_description': 'מידע זה יוצג בפרופיל החשבון \nשלך לבטיחות',
+
       'upload_photo_from_gallery': 'מהגלריה',
+
       'upload_photo_from_camera': 'מהמצלמה',
+
       'upload_photo_next': 'הבא',
 
+
+
       // Register Success Screen
+
       'register_success_title': 'מזל טוב!',
+
       'register_success_description': 'הפרופיל שלך מוכן לשימוש',
+
       'register_success_continue': 'המשך',
 
+
+
       // Register Process Screen
+
       'register_process_title': 'השלם את הפרופיל שלך',
+
       'register_process_first_name': 'שם פרטי',
+
       'register_process_last_name': 'שם משפחה',
+
       'register_process_mobile': 'מספר נייד',
+
       'register_process_next': 'הבא',
+
       'register_process_error_first_name': 'נדרש שם פרטי',
+
       'register_process_error_last_name': 'נדרש שם משפחה',
+
       'register_process_error_phone': 'מספר טלפון לא תקין',
 
+
+
       // Register Screen
+
       'register_title': 'הרשם בחינם',
+
       'register_email_hint': 'אימייל',
+
       'register_password_hint': 'סיסמה',
+
       'register_privacy_policy': 'אני מסכים למדיניות הפרטיות',
+
       'register_login_link': 'כבר יש לך חשבון?',
+
       'register_button': 'צור חשבון',
+
       'register_error_email_required': 'נדרש אימייל',
+
       'register_error_password_required': 'נדרשת סיסמה',
+
       'register_error_privacy_policy': 'עליך לאשר את מדיניות הפרטיות',
 
+
+
       // Forgot Password Screen
+
       'forgot_password_title': 'שכחת סיסמה?',
+
       'forgot_password_description': 'הזן את כתובת האימייל שלך לאיפוס הסיסמה',
+
       'forgot_password_email_hint': 'אימייל',
+
       'forgot_password_send_button': 'שלח',
 
+
+
       // Login Screen
+
       'login_title': 'התחבר לחשבון שלך',
+
       'login_email_hint': 'אימייל',
+
       'login_password_hint': 'סיסמה',
+
       'login_privacy_policy': 'אני מסכים למדיניות הפרטיות',
+
       'login_forgot_password': 'שכחת סיסמה?',
+
       'login_button': 'התחבר',
+
       'login_error_email_required': 'נדרש אימייל',
+
       'login_error_password_required': 'נדרשת סיסמה',
+
       'login_error_privacy_policy': 'עליך לאשר את מדיניות הפרטיות',
 
+
+
       // Onboarding Screens
-      'onboarding_first_title': 'תקתק, תשב, \nתהנה',
+
+      'onboarding_first_title': ' תזמין, תשב, \nתהנה',
+
       'onboarding_first_description': 'הזמן מהטלפון שלך וקבל את כל מה שאתה צריך \nמבלי לעזוב את המושב שלך. תהנה!',
+
       'onboarding_second_title': 'דלג על התורים. אל \nתפספס אף רגע.',
+
       'onboarding_second_description': 'תהנה מאוכל, משקאות ומרצ׳נדייז שיגיעו ישירות למושב שלך - \nכדי שתוכל להישאר באקשן, לא בתור.',
+
       'onboarding_button_next': 'הבא',
 
+
+
       // Select Stadium Screen
+
       'select_stadium_title': 'בחר אצטדיון',
+
       'select_stadium_description': 'בחר את האצטדיון המועדף עליך לחקור אפשרויות מזון',
+
       'select_stadium_search': 'חפש אצטדיונים...',
+
       'select_stadium_empty': 'לא נמצאו אצטדיונים',
+
       'select_stadium_error': 'שגיאה בטעינת אצטדיונים: {0}',
 
+
+
       // Goal Screen
-      'goal_screen_main_title': 'תקתק. תשב. תהנה.',
+
+      'goal_screen_main_title': ' תזמין. תשב. תהנה.',
+
       'goal_screen_description': 'תהנה מאוכל, משקאות ומרצ׳נדייז שיגיעו ישירות למושב שלך - כדי שתוכל להישאר באקשן, לא בתור.',
+
       'goal_screen_title': 'דלג על התורים. אל תפספס אף רגע.',
+
       'goal_screen_button': 'בוא נתחיל!',
 
+
+
       // Months
+
       'jan': 'ינו',
+
       'feb': 'פבר',
+
       'mar': 'מרץ',
+
       'apr': 'אפר',
+
       'may': 'מאי',
+
       'jun': 'יונ',
+
       'jul': 'יול',
+
       'aug': 'אוג',
+
       'sep': 'ספט',
+
       'oct': 'אוק',
+
       'nov': 'נוב',
+
       'dec': 'דצמ',
 
+
+
       // General
+
       'settings': 'הגדרות',
+
       'searchFood': 'חפש אוכל...',
+
       'filterByType': 'סנן לפי סוג',
+
       'halal': 'חלאל',
+
       'kosher': 'כשר',
+
       'vegan': 'טבעוני',
+
       'preparationTime': 'דקות',
+
       'description': 'תיאור',
+
       'addTip': 'הוסף טיפ',
-      'feedbackUs': 'מָשׁוֹב',
+
       'tipDescription':
-          '100% מהטיפ שלך מגיע לשליח שלך. הטיפים מבוססים על סך ההזמנה שלך',
+
+      '100% מהטיפ שלך מגיע לשליח שלך. הטיפים מבוססים על סך ההזמנה שלך',
+
       'beforeDiscounts': 'לפני הנחות ומבצעים.',
+
       'tipButton': 'הוסף טיפ',
+
       'skipButton': 'דלג',
+
       'tipAmount': 'סכום הטיפ',
+
       'customTip': 'טיפ מותאם אישית',
+
       'enterCustomTip': 'הזן סכום טיפ מותאם אישית',
+
       'confirmTip': 'אשר',
+
       'cancelTip': 'ביטול',
+
       'invalidTipAmount': 'אנא הזן סכום טיפ תקין',
+
       'orderConfirmTitle': 'אשר את ההזמנה שלך',
+
       'orderConfirmSubtitle': 'אנא ספק את פרטי המושב שלך להשלמת ההזמנה',
+
       'rowLabel': 'שורה',
+
       'rowHint': 'הזן את מספר השורה שלך',
+
       'seatLabel': 'מושב',
+
       'seatHint': 'הזן את מספר המושב שלך',
-      'sectionLabel': 'מתחם',
-      'sectionHint': 'הזן את מספר המתחם שלך',
+
+      'sectionLabel': 'יציע',
+
+      'sectionHint': 'הזן את מספר היציע שלך',
+
       'detailsLabel': 'פרטים נוספים',
+
       'detailsHint': 'בקשות מיוחדות או הערות (לא חובה)',
+
       'uploadTicketTitle': 'העלה כרטיס',
+
       'uploadTicketDesc':
-          'העלה את תמונת הכרטיס שלך למילוי אוטומטי של פרטי המושב',
+
+      'העלה את תמונת הכרטיס שלך למילוי אוטומטי של פרטי המושב',
+
       'uploadFromCamera': 'צלם תמונה',
+
       'frontCamera': 'מצלמה קדמית',
+
       'uploadFromGallery': 'בחר מהגלריה',
+
       'ticketExtractSuccess': 'פרטי הכרטיס חולצו בהצלחה',
+
       'ticketExtractError': 'שגיאה בעיבוד הכרטיס',
+
       'imageUploadError': 'העלאת התמונה נכשלה. אנא נסה שוב.',
+
       'placeOrder': 'בצע הזמנה',
+
       'orderSuccess': 'ההזמנה נוצרה בהצלחה',
+
       'paymentSuccess': 'התשלום הצליח!',
+
       'paymentFailed': 'התשלום נכשל',
+
       'selectPayment': 'בחר אמצעי תשלום',
+
       'accountRequired': 'נדרש חשבון',
+
       'loginOrRegister':
-          'עליך להתחבר כדי לבצע הזמנה. אנא התחבר או צור חשבון חדש כדי להמשיך.',
+
+      'עליך להתחבר כדי לבצע הזמנה. אנא התחבר או צור חשבון חדש כדי להמשיך.',
+
       'login': 'התחבר',
+
       'createAccount': 'צור חשבון',
+
       'cancel': 'ביטול',
+
       'or': 'או',
+
       'noTicketInfoFound':
-          'לא נמצאו פרטי כרטיס. אנא נסה שוב או הזן את הפרטים ידנית.',
+
+      'לא נמצאו פרטי כרטיס. אנא נסה שוב או הזן את הפרטים ידנית.',
+
       'reviews': 'ביקורות',
+
       'addToCart': 'הוסף לעגלה',
+
       'orderCount': 'הזמנות',
+
       'noRatings': 'אין דירוגים עדיין',
+
       'noDescriptionAvailable': 'אין תיאור זמין',
+
       'allergens': 'אלרגנים',
+
       'noIngredientsAvailable': 'אין מרכיבים זמינים',
+
       'testimonials': 'חוות דעת',
+
       'noTestimonialsAvailable': 'אין חוות דעת זמינות',
+
       'failedToLoadTestimonials': 'טעינת חוות דעת נכשלה',
+
       'apply': 'החל',
+
       'reset': 'אפס',
+
       'noFoodFound': 'לא נמצאו פריטי מזון',
+
       'loadingFood': 'טוען פריטי מזון...',
+
       'openRestaurants': 'מסעדות פתוחות',
+
       'noShopsAvailable': 'אין חנויות זמינות באצטדיון זה',
+
       'floor': 'קומה',
+
       'gate': 'שער',
+
       'searchForFood': 'חפש אוכל...',
+
       'selectedStadium': 'אצטדיון נבחר',
+
       'chooseStadium': 'בחר אצטדיון',
+
       'goodMorning': 'בוקר טוב',
+
       'goodAfternoon': 'צהריים טובים',
+
       'goodEvening': 'ערב טוב',
+
       'guest': 'אורח',
+
       'whatToEat': 'מה תרצה לאכול היום?',
+
       'allCategories': 'כל הקטגוריות',
+
       'seeAll': 'ראה הכל',
+
       'popularMenu': 'תפריט פופולרי',
+
       'noMenuItems': 'אין פריטי תפריט זמינים לאצטדיון זה',
+
       'language': 'שפה',
+
       'currency': 'מטבע',
+
       'profile': 'פרופיל',
 
-
-
-      // Image Upload
-      'uploadTicket': 'העלה תמונת כרטיס',
-      'gallery': 'גלריה',
-      'camera': 'מצלמה',
 
 
       // Auth
 
       'register': 'הרשמה',
+
       'email': 'אימייל',
+
       'password': 'סיסמה',
 
+
+
       // Food Related
+
       'menu': 'תפריט',
+
       'items': 'פריטים',
+
       'quantity': 'כמות',
+
       'subtotal': 'סכום ביניים',
+
       'handlingAndDelivery': 'טיפול ומשלוח',
+
       'tip': 'טיפ',
+
       'discount': 'הנחה',
+
       'total': 'סה״כ',
+
       'orders': 'הזמנות',
+
       'cart': 'עגלה',
+
       'cartEmpty': 'העגלה ריקה',
+
       'favorites': 'מועדפים',
+
       'favoritesFoods': 'מאכלים אהובים',
 
+
+
       'removeFromCart': 'הסר מהעגלה',
+
       // Food Categories
+
       'all': 'הכל',
+
       'snacksStreetFood': 'מזנונים ואוכל רחוב',
+
       'saladsSoups': 'סלטים ומרקים',
+
       'pizzaPastaBurgers': 'פיצה, פסטה והמבורגרים',
+
       'grillBbq': 'גריל וברביקיו',
-      'seafood': 'דגים ופירות ים',
+
+      'seafood': 'דגים',
+
       'vegetarianVegan': 'צמחוני / טבעוני',
+
       'dessertsSweets': 'קינוחים ומתוקים',
+
       'drinksBeverages': 'משקאות',
+
       'kidsMenu': 'תפריט ילדים',
+
       'combosDeals': 'קומבו והצעות',
+
       'traditionalLocal': 'מסורתי / מקומי',
+
       'trendingChef': 'פופולרי / מנות השף',
+
       'appetizers': 'מנות פתיחה',
 
+
+
       // Order Status
+
       'orderStatus': 'סטטוס הזמנה',
+
       'order': 'הזמנה',
+
       'orderReceived': 'ההזמנה התקבלה',
+
       'onTheWay': 'בדרך',
+
       'tracking': 'מעקב',
+
       'dateNotAvailable': 'תאריך לא זמין',
+
       'noOrdersFound': 'לא נמצאו הזמנות',
+
       'continueShopping': 'המשך קנייה',
+
       'active': 'פעיל',
+
       'completed': 'הושלם',
+
       'cancelled': 'בוטל',
+
       'pending': 'ממתין',
+
       'preparing': 'בהכנה',
+
       'delivering': 'במשלוח',
+
       'delivered': 'נמסר',
 
+
+
       // Profile
+
       'editProfile': 'ערוך פרופיל',
+
       'deleteAccount': 'מחק חשבון',
+
       'termsAndConditions': 'תנאים והגבלות',
+
       'feedback': 'משוב',
+
       'guestUser': 'משתמש אורח',
 
+
+
       // Messages
+
       'shopOwnerNotFound': 'בעל החנות לא נמצא',
+
       'confirmLogout': 'האם אתה בטוח שברצונך להתנתק?',
+
       'confirmDelete':
-          'האם אתה בטוח שברצונך למחוק את החשבון? פעולה זו אינה הפיכה.',
+
+      'האם אתה בטוח שברצונך למחוק את החשבון? פעולה זו אינה הפיכה.',
+
       'noFavorites': 'אין מאכלים מועדפים עדיין',
+
       'noOrders': 'אין הזמנות עדיין',
+
       'activeOrders': 'פעיל',
+
       'completedOrders': 'הושלם',
+
       'cancelledOrders': 'בוטל',
+
       'delete': 'מחיקה',
+
       'signInPrompt': 'התחבר כדי לגשת לפרופיל שלך',
+
       'accountDeletedSuccess': 'החשבון נמחק בהצלחה',
+
       'reportProblem': 'דווח על בעיה',
+
       'logout': 'התנתק',
+
       'logoutConfirm': 'האם אתה בטוח שאתה רוצה להתנתק?',
+
+      'metersAway': 'מטרים משם',
+
     },
   };
 

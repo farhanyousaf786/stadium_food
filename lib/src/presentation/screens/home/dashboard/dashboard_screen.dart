@@ -28,47 +28,45 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => OfferBloc(
-        offerRepository: OfferRepository(),
-      ),
-      child: Scaffold(
-      backgroundColor: AppColors.bgColor,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const TopBar(),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SearchFilterWidget(
-                        searchController: _searchController,
-                        onChanged: _handleSearch,
-                        onFilterTap: () {},
+        create: (context) => OfferBloc(
+              offerRepository: OfferRepository(),
+            ),
+        child: Scaffold(
+          backgroundColor: AppColors.bgColor,
+          body: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const TopBar(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SearchFilterWidget(
+                            searchController: _searchController,
+                            onChanged: _handleSearch,
+                            onFilterTap: () {},
+                          ),
+                          const SizedBox(height: 24),
+                          OffersList(),
+                          const SizedBox(height: 24),
+                          const CategoryList(),
+                          const SizedBox(height: 24),
+                          const MenuList(),
+                          const SizedBox(height: 24),
+                          const ShopList(),
+                        ],
                       ),
-                      const SizedBox(height: 24),
-                      OffersList(),
-
-                      const SizedBox(height: 24),
-                      const CategoryList(),
-                      const SizedBox(height: 24),
-                      const MenuList(),
-                      const SizedBox(height: 24),
-                      const ShopList(),
-                    ],
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
-      ),
-    ));
-
+          ),
+        ));
   }
 
   @override

@@ -24,9 +24,8 @@ class Food extends Equatable {
   final List<Map<String, dynamic>> sizes;
   final List<Map<String, dynamic>> toppings;
   final DateTime updatedAt;
-  final Map<String, bool> foodType; // Non-Halal, Non-Kosher, Non-Vegan
+  final Map<String, bool> foodType;
 
-  // for cart
   int quantity = 1;
 
   Food({

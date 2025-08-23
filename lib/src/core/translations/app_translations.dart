@@ -640,10 +640,11 @@ class AppTranslations {
       'averageOrderValue': 'Average Order Value',
 
       'customerRetentionRate': 'Customer Retention Rate',
-
+      'feedbackUs': 'Feedback',
     },
 
     'he': {
+      'feedbackUs': 'מָשׁוֹב',
       'entranceLabel': 'כניסה',
       'entranceHint': 'הכנס מספר/שם כניסה',
       'additionalDetailsLabel': 'פרטים נוספים',

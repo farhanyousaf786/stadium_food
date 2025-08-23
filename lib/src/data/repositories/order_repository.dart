@@ -54,20 +54,20 @@ class OrderRepository {
 
   void addToCart(Food food) {
     // If cart is not empty, check if new item is from same shop
-    if (cart.isNotEmpty) {
-      String currentShopId = cart[0].shopIds.first;
-      String newShopId = food.shopIds.first;
-
-      // If from different shop, clear cart and reset quantities
-      if (currentShopId != newShopId) {
-        // Reset quantities of old items
-        for (var item in cart) {
-          item.quantity = 0;
-        }
-        // Clear cart
-        cart.clear();
-      }
-    }
+    // if (cart.isNotEmpty) {
+    //   String currentShopId = cart[0].shopIds.first;
+    //   String newShopId = food.shopIds.first;
+    //
+    //   // If from different shop, clear cart and reset quantities
+    //   if (currentShopId != newShopId) {
+    //     // Reset quantities of old items
+    //     for (var item in cart) {
+    //       item.quantity = 0;
+    //     }
+    //     // Clear cart
+    //     cart.clear();
+    //   }
+    // }
 
     // Add new item
     if (cart.contains(food)) {
@@ -107,7 +107,11 @@ class OrderRepository {
 
   // delivery fee
   static double get deliveryFee {
-    return 2;
+    int totalQuantity = 0;
+    for (var food in cart) {
+      totalQuantity += food.quantity;
+    }
+    return totalQuantity * 2;
   }
 
   // discount
@@ -160,7 +164,7 @@ class OrderRepository {
             .collection('deliveryUsers')
             .doc(selectedDeliveryUerId)
             .get();
-            
+
         if (deliveryUserDoc.exists) {
           final fcmToken = deliveryUserDoc.data()?['fcmToken'];
           if (fcmToken != null) {

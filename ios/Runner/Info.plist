@@ -4,10 +4,6 @@
   <dict>
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Fan Munch needs access to location to find the nearest shop for your order.</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>Fan Munch needs access to location to find the nearest shop for your order.</string>
     <key>CFBundleDisplayName</key>
     <string>Fan Munch</string>
     <key>CFBundleExecutable</key>
@@ -51,12 +47,8 @@
     <true/>
     <key>NSCameraUsageDescription</key>
     <string>Scan your card to add it automatically</string>
-    <key>NSCameraUsageDescription</key>
-    <string>To scan cards</string>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>This app needs access to location when open to show your location on the map.</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>This app needs access to location when in the background to track delivery.</string>
+    <string>This app needs access to location when open to find the nearest shop and show your location.</string>
     <key>io.flutter.embedded_views_preview</key>
     <true/>
   </dict>

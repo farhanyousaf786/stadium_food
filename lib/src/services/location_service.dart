@@ -1,7 +1,6 @@
 import 'package:app_settings/app_settings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class LocationService {
   static final LocationService _instance = LocationService._internal();
@@ -9,19 +8,23 @@ class LocationService {
   LocationService._internal();
 
   static Future<void> checkLocationPermission() async {
-    // Check if location service is enabled
-    if (!await Permission.location.serviceStatus.isEnabled) {
+    // Check if location services are enabled on the device (iOS-safe)
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
       throw Exception('location_service_disabled');
     }
 
-    // Request permission
-    final status = await Permission.location.request();
-    
-    if (status.isDenied) {
-      throw Exception('location_permission_denied');
+    // Check current permission state
+    LocationPermission permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        throw Exception('location_permission_denied');
+      }
     }
-    
-    if (status.isPermanentlyDenied) {
+
+    if (permission == LocationPermission.deniedForever) {
       throw Exception('location_permission_permanent');
     }
   }

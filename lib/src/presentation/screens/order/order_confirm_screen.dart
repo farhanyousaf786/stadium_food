@@ -719,7 +719,6 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                           label: Translate.get('additionalDetailsLabel'),
                           hint: Translate.get('additionalDetailsHint'),
                           icon: Icons.info_outline,
-                          maxLines: 3,
                         ),
 
                         const SizedBox(height: 20),

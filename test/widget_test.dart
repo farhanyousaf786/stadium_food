@@ -8,7 +8,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:stadium_food/main.dart';
 import 'package:stadium_food/src/app.dart';
 
 void main() {

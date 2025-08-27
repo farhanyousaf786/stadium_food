@@ -11,7 +11,6 @@ import 'package:stadium_food/src/presentation/screens/auth/register_success_scre
 import 'package:stadium_food/src/presentation/screens/auth/upload_photo_screen.dart';
 import 'package:stadium_food/src/presentation/screens/chat/chat_details_screen.dart';
 import 'package:stadium_food/src/presentation/screens/explore/food_details_screen.dart';
-import 'package:stadium_food/src/presentation/screens/explore/food_list_screen.dart';
 
 import 'package:stadium_food/src/presentation/screens/home/home_screen.dart';
 import 'package:stadium_food/src/presentation/screens/home/notification_screen.dart';
@@ -74,7 +73,9 @@ class AppRouter {
 
       case '/login':
         return MaterialPageRoute(
-          builder: (_) => const LoginScreen(),
+          builder: (_) => LoginScreen(
+            returnRoute: settings.arguments as String?,
+          ),
         );
 
       case '/login/forgot-password':

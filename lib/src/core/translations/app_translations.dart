@@ -19,7 +19,20 @@ class AppTranslations {
       'areaHint': 'Enter area name/number',
       'standLabel': 'Stand',
       'standHint': 'Enter stand name/number',
+      'rowLabel': 'Row',
+      'rowHint': 'Enter your row number',
+      'seatLabel': 'Seat',
+      'seatHint': 'Enter your seat number',
+      'sectionLabel': 'Section',
+      'sectionHint': 'Enter your section number',
+
+
+
+
+
+
       'home' : 'Home',
+
 
       'privacy_policy_title': 'Privacy Policy',
 
@@ -204,7 +217,10 @@ class AppTranslations {
       'login_error_password_required': 'Password is required',
 
       'login_error_privacy_policy': 'You must accept the Privacy Policy',
-
+      'login_no_account': "Don't have an account?",
+      'login_register_now': 'Register now',
+      'register_have_account': 'Already have an account?',
+      'register_login_now': 'Login now',
 
 
       // Onboarding Screens
@@ -295,17 +311,7 @@ class AppTranslations {
 
       'Please provide your seat information to complete the order',
 
-      'rowLabel': 'Row',
 
-      'rowHint': 'Enter your row number',
-
-      'seatLabel': 'Seat',
-
-      'seatHint': 'Enter your seat number',
-
-      'sectionLabel': 'Section',
-
-      'sectionHint': 'Enter your section number',
 
       'detailsLabel': 'Additional Details',
 
@@ -485,7 +491,7 @@ class AppTranslations {
 
       'cart': 'Cart',
 
-      'cartEmpty': 'Cart is empty',
+      'cartEmpty': 'Oops… \nYou forgot to add to cart. It’s still empty.',
 
       'favorites': 'Favorites',
 
@@ -499,31 +505,17 @@ class AppTranslations {
 
       'all': 'All',
 
-      'snacksStreetFood': 'Snacks & Street Food',
+      'drinks': 'Drinks',
 
-      'saladsSoups': 'Salads & Soups',
+      'food': 'Food',
 
-      'pizzaPastaBurgers': 'Pizza, Pasta & Burgers',
+      'snacks': 'Snacks',
 
-      'grillBbq': 'Grill & BBQ',
+      'candy': 'Candy & Chocolate',
 
-      'seafood': 'Seafood',
+      'iceCream': 'Popsicles & Ice cream',
 
-      'vegetarianVegan': 'Vegetarian / Vegan',
 
-      'dessertsSweets': 'Desserts & Sweets',
-
-      'drinksBeverages': 'Drinks & Beverages',
-
-      'kidsMenu': 'Kids Menu',
-
-      'combosDeals': 'Combos & Deals',
-
-      'traditionalLocal': 'Traditional / Local Specials',
-
-      'trendingChef': 'Trending / Chef\'s Specials',
-
-      'appetizers': 'Appetizers',
 
 
 
@@ -645,14 +637,22 @@ class AppTranslations {
 
     'he': {
       'feedbackUs': 'מָשׁוֹב',
-      'entranceLabel': 'כניסה',
-      'entranceHint': 'הכנס מספר/שם כניסה',
+
+      'entranceLabel': 'שער',
+      'entranceHint': 'הכנס מספר/שם שער',
       'additionalDetailsLabel': 'פרטים נוספים',
       'additionalDetailsHint': 'מידע נוסף על המושב שלך',
-      'areaLabel': 'אזור',
-      'areaHint': 'הכנס שם/מספר אזור',
+      'areaLabel': 'גוש',
+      'areaHint': 'הכנס שם/מספר גוש',
       'standLabel': 'יציע',
       'standHint': 'הכנס שם/מספר יציע',
+      'rowLabel': 'שורה',
+      'rowHint': 'הזן את מספר השורה שלך',
+      'seatLabel': 'מושב',
+      'seatHint': 'הזן את מספר המושב שלך',
+      'sectionLabel': 'יציע',
+      'sectionHint': 'הזן את מספר היציע שלך',
+
 
 
       'home' : 'בַּיִת',
@@ -814,7 +814,7 @@ class AppTranslations {
 
       'forgot_password_title': 'שכחת סיסמה?',
 
-      'forgot_password_description': 'הזן את כתובת האימייל שלך לאיפוס הסיסמה',
+      'forgot_password_description': 'הזן את כתובת המייל שלך לאיפוס הסיסמא',
 
       'forgot_password_email_hint': 'אימייל',
 
@@ -841,20 +841,24 @@ class AppTranslations {
       'login_error_password_required': 'נדרשת סיסמה',
 
       'login_error_privacy_policy': 'עליך לאשר את מדיניות הפרטיות',
-
+      'login_no_account': 'אין לך חשבון?',
+      'login_register_now': 'הירשם עכשיו',
+      'register_have_account': 'כבר יש לך חשבון?',
+      'register_login_now': 'התחבר עכשיו',
 
 
       // Onboarding Screens
 
-      'onboarding_first_title': ' תזמין, תשב, \nתהנה',
+      'onboarding_first_title': "תשב. תזמין. תנשנש.",
 
-      'onboarding_first_description': 'הזמן מהטלפון שלך וקבל את כל מה שאתה צריך \nמבלי לעזוב את המושב שלך. תהנה!',
+      'onboarding_first_description': "נותנים לך להישאר במשחק.\nבלי תורים. בלי לחץ!",
 
-      'onboarding_second_title': 'דלג על התורים. אל \nתפספס אף רגע.',
+      'onboarding_second_title': "דלג על התורים. אל תפספס אף רגע!",
 
-      'onboarding_second_description': 'תהנה מאוכל, משקאות ומרצ׳נדייז שיגיעו ישירות למושב שלך - \nכדי שתוכל להישאר באקשן, לא בתור.',
+      'onboarding_second_description': "תהנה מאוכל, משקאות ומרצ'נדייז שיגיעו ישירות למושב שלך - \nכדי שתוכל להישאר באקשן, לא בתור.",
 
-      'onboarding_button_next': 'הבא',
+      'onboarding_button_next': "הבא",
+
 
 
 
@@ -868,7 +872,7 @@ class AppTranslations {
 
       'select_stadium_empty': 'לא נמצאו אצטדיונים',
 
-      'select_stadium_error': 'שגיאה בטעינת אצטדיונים: {0}',
+      'select_stadium_error': 'שגיאה בטעינת אצטדיונים: ',
 
 
 
@@ -876,11 +880,12 @@ class AppTranslations {
 
       'goal_screen_main_title': ' תזמין. תשב. תהנה.',
 
-      'goal_screen_description': 'תהנה מאוכל, משקאות ומרצ׳נדייז שיגיעו ישירות למושב שלך - כדי שתוכל להישאר באקשן, לא בתור.',
+      'goal_screen_description': "הזמן אוכל, שתיה ומוצרים נלווים בקלות מהמושב, וקבל אותם במהירות!\nתשאיר את התור למי שלא מכיר!",
 
-      'goal_screen_title': 'דלג על התורים. אל תפספס אף רגע.',
+      'goal_screen_title': "עזוב ת׳תור ותתמקד במשחק!",
 
       'goal_screen_button': 'בוא נתחיל!',
+
 
 
 
@@ -958,18 +963,6 @@ class AppTranslations {
 
       'orderConfirmSubtitle': 'אנא ספק את פרטי המושב שלך להשלמת ההזמנה',
 
-      'rowLabel': 'שורה',
-
-      'rowHint': 'הזן את מספר השורה שלך',
-
-      'seatLabel': 'מושב',
-
-      'seatHint': 'הזן את מספר המושב שלך',
-
-      'sectionLabel': 'יציע',
-
-      'sectionHint': 'הזן את מספר היציע שלך',
-
       'detailsLabel': 'פרטים נוספים',
 
       'detailsHint': 'בקשות מיוחדות או הערות (לא חובה)',
@@ -980,9 +973,9 @@ class AppTranslations {
 
       'העלה את תמונת הכרטיס שלך למילוי אוטומטי של פרטי המושב',
 
-      'uploadFromCamera': 'צלם תמונה',
+      'uploadFromCamera': 'מצלמה',
 
-      'frontCamera': 'מצלמה קדמית',
+      'frontCamera': 'מצלמה',
 
       'uploadFromGallery': 'בחר מהגלריה',
 
@@ -1022,7 +1015,7 @@ class AppTranslations {
 
       'reviews': 'ביקורות',
 
-      'addToCart': 'הוסף לעגלה',
+      'addToCart': 'הוסף לסל',
 
       'orderCount': 'הזמנות',
 
@@ -1070,7 +1063,7 @@ class AppTranslations {
 
       'guest': 'אורח',
 
-      'whatToEat': 'מה תרצה לאכול היום?',
+      'whatToEat': 'מה תרצה לנשנש?',
 
       'allCategories': 'כל הקטגוריות',
 
@@ -1118,9 +1111,9 @@ class AppTranslations {
 
       'orders': 'הזמנות',
 
-      'cart': 'עגלה',
+      'cart': 'סל',
 
-      'cartEmpty': 'העגלה ריקה',
+      'cartEmpty': 'אופס… \nשכחת להוסיף לסל. הסל ריק.',
 
       'favorites': 'מועדפים',
 
@@ -1134,31 +1127,17 @@ class AppTranslations {
 
       'all': 'הכל',
 
-      'snacksStreetFood': 'מזנונים ואוכל רחוב',
+      'drinks': 'שתיה',
 
-      'saladsSoups': 'סלטים ומרקים',
+      'food': 'אוכל',
 
-      'pizzaPastaBurgers': 'פיצה, פסטה והמבורגרים',
+      'snacks': 'חטיפים מלוחים',
 
-      'grillBbq': 'גריל וברביקיו',
+      'candy': 'חטיפים מתוקים',
 
-      'seafood': 'דגים',
+      'iceCream': 'גלידה וארטיקים',
 
-      'vegetarianVegan': 'צמחוני / טבעוני',
 
-      'dessertsSweets': 'קינוחים ומתוקים',
-
-      'drinksBeverages': 'משקאות',
-
-      'kidsMenu': 'תפריט ילדים',
-
-      'combosDeals': 'קומבו והצעות',
-
-      'traditionalLocal': 'מסורתי / מקומי',
-
-      'trendingChef': 'פופולרי / מנות השף',
-
-      'appetizers': 'מנות פתיחה',
 
 
 

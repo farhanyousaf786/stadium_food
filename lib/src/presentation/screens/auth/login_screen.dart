@@ -11,7 +11,8 @@ import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final String? returnRoute;
+  const LoginScreen({super.key, this.returnRoute});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -43,14 +44,18 @@ class _LoginScreenState extends State<LoginScreen> {
         listener: (context, state) {
           if (state is LoginSuccess) {
             Navigator.pop(context);
-            // Always show stadium selection after login
-            Navigator.pushNamed(context, '/select-stadium').then((_) {
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                '/home',
-                (route) => false,
-              );
-            });
+            if (widget.returnRoute != null) {
+              Navigator.pop(context);
+            } else {
+              // Default flow: show stadium selection then home
+              Navigator.pushNamed(context, '/select-stadium').then((_) {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/home',
+                  (route) => false,
+                );
+              });
+            }
           }
 
           if (state is LoginError) {
@@ -124,8 +129,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   fillColor: AppColors().cardColor,
                                   filled: true,
                                   hintText: Translate.get('login_email_hint'),
-                                  hintStyle: CustomTextStyle.size14Weight400Text()
-                                      .copyWith(
+                                  hintStyle:
+                                      CustomTextStyle.size14Weight400Text()
+                                          .copyWith(
                                     color: Colors.grey,
                                   ),
                                   border: InputBorder.none,
@@ -148,9 +154,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 decoration: InputDecoration(
                                   fillColor: AppColors().cardColor,
                                   filled: true,
-                                  hintText: Translate.get('login_password_hint'),
-                                  hintStyle: CustomTextStyle.size14Weight400Text()
-                                      .copyWith(
+                                  hintText:
+                                      Translate.get('login_password_hint'),
+                                  hintStyle:
+                                      CustomTextStyle.size14Weight400Text()
+                                          .copyWith(
                                     color: Colors.grey,
                                   ),
                                   border: InputBorder.none,
@@ -196,7 +204,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const PrivacyPolicyScreen(),
+                                    builder: (context) =>
+                                        const PrivacyPolicyScreen(),
                                   ),
                                 );
                               },
@@ -225,16 +234,16 @@ class _LoginScreenState extends State<LoginScreen> {
                           blendMode: BlendMode.srcIn,
                           child: Text(
                             Translate.get('login_forgot_password'),
-                            style: CustomTextStyle.size14Weight400Text()
-                                .copyWith(
-                              decoration: TextDecoration.underline,
-                            ),
+                            style:
+                                CustomTextStyle.size14Weight400Text().copyWith(
+                                    // decoration: TextDecoration.underline,
+                                    ),
                           ),
                         ),
                       ),
                       const SizedBox(height: 20),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 60),
+                        padding: const EdgeInsets.only(bottom: 20),
                         child: PrimaryButton(
                           text: Translate.get('login_button'),
                           onTap: () {
@@ -242,7 +251,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   backgroundColor: AppColors.errorColor,
-                                  content: Text(Translate.get('login_error_email_required')),
+                                  content: Text(Translate.get(
+                                      'login_error_email_required')),
                                 ),
                               );
                               return;
@@ -251,7 +261,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   backgroundColor: AppColors.errorColor,
-                                  content: Text(Translate.get('login_error_password_required')),
+                                  content: Text(Translate.get(
+                                      'login_error_password_required')),
                                 ),
                               );
                               return;
@@ -260,7 +271,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   backgroundColor: AppColors.errorColor,
-                                  content: Text(Translate.get('login_error_privacy_policy')),
+                                  content: Text(Translate.get(
+                                      'login_error_privacy_policy')),
                                 ),
                               );
                               return;
@@ -277,6 +289,38 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
                       ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            Translate.get('login_no_account'),
+                            style: CustomTextStyle.size14Weight400Text(),
+                          ),
+                          const SizedBox(width: 4),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/register');
+                            },
+                            child: ShaderMask(
+                              shaderCallback: (bounds) => LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: AppColors.primaryGradient,
+                              ).createShader(bounds),
+                              blendMode: BlendMode.srcIn,
+                              child: Text(
+                                Translate.get('login_register_now'),
+                                style: CustomTextStyle.size14Weight400Text()
+                                    .copyWith(
+                                        // decoration: TextDecoration.underline,
+                                        ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 40),
                     ],
                   ),
                 ),

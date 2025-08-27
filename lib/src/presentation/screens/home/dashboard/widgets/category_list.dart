@@ -14,21 +14,18 @@ class CategoryList extends StatefulWidget {
 class _CategoryListState extends State<CategoryList> {
   int _selectedIndex = 0;
 
+
+
   final List<Map<String, dynamic>> categories = [
-    {'name': 'all', 'icon': '🔥'},
-    {'name': 'snacksStreetFood', 'icon': '🥨'},
-    {'name': 'saladsSoups', 'icon': '🥗'},
-    {'name': 'pizzaPastaBurgers', 'icon': '🍕'},
-    {'name': 'grillBbq', 'icon': '🍖'},
-    {'name': 'seafood', 'icon': '🦐'},
-    {'name': 'vegetarianVegan', 'icon': '🥬'},
-    {'name': 'dessertsSweets', 'icon': '🍰'},
-    {'name': 'drinksBeverages', 'icon': '🥤'},
-    {'name': 'kidsMenu', 'icon': '🧸'},
-    {'name': 'combosDeals', 'icon': '🎯'},
-    {'name': 'traditionalLocal', 'icon': '🏆'},
-    {'name': 'trendingChef', 'icon': '⭐'},
-    {'name': 'appetizers', 'icon': '🍱'},
+
+      {'name': 'all', 'icon': '🔥'},         // All items = Hot/Trending
+      {'name': 'drinks', 'icon': '🥤'},      // Drinks = Soda cup
+      {'name': 'food', 'icon': '🍔'},        // Food = Burger (general meal)
+      {'name': 'snacks', 'icon': '🥨'},      // Snacks = Pretzel
+      {'name': 'candy', 'icon': '🍭'},       // Candy = Lollipop
+      {'name': 'iceCream', 'icon': '🍦'},    // Ice Cream = Soft serve
+
+
   ];
 
   @override

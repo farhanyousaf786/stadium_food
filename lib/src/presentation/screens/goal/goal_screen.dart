@@ -326,7 +326,7 @@ class _GoalScreenState extends State<GoalScreen> with TickerProviderStateMixin {
           // Button positioned at bottom right with smooth animation
           Positioned(
             bottom: 40,
-            right: 30,
+            left: 30,
             child: TweenAnimationBuilder<double>(
               tween: Tween<double>(begin: 0.0, end: 1.0),
               duration: const Duration(milliseconds: 1200),

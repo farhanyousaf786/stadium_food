@@ -70,13 +70,13 @@ class _SelectStadiumScreenState extends State<SelectStadiumScreen> {
                   color: Colors.black,
                 ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            Translate.get('select_stadium_description'),
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.grey[600],
-                ),
-          ),
+          // const SizedBox(height: 8),
+          // Text(
+          //   Translate.get('select_stadium_description'),
+          //   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+          //         color: Colors.grey[600],
+          //       ),
+          // ),
         ],
       ),
     );

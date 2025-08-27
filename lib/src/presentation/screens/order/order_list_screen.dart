@@ -30,7 +30,7 @@ class _OrderListScreenState extends State<OrderListScreen>
 
     BlocProvider.of<OrderBloc>(context).add(FetchOrders());
 
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -49,9 +49,9 @@ class _OrderListScreenState extends State<OrderListScreen>
                 o.status == OrderStatus.delivering)
             .toList();
       case 'completed':
-        return orders.where((o) => o.status == OrderStatus.delivered).toList();
-      case 'cancelled':
-        return orders.where((o) => o.status == OrderStatus.canceled).toList();
+        return orders.where((o) => o.status == OrderStatus.delivered || o.status == OrderStatus.canceled).toList();
+      // case 'cancelled':
+      //   return orders.where((o) => o.status == OrderStatus.canceled).toList();
       default:
         return [];
     }
@@ -77,7 +77,7 @@ class _OrderListScreenState extends State<OrderListScreen>
                 tabs: [
                   Tab(text: Translate.get('active')),
                   Tab(text: Translate.get('completed')),
-                  Tab(text: Translate.get('cancelled')),
+                  // Tab(text: Translate.get('cancelled')),
                 ],
               ),
               const SizedBox(height: 10),
@@ -93,8 +93,8 @@ class _OrderListScreenState extends State<OrderListScreen>
                           _buildOrderList(filterOrders(state.orders, 'active')),
                           _buildOrderList(
                               filterOrders(state.orders, 'completed')),
-                          _buildOrderList(
-                              filterOrders(state.orders, 'cancelled')),
+                        //   _buildOrderList(
+                        //       filterOrders(state.orders, 'cancelled')),
                         ],
                       );
                     } else if (state is OrderFetchingError) {

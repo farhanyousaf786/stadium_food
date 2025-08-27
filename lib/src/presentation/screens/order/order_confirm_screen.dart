@@ -238,7 +238,11 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                     onPressed: () {
                       Navigator.pop(context); // Close dialog
                       // Navigate to login without removing previous screens
-                      Navigator.pushNamed(context, '/login');
+                      Navigator.pushNamed(
+                        context,
+                        '/login',
+                        arguments: '/order-confirm',
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryColor,
@@ -262,6 +266,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                     Navigator.pop(context); // Close dialog
                     // Navigate to register without removing previous screens
                     Navigator.pushNamed(context, '/register');
+
                   },
                   child: Text(
                     Translate.get('createAccount'),
@@ -309,11 +314,14 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
             ),
           );
           // Navigate to order list screen
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            '/order-list',
-            (route) => false,
-          );
+          Future.delayed(const Duration(seconds: 1), () {
+            Navigator.of(context, rootNavigator: true).pop(); // Close dialog
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              "/home",
+                  (route) => false,
+            );
+          });
         } else if (state is OrderCreatingError) {
           // remove loading
           Navigator.of(context).pop();
@@ -665,52 +673,63 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                           children: [
                             Expanded(
                               child: _buildTextField(
-                                controller: _seatNoController,
-                                label: Translate.get('seatLabel'),
-                                hint: Translate.get('seatHint'),
-                                icon: Icons.chair_outlined,
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: _buildTextField(
                                 controller: _standController,
                                 label: Translate.get('standLabel'),
                                 hint: Translate.get('standHint'),
                                 icon: Icons.chair_rounded,
                               ),
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _buildTextField(
-                                controller: _rowController,
-                                label: Translate.get('rowLabel'),
-                                hint: Translate.get('rowHint'),
-                                icon: Icons.view_week_outlined,
-                              ),
-                            ),
+
+
                             const SizedBox(width: 16),
                             Expanded(
                               child: _buildTextField(
+
                                 controller: _entranceController,
                                 label: Translate.get('entranceLabel'),
                                 hint: Translate.get('entranceHint'),
                                 icon: Icons.info_outline,
                               ),
                             ),
+
+                          ],
+                        ),
+
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child:
+                              _buildTextField(
+                                controller: _areaController,
+                                label: Translate.get('areaLabel'),
+                                hint: Translate.get('areaHint'),
+                                icon: Icons.category_outlined,
+                              ),
+
+
+                            ),
+
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child:
+                              _buildTextField(
+                                controller: _rowController,
+                                label: Translate.get('rowLabel'),
+                                hint: Translate.get('rowHint'),
+                                icon: Icons.view_week_outlined,
+                              ),
+
+                            ),
                           ],
                         ),
                         const SizedBox(height: 16),
                         _buildTextField(
-                          controller: _areaController,
-                          label: Translate.get('areaLabel'),
-                          hint: Translate.get('areaHint'),
-                          icon: Icons.category_outlined,
+                          controller: _seatNoController,
+                          label: Translate.get('seatLabel'),
+                          hint: Translate.get('seatHint'),
+                          icon: Icons.chair_outlined,
+                          keyboardType: TextInputType.number,
                         ),
 
                         const SizedBox(height: 16),

@@ -305,8 +305,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     children: [
                                       _buildStatsItem(
                                           '...', Translate.get('activeOrders')),
-                                      _buildStatsItem('...',
-                                          Translate.get('cancelledOrders')),
+                                      // _buildStatsItem('...',
+                                      //     Translate.get('cancelledOrders')),
                                       _buildStatsItem('...',
                                           Translate.get('completedOrders')),
                                     ],
@@ -323,10 +323,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           filterOrders(stateOrder.orders,
                                               'completedOrders'),
                                           Translate.get('completedOrders')),
-                                      _buildStatsItem(
-                                          filterOrders(stateOrder.orders,
-                                              'cancelledOrders'),
-                                          Translate.get('cancelledOrders')),
+                                      // _buildStatsItem(
+                                      //     filterOrders(stateOrder.orders,
+                                      //         'cancelledOrders'),
+                                      //     Translate.get('cancelledOrders')),
                                     ],
                                   );
                                 }
@@ -335,8 +335,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   children: [
                                     _buildStatsItem(
                                         '...', Translate.get('activeOrders')),
-                                    _buildStatsItem('...',
-                                        Translate.get('cancelledOrders')),
+                                    // _buildStatsItem('...',
+                                    //     Translate.get('cancelledOrders')),
                                     _buildStatsItem('...',
                                         Translate.get('completedOrders')),
                                   ],

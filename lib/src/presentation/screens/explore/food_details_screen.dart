@@ -77,6 +77,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
             children: [
               Row(
                 children: [
+                  const SizedBox(width: 40),
                   BlocBuilder<ProfileBloc, ProfileState>(
                     builder: (context, state) {
                       return LikeButton(
@@ -111,6 +112,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                   ),
                 ),
               ),
+              const SizedBox(width: 20),
             ],
           ),
         ),
@@ -242,9 +244,9 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                       ),
                       const SizedBox(height: 24),
 
-                      Text(
-                        Translate.get('description'),
-                      ),
+                      // Text(
+                      //   Translate.get('description'),
+                      // ),
                       Text(
                         widget.food.description.isNotEmpty
                             ? widget.food.description
@@ -255,7 +257,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                               : AppColors().secondaryTextColor,
                         ),
                         textAlign: widget.food.description.isNotEmpty
-                            ? TextAlign.left
+                            ? TextAlign.right
                             : TextAlign.center,
                       ),
                       const SizedBox(height: 20),

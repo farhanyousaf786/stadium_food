@@ -191,30 +191,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            "/login",
-                          );
-                        },
-                        child: ShaderMask(
-                          shaderCallback: (bounds) => LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: AppColors.primaryGradient,
-                          ).createShader(bounds),
-                          blendMode: BlendMode.srcIn,
-                          child: Text(
-                            Translate.get('register_login_link'),
-                            style: CustomTextStyle.size14Weight400Text()
-                                .copyWith(
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
                       Padding(
                         padding: const EdgeInsets.only(bottom: 60),
                         child: PrimaryButton(
@@ -263,6 +239,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           },
                         ),
                       ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            Translate.get('register_have_account'),
+                            style: CustomTextStyle.size14Weight400Text(),
+                          ),
+                          const SizedBox(width: 4),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/login');
+                            },
+                            child: ShaderMask(
+                              shaderCallback: (bounds) => LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: AppColors.primaryGradient,
+                              ).createShader(bounds),
+                              blendMode: BlendMode.srcIn,
+                              child: Text(
+                                Translate.get('register_login_now'),
+                                style: CustomTextStyle.size14Weight400Text().copyWith(
+                                 /* decoration: TextDecoration.underline,*/
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 40),
                     ],
                   ),
                 ),

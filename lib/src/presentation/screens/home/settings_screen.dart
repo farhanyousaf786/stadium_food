@@ -57,37 +57,37 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(
-                  "Currency",
-                  style: CustomTextStyle.size16Weight400Text(),
-                ),
-                trailing: BlocBuilder<SettingsBloc, SettingsState>(
-                  builder: (context, state) {
-                    return DropdownButton<String>(
-                      value: CurrencyService.getCurrentCurrency(),
-                      items: const [
-                        DropdownMenuItem(
-                          value: 'USD',
-                          child: Text('USD'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'NIS',
-                          child: Text('NIS'),
-                        ),
-                      ],
-                      onChanged: (String? newValue) {
-                        if (newValue != null) {
-                          context.read<SettingsBloc>().add(
-                                ChangeCurrency(newValue),
-                              );
-                        }
-                      },
-                    );
-                  },
-                ),
-              ),
+              // ListTile(
+              //   contentPadding: EdgeInsets.zero,
+              //   title: Text(
+              //     "Currency",
+              //     style: CustomTextStyle.size16Weight400Text(),
+              //   ),
+              //   trailing: BlocBuilder<SettingsBloc, SettingsState>(
+              //     builder: (context, state) {
+              //       return DropdownButton<String>(
+              //         value: CurrencyService.getCurrentCurrency(),
+              //         items: const [
+              //           DropdownMenuItem(
+              //             value: 'USD',
+              //             child: Text('USD'),
+              //           ),
+              //           DropdownMenuItem(
+              //             value: 'NIS',
+              //             child: Text('NIS'),
+              //           ),
+              //         ],
+              //         onChanged: (String? newValue) {
+              //           if (newValue != null) {
+              //             context.read<SettingsBloc>().add(
+              //                   ChangeCurrency(newValue),
+              //                 );
+              //           }
+              //         },
+              //       );
+              //     },
+              //   ),
+              // ),
             ],
           ),
         ),

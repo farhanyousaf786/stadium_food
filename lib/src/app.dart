@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive/hive.dart';
 
 import 'package:stadium_food/src/bloc/theme/theme_bloc.dart';
@@ -27,6 +28,16 @@ class MyApp extends StatelessWidget {
         title: "Fans Food",
         theme: themeData,
         onGenerateRoute: AppRouter.onGenerateRoute,
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('he', 'IL'), // Hebrew
+          Locale('en', 'US'), // English
+        ],
+        locale: const Locale('he', 'IL'),
       );
     },
         );

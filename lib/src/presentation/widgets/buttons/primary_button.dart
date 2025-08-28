@@ -19,16 +19,19 @@ class PrimaryButton extends StatelessWidget {
     return Ink(
       decoration: const BoxDecoration(
         color: AppColors.primaryDarkColor,
-        borderRadius: BorderRadius.all(Radius.circular(5)),
+        borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
       child: InkWell(
-        borderRadius: const BorderRadius.all(Radius.circular(5)),
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
         onTap: onTap,
         child: Container(
           width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(10))
+          ),
           padding: const EdgeInsets.symmetric(
             horizontal: 60,
-            vertical: 16,
+            vertical: 20,
           ),
           child: iconData == null
               ? Text(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:stadium_food/src/presentation/screens/onboarding/onboarding_screen.dart';
 import 'package:stadium_food/src/presentation/screens/server.dart';
 import 'package:stadium_food/src/presentation/screens/goal/goal_screen.dart';
 
@@ -27,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
       // Always show the goal screen first
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const GoalScreen()),
+        MaterialPageRoute(builder: (context) => const OnboardingScreen()),
       );
       
       // The following code is now handled by the GoalScreen's button

@@ -28,16 +28,16 @@ class MyApp extends StatelessWidget {
         title: "Fans Food",
         theme: themeData,
         onGenerateRoute: AppRouter.onGenerateRoute,
-        localizationsDelegates: [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: const [
-          Locale('he', 'IL'), // Hebrew
-          Locale('en', 'US'), // English
-        ],
-        locale: const Locale('he', 'IL'),
+        // localizationsDelegates: [
+        //   GlobalMaterialLocalizations.delegate,
+        //   GlobalWidgetsLocalizations.delegate,
+        //   GlobalCupertinoLocalizations.delegate,
+        // ],
+        // supportedLocales: const [
+        //   Locale('he', 'IL'), // Hebrew
+        //   Locale('en', 'US'), // English
+        // ],
+        // locale: const Locale('he', 'IL'),
       );
     },
         );

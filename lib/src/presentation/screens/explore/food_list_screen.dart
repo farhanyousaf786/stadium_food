@@ -111,7 +111,7 @@ class _FoodListScreenState extends State<FoodListScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const CustomBackButton(),
+                  const CustomBackButton(color: AppColors.primaryDarkColor,),
                   const SizedBox(height: 20),
                   Text(
                     widget.shop.name,

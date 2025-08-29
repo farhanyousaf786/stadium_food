@@ -4,7 +4,6 @@ import 'package:stadium_food/src/bloc/menu/menu_bloc.dart';
 import 'package:stadium_food/src/bloc/offer/offer_bloc.dart';
 import 'package:stadium_food/src/data/repositories/offer_repository.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
-import 'package:stadium_food/src/presentation/widgets/search_filter_widget.dart';
 import 'widgets/category_list.dart';
 import 'widgets/menu_list.dart';
 import 'widgets/offers_list.dart';
@@ -33,38 +32,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
         child: Scaffold(
           backgroundColor: AppColors.bgColor,
-          body: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const TopBar(),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SearchFilterWidget(
-                            searchController: _searchController,
-                            onChanged: _handleSearch,
-                            onFilterTap: () {},
-                          ),
-                          const SizedBox(height: 24),
-                          OffersList(),
-                          const SizedBox(height: 24),
-                          const CategoryList(),
-                          const SizedBox(height: 24),
-                          const MenuList(),
-                          const SizedBox(height: 24),
-                          const ShopList(),
-                        ],
-                      ),
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TopBar(
+                onSearch: _handleSearch,
+                searchController: _searchController,
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 24),
+                        OffersList(),
+                        const SizedBox(height: 24),
+                        const CategoryList(),
+                        const SizedBox(height: 24),
+                        const MenuList(),
+                        const SizedBox(height: 24),
+                        const ShopList(),
+                        const SizedBox(height: 50),
+                      ],
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ));
   }

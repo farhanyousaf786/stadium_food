@@ -4,10 +4,13 @@ import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 
 class CustomBackButton extends StatelessWidget {
-  const CustomBackButton({
-    super.key,
-  });
 
+
+   const CustomBackButton({
+    super.key,
+     required this.color
+  });
+   final Color color;
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -15,16 +18,26 @@ class CustomBackButton extends StatelessWidget {
         Navigator.pop(context);
       },
       borderRadius: AppStyles.defaultBorderRadius,
-      child: Container(
-        width: 45,
-        height: 45,
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: AppColors.primaryColor.withOpacity(0.1),
-          borderRadius: AppStyles.defaultBorderRadius,
-        ),
+      child:
+
+
+      Container(
+        width: 50,
+        height: 50,
+        padding: const EdgeInsets.all(9),
+            decoration: BoxDecoration(
+              color:color.withOpacity(0.1),
+              shape: BoxShape.circle,
+              border: Border.all(color: color.withOpacity(0.25)),
+              boxShadow: [AppStyles.boxShadow7],
+            ),
+
         child: SvgPicture.asset(
-          "assets/svg/back.svg",
+          "assets/svg/back_arrow.svg",
+          colorFilter:  ColorFilter.mode(
+            color,
+            BlendMode.srcIn,
+          ),
         ),
       ),
     );

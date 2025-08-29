@@ -70,11 +70,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 selectedIndex: _selectedIndex,
                 destinations: [
                   NavigationDestination(
-                    icon: Opacity(
-                      opacity: 0.5,
-                      child: SvgPicture.asset(
-                        "assets/svg/home_new.svg",
-                      ),
+                    icon: SvgPicture.asset(
+                      "assets/svg/home_f.svg",
+
                     ),
                     selectedIcon: SvgPicture.asset(
                       "assets/svg/home_new.svg",
@@ -101,11 +99,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           offset: const Offset(10, -10),
-                          child: Opacity(
-                            opacity: 0.5,
-                            child: SvgPicture.asset(
-                              "assets/svg/order.svg",
-                            ),
+                          child: SvgPicture.asset(
+
+                            "assets/svg/order_f.svg",
                           ),
                         );
                       },
@@ -150,11 +146,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           offset: const Offset(10, -10),
-                          child: Opacity(
-                            opacity: 0.5,
-                            child: SvgPicture.asset(
-                              "assets/svg/cart.svg",
-                            ),
+                          child: SvgPicture.asset(
+
+                            "assets/svg/cart_f.svg",
                           ),
                         );
                       },
@@ -180,11 +174,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     label: Translate.get('cart'),
                   ),
                   NavigationDestination(
-                    icon: Opacity(
-                      opacity: 0.5,
-                      child: SvgPicture.asset(
-                        "assets/svg/profile.svg",
-                      ),
+                    icon: SvgPicture.asset(
+
+                      "assets/svg/prfile_f.svg",
                     ),
                     selectedIcon: SvgPicture.asset(
                       "assets/svg/profile.svg",

@@ -86,7 +86,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     SizedBox(
                       height: MediaQuery.of(context).padding.top + 40,
                     ),
-                    const CustomBackButton(),
+                    const CustomBackButton(color: AppColors.primaryDarkColor,),
                     const SizedBox(height: 20),
                     Text(
                       Translate.get('forgot_password_title'),

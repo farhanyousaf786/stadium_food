@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
 import '../../../services/location_service.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
@@ -103,113 +104,193 @@ class _CartScreenState extends State<CartScreen> {
   Widget _buildScreen(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bgColor,
-      bottomNavigationBar: BlocBuilder<OrderBloc, OrderState>(
+      body: BlocBuilder<OrderBloc, OrderState>(
         builder: (context, state) {
-          return OrderRepository.cart.isNotEmpty
-              ? PriceInfoWidget(
-                  onTap: () async {
-                    if (OrderRepository.cart.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(Translate.get('cartEmpty')),
-                          backgroundColor: AppColors.errorColor,
-                        ),
-                      );
-                      return;
-                    }
-
-                    // Find nearest shop before proceeding
-                    try {
-                      await _findNearestShopAndNavigate(context);
-                    } catch (e) {
-                      await _handleLocationError(context, e);
-                    }
-                  },
-                )
-              : SizedBox();
-        },
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-          child: SingleChildScrollView(
+          return SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                widget.isFromHome == false
-                    ? const CustomBackButton()
-                    : SizedBox(),
-                const SizedBox(height: 20),
-                Text(
-                  Translate.get('cart'),
-                  style: CustomTextStyle.size25Weight600Text(),
-                ),
-                const SizedBox(height: 20),
-                if (OrderRepository.cart.isEmpty)
-                  Container(
-                    alignment: Alignment.center,
-                    height: MediaQuery.of(context).size.height * 0.4,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(
-                          "assets/svg/cart.svg",
-                          color: AppColors.starEmptyColor,
-                          height: 100,
-                          width: 100,
+                // Header with background image and overlay
+                Stack(
+                  children: [
+                    Container(
+                      height: 300,
+                      width: double.infinity,
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('assets/png/cart_bg.png'),
+                          fit: BoxFit.fill,
                         ),
-                        const SizedBox(
+                      ),
+                    ),
+                    // dark gradient overlay for text readability
+
+                    Positioned(
+                      left: 16,
+                      top: MediaQuery.of(context).padding.top + 16,
+                      child: widget.isFromHome == false
+                          ? const CustomBackButton(
+                              color: Colors.white,
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                    Positioned.fill(
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                              top: MediaQuery.of(context).padding.top + 24),
+                          child: Text(
+                            Translate.get('addToCart'),
+                            style: CustomTextStyle.size22Weight600Text(
+                                Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Empty state
+                if (OrderRepository.cart.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: MediaQuery.of(context).size.height * 0.35,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: AppStyles.largeBorderRadius,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset(
+                            "assets/svg/cart.svg",
+                            color: AppColors.starEmptyColor,
+                            height: 100,
+                            width: 100,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            Translate.get('cartEmpty'),
+                            style: CustomTextStyle.size22Weight600Text(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                // Cart items list
+                if (OrderRepository.cart.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      children: [
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: OrderRepository.cart.length,
+                          itemBuilder: (context, index) {
+                            return Column(
+                              children: [
+                                Dismissible(
+                                  key: Key(OrderRepository.cart[index].name),
+                                  onDismissed: (direction) {
+                                    BlocProvider.of<OrderBloc>(context).add(
+                                      RemoveCompletelyFromCart(
+                                        OrderRepository.cart[index],
+                                      ),
+                                    );
+                                  },
+                                  background: Container(
+                                    alignment: Alignment.centerRight,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      borderRadius: AppStyles.largeBorderRadius,
+                                      color: AppColors.secondaryColor,
+                                    ),
+                                    child: SvgPicture.asset(
+                                      "assets/svg/trash.svg",
+                                    ),
+                                  ),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: AppStyles.largeBorderRadius,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.03),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 3),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8.0, horizontal: 8),
+                                      child: CartItem(
+                                        food: OrderRepository.cart[index],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                              ],
+                            );
+                          },
+                        ),
+                        SizedBox(
                           height: 16,
                         ),
-                        Text(
-                          Translate.get('cartEmpty'),
-                          style: CustomTextStyle.size22Weight600Text(),
+                        OrderRepository.cart.isNotEmpty
+                            ? PriceInfoWidget()
+                            : SizedBox(),
+                        SizedBox(
+                          height: 30,
                         ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 30),
+                          child: OrderRepository.cart.isNotEmpty
+                              ? PrimaryButton(
+                                  text: Translate.get('placeOrder'),
+                                  onTap: () async {
+                                    if (OrderRepository.cart.isEmpty) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content:
+                                              Text(Translate.get('cartEmpty')),
+                                          backgroundColor: AppColors.errorColor,
+                                        ),
+                                      );
+                                      return;
+                                    }
+
+                                    // Find nearest shop before proceeding
+                                    try {
+                                      await _findNearestShopAndNavigate(context);
+                                    } catch (e) {
+                                      await _handleLocationError(context, e);
+                                    }
+                                  })
+                              : SizedBox(),
+                        )
                       ],
                     ),
                   ),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: OrderRepository.cart.length,
-                  itemBuilder: (context, index) {
-                    return Column(
-                      children: [
-                        Dismissible(
-                          key: Key(OrderRepository.cart[index].name),
-                          onDismissed: (direction) {
-                            BlocProvider.of<OrderBloc>(context).add(
-                              RemoveCompletelyFromCart(
-                                OrderRepository.cart[index],
-                              ),
-                            );
-                          },
-                          background: Container(
-                            alignment: Alignment.centerRight,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: AppStyles.largeBorderRadius,
-                              color: AppColors.secondaryColor,
-                            ),
-                            child: SvgPicture.asset(
-                              "assets/svg/trash.svg",
-                            ),
-                          ),
-                          child: CartItem(
-                            food: OrderRepository.cart[index],
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                      ],
-                    );
-                  },
-                ),
               ],
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

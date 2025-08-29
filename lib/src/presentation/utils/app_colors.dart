@@ -3,7 +3,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 class AppColors {
   // general colors
-  static const Color bgColor = Color(0xFFF5F5F5);
+  static const Color bgColor = Color(0xFFEFF1F4);
+  static const Color unSelectedColor = Color(0xFF484C52);
   static const Color primaryColor = Color(0xFF426FF3);
   static const Color primaryDarkColor = Color(0xFF3C67E3); // 20% darker
   static const Color primaryLightColor = Color(0xFF5A84F8); // 20% lighter
@@ -66,8 +67,8 @@ class AppColors {
       : lightCardColor;
 
   Color secondaryTextColor = Hive.box("myBox").get("isDarkMode") == false
-      ? grayColor.withOpacity(0.3)
-      : grayColor.withOpacity(0.3);
+      ? Color(0xFF3F3F3F)
+      : Color(0xFF3F3F3F);
 
   Color borderColor = Hive.box("myBox").get("isDarkMode") == false
       ? lightBorderColor

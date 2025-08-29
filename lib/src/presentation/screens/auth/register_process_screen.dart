@@ -133,7 +133,7 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
                         ),
                         // check if previous page exists
                         if (ModalRoute.of(context)!.canPop) ...[
-                          const CustomBackButton(),
+                          const CustomBackButton(color: AppColors.primaryDarkColor,),
                         ],
                         const SizedBox(height: 20),
                         Text(

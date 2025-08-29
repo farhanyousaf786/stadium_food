@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stadium_food/src/bloc/shop/shop_bloc.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
@@ -38,44 +39,34 @@ class _ShopListState extends State<ShopList> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Padding(
-        //   padding: const EdgeInsets.only(left: 16),
-        //   child: Row(
-        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //     children: [
-        //       Text(
-        //         Translate.get('openRestaurants'),
-        //         style: TextStyle(
-        //           fontSize: 16,
-        //           fontWeight: FontWeight.w600,
-        //           color: AppColors.grayColor,
-        //         ),
-        //       ),
-        //       // TextButton(
-        //       //   onPressed: () {},
-        //       //   child: Row(
-        //       //     children: [
-        //       //       Text(
-        //       //         Translate.get('seeAll'),
-        //       //         style: TextStyle(
-        //       //           fontSize: 14,
-        //       //           color: AppColors.primaryColor,
-        //       //         ),
-        //       //       ),
-        //       //       Icon(
-        //       //         Icons.chevron_right,
-        //       //         size: 20,
-        //       //         color: AppColors.primaryColor,
-        //       //       ),
-        //       //     ],
-        //       //   ),
-        //       // ),
-        //     ],
-        //   ),
-        // ),
-        const SizedBox(height: 16),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                Translate.get('openRestaurants'),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              TextButton(
+                onPressed: () {},
+                child: Text(
+                  Translate.get('viewAll'),
+                  style: const TextStyle(
+                    color: AppColors.primaryColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
         SizedBox(
-          height: 320,
+          height: 360,
           child: BlocBuilder<ShopBloc, ShopState>(
             builder: (context, state) {
               if (state is ShopsLoading) {
@@ -91,165 +82,17 @@ class _ShopListState extends State<ShopList> {
                   );
                 }
 
-                return ListView.builder(
-                  scrollDirection: Axis.vertical,
+                return ListView.separated(
+                  scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   itemCount: _shops.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 12),
                   itemBuilder: (context, index) {
                     final shop = _shops[index];
-                    return Container(
-                      width: MediaQuery.of(context).size.width,
-                      margin: const EdgeInsets.only(right: 0, bottom: 8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: InkWell(
-                        onTap: () async {
-                          final prefs = await SharedPreferences.getInstance();
-                          final stadiumId = prefs.getString('selected_stadium_id');
-                          final stadiumName = prefs.getString('selected_stadium_name');
-
-                          if (stadiumId != null && stadiumName != null && mounted) {
-                            final stadium = Stadium(
-                              id: stadiumId,
-                              name: stadiumName,
-                              location: '',
-                              imageUrl: '',
-                              about: '',
-                              capacity: 0,
-                              createdAt: DateTime.now().toIso8601String(),
-                              updatedAt: DateTime.now().toIso8601String(),
-                            );
-
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => FoodListScreen(
-                                  stadium: stadium,
-                                  shop: shop,
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                        borderRadius: BorderRadius.circular(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ClipRRect(
-                              borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(16),
-                              ),
-                              child: Image.network(
-                                'https://media.istockphoto.com/id/612008886/vector/baseball-game.jpg?s=612x612&w=0&k=20&c=7KrxNdxWx30xj9q01XkfYQQ3QIhWc73ADDSG8enGPpA=',
-                                height: 150,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                              Text(
-                                shop.name,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                shop.description,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey[600],
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 16),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.stadium,
-                                    color: AppColors.primaryColor,
-                                    size: 20,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    shop.stadiumName,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.grey[700],
-                                    ),
-                                  ),
-
-
-                                  const SizedBox(width: 24),
-                                  Icon(
-                                    Icons.location_on,
-                                    color: AppColors.primaryColor,
-                                    size: 20,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    shop.location,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.grey[700],
-                                    )),
-                                  
-
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.stairs,
-                                    color: AppColors.primaryColor,
-                                    size: 20,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    '${Translate.get('floor')} ${shop.floor}',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.grey[700],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 24),
-                                  Icon(
-                                    Icons.door_front_door,
-                                    color: AppColors.primaryColor,
-                                    size: 20,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    '${Translate.get('gate')} ${shop.gate}',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.grey[700],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                            ],
-                          ),
-                      ),
+                    final cardWidth = MediaQuery.of(context).size.width - 48; // full-bleed card look
+                    return SizedBox(
+                      width: cardWidth,
+                      child: _ShopCard(shop: shop),
                     );
                   },
                 );
@@ -264,6 +107,186 @@ class _ShopListState extends State<ShopList> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _ShopCard extends StatelessWidget {
+  const _ShopCard({required this.shop});
+
+  final Shop shop;
+
+  Future<void> _openShop(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final stadiumId = prefs.getString('selected_stadium_id');
+    final stadiumName = prefs.getString('selected_stadium_name');
+
+    if (stadiumId != null && stadiumName != null && context.mounted) {
+      final stadium = Stadium(
+        id: stadiumId,
+        name: stadiumName,
+        location: '',
+        imageUrl: '',
+        about: '',
+        capacity: 0,
+        createdAt: DateTime.now().toIso8601String(),
+        updatedAt: DateTime.now().toIso8601String(),
+      );
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FoodListScreen(
+            stadium: stadium,
+            shop: shop,
+          ),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: () => _openShop(context),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              child: Image.asset(
+                'assets/png/shop_img.png',
+                height: 180,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    shop.name,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  _DescriptionWithSeeMore(text: shop.description),
+                  const SizedBox(height: 10),
+                  _InfoRow(
+                    icon: 'ic_loc',
+
+                    text: shop.location,
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _InfoRow(
+                          icon: 'ic_stadium',
+
+                          text: shop.stadiumName,
+                        ),
+                      ),
+
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _InfoRow(
+                          icon: 'ic_floor',
+
+                          text: '${Translate.get('floor')} ${shop.floor}',
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  _InfoRow(
+                    icon: 'ic_stadium',
+
+                    text: '${Translate.get('gate')} ${shop.gate}',
+                  ),
+
+
+
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _InfoRow extends StatelessWidget {
+  const _InfoRow({required this.icon,  required this.text});
+
+  final String icon;
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SvgPicture.asset(
+          "assets/svg/$icon.svg",
+
+        ),
+
+        const SizedBox(width: 6),
+        Expanded(
+          child: Text(
+            text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.grey.shade700,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _DescriptionWithSeeMore extends StatelessWidget {
+  const _DescriptionWithSeeMore({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final style = TextStyle(fontSize: 13, color: Colors.grey.shade700);
+    final span = TextSpan(text: text, style: style);
+    return RichText(
+      text: TextSpan(
+        children: [
+          span,
+
+        ],
+      ),
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
     );
   }
 }

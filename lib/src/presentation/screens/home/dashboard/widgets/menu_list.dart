@@ -83,11 +83,11 @@ class _MenuListState extends State<MenuList> {
                   itemBuilder: (context, index) {
                     final food = _menuItems[index];
                     return Container(
-                        width: 160,
+                        width: 180,
                         margin: const EdgeInsets.only(right: 16),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(8),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.05),
@@ -104,14 +104,15 @@ class _MenuListState extends State<MenuList> {
                               arguments: food,
                             );
                           },
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(8),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               // Food Image
                               ClipRRect(
                                 borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(16),
+                                  top: Radius.circular(8),
+                                  bottom: Radius.circular(8),
                                 ),
                                 child: Image.network(
                                   food.images.first,
@@ -128,7 +129,7 @@ class _MenuListState extends State<MenuList> {
                                     Text(
                                       food.name,
                                       style: const TextStyle(
-                                        fontSize: 14,
+                                        fontSize: 16,
                                         fontWeight: FontWeight.w600,
                                       ),
                                       maxLines: 1,
@@ -138,7 +139,7 @@ class _MenuListState extends State<MenuList> {
                                     FormattedPriceText(
                                       amount: food.price,
                                       style: TextStyle(
-                                        fontSize: 14,
+                                        fontSize: 16,
                                         fontWeight: FontWeight.w600,
                                         color: AppColors.primaryColor,
                                       ),

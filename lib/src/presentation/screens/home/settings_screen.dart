@@ -6,6 +6,8 @@ import 'package:stadium_food/src/data/services/language_service.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/back_button.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 
+import '../../../core/constants/colors.dart';
+
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -18,7 +20,7 @@ class SettingsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const CustomBackButton(),
+              CustomBackButton(color: AppColors.primaryColor,),
               const SizedBox(height: 20),
               Text(
                 "Settings",

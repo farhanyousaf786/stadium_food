@@ -27,7 +27,7 @@ class NotificationScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const CustomBackButton(),
+                    const CustomBackButton(color: AppColors.primaryDarkColor,),
                     const SizedBox(height: 20),
                     Text(
                       "Notification",

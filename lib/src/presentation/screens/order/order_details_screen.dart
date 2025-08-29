@@ -85,7 +85,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const CustomBackButton(),
+                        const CustomBackButton(color: AppColors.primaryDarkColor,),
                         order.status.index != 3
                             ? InkWell(
                                 onTap: () async {

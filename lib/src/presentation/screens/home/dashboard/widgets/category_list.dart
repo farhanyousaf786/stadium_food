@@ -70,7 +70,7 @@ class _CategoryListState extends State<CategoryList> {
                 margin: const EdgeInsets.only(right: 12, bottom: 4),
                 child: Material(
                   color: isSelected ? AppColors.primaryColor : Colors.white,
-                  borderRadius: BorderRadius.circular(25),
+                  borderRadius: BorderRadius.circular(15),
                   elevation: 2,
                   child: InkWell(
                     onTap: () {
@@ -81,20 +81,20 @@ class _CategoryListState extends State<CategoryList> {
                         _filterByCategory(category['name'] as String);
                       }
                     },
-                    borderRadius: BorderRadius.circular(25),
+                    borderRadius: BorderRadius.circular(15),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
                       child: Row(
                         children: [
                           Text(
                             category['icon'] as String,
-                            style: const TextStyle(fontSize: 24),
+                            style: const TextStyle(fontSize: 20),
                           ),
                           const SizedBox(width: 8),
                           Text(
                             Translate.get(category['name'] as String),
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 15,
                               fontWeight: FontWeight.w500,
                               color: isSelected ? Colors.white : Colors.black87,
                             ),

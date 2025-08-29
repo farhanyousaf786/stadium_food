@@ -82,7 +82,7 @@ class _TipScreenState extends State<TipScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CustomBackButton(),
+              CustomBackButton(color: AppColors.primaryColor,),
               SizedBox(
                 height: 16,
               ),

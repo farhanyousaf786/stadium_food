@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_swipe_button/flutter_swipe_button.dart';
 import 'package:stadium_food/src/bloc/food/food_bloc.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
@@ -10,7 +11,6 @@ import 'package:stadium_food/src/bloc/testimonial/testimonial_bloc.dart';
 import 'package:stadium_food/src/data/models/food.dart';
 import 'package:stadium_food/src/data/models/testimonial.dart';
 import 'package:stadium_food/src/presentation/widgets/bullet_point.dart';
-import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
 import 'package:stadium_food/src/presentation/widgets/formatted_price_text.dart';
 import 'package:stadium_food/src/presentation/widgets/image_placeholder.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/like_button.dart';
@@ -21,6 +21,7 @@ import '../../widgets/buttons/back_button.dart';
 
 class FoodDetailsScreen extends StatefulWidget {
   final Food food;
+
   const FoodDetailsScreen({super.key, required this.food});
 
   @override
@@ -30,6 +31,20 @@ class FoodDetailsScreen extends StatefulWidget {
 class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
   List<Testimonial> testimonials = [];
   double rating = 0;
+
+  Widget _dot(bool active) {
+    return Container(
+      width: 8,
+      height: 8,
+      decoration: BoxDecoration(
+        color: active
+            ? AppColors.primaryColor
+            : AppColors.primaryColor.withOpacity(0.2),
+        shape: BoxShape.circle,
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -71,49 +86,32 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
       child: Scaffold(
         backgroundColor: AppColors.bgColor,
         bottomNavigationBar: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 10, 0, 16),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
-                children: [
-                  const SizedBox(width: 40),
-                  BlocBuilder<ProfileBloc, ProfileState>(
-                    builder: (context, state) {
-                      return LikeButton(
-                        isLiked: widget.food.isFavorite,
-                        onTap: () {
-                          BlocProvider.of<ProfileBloc>(context).add(
-                            ToggleFavoriteFood(
-                              foodId: widget.food.id,
-                              shopId: widget.food.shopIds.first,
-                              stadiumId: widget.food.stadiumId,
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                  const SizedBox(width: 10),
-                ],
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-                  child: PrimaryButton(
-                    iconData: Icons.add_shopping_cart,
-                    text: Translate.get('addToCart'),
-                    onTap: () {
-                      BlocProvider.of<OrderBloc>(context).add(
-                        AddToCart(widget.food),
-                      );
-                      Navigator.pushNamed(context, '/cart');
-                    },
-                  ),
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+            child: SwipeButton.expand(
+              duration: const Duration(milliseconds: 200),
+              thumbPadding: EdgeInsets.all(3),
+              height: 60,
+              activeThumbColor: AppColors.primaryDarkColor,
+              inactiveThumbColor: Colors.white,
+              activeTrackColor: Colors.white,
+              inactiveTrackColor: AppColors.primaryDarkColor,
+              elevationThumb: 1,
+              child: Text(
+                Translate.get('addToCart'),
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Color(0xFF969696),
                 ),
               ),
-              const SizedBox(width: 20),
-            ],
+              onSwipe: () {
+                BlocProvider.of<OrderBloc>(context).add(
+                  AddToCart(widget.food),
+                );
+                Navigator.pushNamed(context, '/cart');
+              },
+            ),
           ),
         ),
         body: SafeArea(
@@ -121,40 +119,86 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
             slivers: [
               SliverAppBar(
                 backgroundColor: AppColors.bgColor,
-                leading: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: const CustomBackButton(),
-                ),
-
-                expandedHeight: MediaQuery.of(context).size.height * 0.4,
+                leading: SizedBox.shrink(),
+                expandedHeight: MediaQuery.of(context).size.height * 0.45,
                 flexibleSpace: FlexibleSpaceBar(
-
-                  background: widget.food.images.isNotEmpty
-                      ? Container(
-                          color: AppColors.bgColor,
-                          padding: EdgeInsets.all(10),
-                          child: Image.network(
-                            widget.food.images.first,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                ImagePlaceholder(
+                  background: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      widget.food.images.isNotEmpty
+                          ? Container(
+                              color: AppColors.bgColor,
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: Image.network(
+                                widget.food.images.first,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    ImagePlaceholder(
+                                  iconData: Icons.fastfood,
+                                  iconSize: 100,
+                                ),
+                              ),
+                            )
+                          : ImagePlaceholder(
                               iconData: Icons.fastfood,
                               iconSize: 100,
                             ),
-                          ),
-                        )
-                      : ImagePlaceholder(
-                          iconData: Icons.fastfood,
-                          iconSize: 100,
+                      // bottom gradient fade
+                      // Align(
+                      //   alignment: Alignment.bottomCenter,
+                      //   child:
+                      //
+                      //   Container(
+                      //     height: 120,
+                      //     decoration:  BoxDecoration(
+                      //       gradient: LinearGradient(
+                      //         begin: Alignment.topCenter,
+                      //         end: Alignment.bottomCenter,
+                      //         colors: [
+                      //           Colors.transparent,
+                      //           Colors.black12.withOpacity(0.1),
+                      //           Colors.black26.withOpacity(0.1),
+                      //         ],
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      // top-right like button
+                      Positioned(
+                        left: 16,
+                        top: 16,
+                        child: CustomBackButton(color: AppColors.primaryDarkColor,),
+                      ),
+                      Positioned(
+                        right: 16,
+                        top: 16,
+                        child: BlocBuilder<ProfileBloc, ProfileState>(
+                          builder: (context, state) {
+                            return LikeButton(
+                              isLiked: widget.food.isFavorite,
+                              onTap: () {
+                                BlocProvider.of<ProfileBloc>(context).add(
+                                  ToggleFavoriteFood(
+                                    foodId: widget.food.id,
+                                    shopId: widget.food.shopIds.first,
+                                    stadiumId: widget.food.stadiumId,
+                                  ),
+                                );
+                              },
+                            );
+                          },
                         ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               SliverToBoxAdapter(
                 child: Container(
-                  color: AppColors().backgroundColor,
+                  color: AppColors.bgColor,
                   padding: const EdgeInsets.fromLTRB(
                     20,
-                    0,
+                    8,
                     20,
                     40,
                   ),
@@ -162,91 +206,54 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 20),
+                      // orders centered
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Expanded(
-                            child: Text(
-                              widget.food.name,
-                              style: CustomTextStyle.size27Weight600Text(),
-                            ),
+                          SvgPicture.asset(
+                            "assets/svg/orders.svg",
+                            height: 24,
+                            width: 24,
                           ),
-                          FormattedPriceText(
-                            amount: widget.food.price,
-                            style: CustomTextStyle.size22Weight600Text(
-                              AppColors.primaryColor,
-                            ),
+                          const SizedBox(width: 8),
+                          BlocBuilder<FoodBloc, FoodState>(
+                            builder: (context, state) {
+                              String text;
+                              if (state is OrderCountFetched) {
+                                text =
+                                    "${state.count} ${Translate.get('orderCount')}";
+                              } else if (state is OrderCountFetching) {
+                                text = Translate.get('loading');
+                              } else {
+                                text = "0 ${Translate.get('orderCount')}";
+                              }
+                              return Text(
+                                text,
+                                style: CustomTextStyle.size16Weight400Text(
+                                    AppColors().secondaryTextColor),
+                              );
+                            },
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset(
-                              "assets/svg/star.svg",
-                            ),
-                            const SizedBox(width: 10),
-                            BlocBuilder<TestimonialBloc, TestimonialState>(
-                              builder: (context, state) {
-                                return Text(
-                                  rating > 0
-                                      ? "${rating.toStringAsFixed(2)} ${Translate.get('rating')}"
-                                      : Translate.get('noRatings'),
-                                  style: CustomTextStyle.size14Weight400Text(
-                                    AppColors().secondaryTextColor,
-                                  ),
-                                );
-                              },
-                            ),
-                            const SizedBox(width: 25),
-                            SvgPicture.asset(
-                              "assets/svg/shopping-bag.svg",
-                            ),
-                            const SizedBox(width: 10),
-                            BlocBuilder<FoodBloc, FoodState>(
-                              builder: (context, state) {
-                                if (state is OrderCountFetching) {
-                                  return const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: AppColors.primaryColor,
-                                    ),
-                                  );
-                                } else if (state is OrderCountFetched) {
-                                  return Text(
-                                    "${state.count} ${Translate.get('orderCount')}",
-                                    style: CustomTextStyle.size14Weight400Text(
-                                      AppColors().secondaryTextColor,
-                                    ),
-                                  );
-                                }
-                                return Text(
-                                  "0 ${Translate.get('orderCount')}",
-                                  style: CustomTextStyle.size14Weight400Text(
-                                    AppColors().secondaryTextColor,
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
+                      const SizedBox(height: 12),
+                      // title centered
+                      Center(
+                        child: Text(
+                          widget.food.name,
+                          style: CustomTextStyle.size27Weight600Text(),
+                          textAlign: TextAlign.center,
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 16),
+                      Center(
+                        child: Text(
+                          Translate.get('description'),
+                          style: CustomTextStyle.size20Weight600Text(),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
 
-                      // Text(
-                      //   Translate.get('description'),
-                      // ),
                       Text(
                         widget.food.description.isNotEmpty
                             ? widget.food.description
@@ -256,18 +263,31 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                               ? null
                               : AppColors().secondaryTextColor,
                         ),
-                        textAlign: widget.food.description.isNotEmpty
-                            ? TextAlign.right
-                            : TextAlign.center,
+                        textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 24),
+
+                      // Price big and blue
+                      Center(
+                        child: FormattedPriceText(
+                          amount: widget.food.price,
+                          style: CustomTextStyle.size22Weight600Text(
+                                  AppColors.primaryColor)
+                              .copyWith(fontSize: 26),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
 
                       // allergens
-                      widget.food.allergens.isNotEmpty?  Text(
-                        Translate.get('allergens'),
-                        style: CustomTextStyle.size18Weight600Text(),
-                      ):SizedBox(),
-                      widget.food.allergens.isNotEmpty?  const SizedBox(height: 10):SizedBox(),
+                      widget.food.allergens.isNotEmpty
+                          ? Text(
+                              Translate.get('allergens'),
+                              style: CustomTextStyle.size18Weight600Text(),
+                            )
+                          : SizedBox(),
+                      widget.food.allergens.isNotEmpty
+                          ? const SizedBox(height: 10)
+                          : SizedBox(),
                       widget.food.allergens.isNotEmpty
                           ? ListView.builder(
                               shrinkWrap: true,
@@ -299,7 +319,6 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                       //         ),
                       //       ),
 
-
                       // testimonials
 
                       BlocBuilder<TestimonialBloc, TestimonialState>(
@@ -312,16 +331,15 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                           }
 
                           if (testimonials.isEmpty) {
-
-                            return SizedBox();
-                              Center(
-                              child: Text(
-                                Translate.get('noTestimonialsAvailable'),
-                                style: CustomTextStyle.size14Weight400Text(
-                                  AppColors().secondaryTextColor,
-                                ),
-                              ),
-                            );
+                            return SizedBox.shrink();
+                            // return Center(
+                            //   child: Text(
+                            //     Translate.get('noTestimonialsAvailable'),
+                            //     style: CustomTextStyle.size14Weight400Text(
+                            //       AppColors().secondaryTextColor,
+                            //     ),
+                            //   ),
+                            // );
                           }
 
                           return Column(

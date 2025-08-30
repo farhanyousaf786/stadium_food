@@ -41,7 +41,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     if (widget.order.id != null) {
       context.read<OrderDetailBloc>().add(FetchOrderDetail(widget.order.id!));
     }
-   // _getCurrentLocation();
+    // _getCurrentLocation();
   }
 
   Future<void> _getCurrentLocation() async {
@@ -75,307 +75,366 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         final order = state is OrderDetailLoaded ? state.order : widget.order;
         return Scaffold(
           backgroundColor: AppColors.bgColor,
-          body: SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const CustomBackButton(color: AppColors.primaryDarkColor,),
-                        order.status.index != 3
-                            ? InkWell(
-                                onTap: () async {
-                                  final querySnapshot = await FirebaseFirestore
-                                      .instance
-                                      .collection('users')
-                                      .where('shopsId',
-                                          arrayContains: order.shopId)
-                                      .limit(1)
-                                      .get();
+          body: Stack(
+            children: [
+              Container(
+                height: 300,
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/png/order_detail_bg.png'),
+                    fit: BoxFit.fill,
+                  ),
+                ),
+              ),
+              SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.only(left: 20, right: 20, top: MediaQuery
+                      .of(context)
+                      .padding
+                      .top + 20, bottom: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const CustomBackButton(
+                            color: Colors.white,
+                          ),
+                          order.status.index != 3
+                              ? InkWell(
+                            onTap: () async {
+                              final querySnapshot = await FirebaseFirestore
+                                  .instance
+                                  .collection('users')
+                                  .where('shopsId',
+                                  arrayContains: order.shopId)
+                                  .limit(1)
+                                  .get();
 
-                                  if (querySnapshot.docs.isEmpty) {
-                                    if (context.mounted) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                            content: Text(Translate.get(
-                                                'shopOwnerNotFound'))),
-                                      );
-                                    }
-                                    return;
-                                  }
+                              if (querySnapshot.docs.isEmpty) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(
+                                    SnackBar(
+                                        content: Text(Translate.get(
+                                            'shopOwnerNotFound'))),
+                                  );
+                                }
+                                return;
+                              }
 
-                                  final shopUser = ShopUser.fromMap(
-                                      querySnapshot.docs.first.data());
-                                  if (context.mounted) {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ChatDetailsScreen(
+                              final shopUser = ShopUser.fromMap(
+                                  querySnapshot.docs.first.data());
+                              if (context.mounted) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        ChatDetailsScreen(
                                           otherUser: shopUser,
                                         ),
-                                      ),
-                                    );
-                                  }
-                                },
-                                borderRadius: AppStyles.defaultBorderRadius,
-                                child: Container(
-                                  width: 45,
-                                  height: 45,
-                                  padding: const EdgeInsets.all(14),
-                                  decoration: BoxDecoration(
-                                    color:
-                                        AppColors.primaryColor.withOpacity(0.1),
-                                    borderRadius: AppStyles.defaultBorderRadius,
                                   ),
-                                  child: SvgPicture.asset(
-                                    "assets/svg/chat.svg",
-                                  ),
-                                ),
-                              )
-                            : SizedBox(),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "${Translate.get('order')} #${order.id}",
-                          style: CustomTextStyle.size22Weight600Text(),
-                        ),
-                        if (order.location != null &&
-                            order.customerLocation != null) ...[
-                          const SizedBox(height: 8),
-                          DeliveryDistanceTracker(
-                            distance: _locationService.calculateDistance(
-                              order.customerLocation!.latitude,
-                              order.customerLocation!.longitude,
-                              order.location!.latitude,
-                              order.location!.longitude,
-                            ),
-                            isDelivered: order.status == OrderStatus.delivered,
-                          ),
-                        ],
-                      ],
-                    ),
-                    // --- QR Code Section ---
-                    order.status.index != 3
-                        ? const SizedBox(height: 20)
-                        : SizedBox(),
-
-                    order.status.index != 3
-                        ? Center(
-                            child: QrImageView(
-                              data: order.orderCode ?? 'No Code',
-                              version: QrVersions.auto,
-                              size: 160,
-                              backgroundColor: Colors.white,
-                              eyeStyle: const QrEyeStyle(
-                                color: Colors.black,
-                                eyeShape: QrEyeShape.square,
+                                );
+                              }
+                            },
+                            borderRadius: AppStyles.defaultBorderRadius,
+                            child: Container(
+                              width: 50,
+                              height: 50,
+                              padding: const EdgeInsets.all(9),
+                              decoration: BoxDecoration(
+                                color:Colors.white.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.white.withOpacity(0.25)),
+                                boxShadow: [AppStyles.boxShadow7],
                               ),
-                              dataModuleStyle: const QrDataModuleStyle(
-                                color: Colors.black,
-                                dataModuleShape: QrDataModuleShape.square,
+
+                              child: SvgPicture.asset(
+                                "assets/svg/chat.svg",
+
                               ),
                             ),
                           )
-                        : SizedBox(),
-                    // --- End QR Code Section ---
-
-                    const SizedBox(height: 20),
-
-                    OrderStatusStepper(
-                      status: order.status,
-                      orderTime: order.createdAt?.toDate(),
-                      deliveryTime: order.deliveryTime?.toDate(),
-                    ),
-
-                    const SizedBox(height: 20),
-                    if (order.status == OrderStatus.delivered) ...[
-                      Row(
+                              : SizedBox(),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          if (!order.isTipAdded)
+                          Center(
+                            child: Text(
+                              "${Translate.get('order')} #${onlyDigits(
+                                  order.id ?? '87651')}",
+                              style: CustomTextStyle.size22Weight600Text(
+                                  Colors.white),
+                            ),
+                          ),
+                          if (order.location != null &&
+                              order.customerLocation != null) ...[
+                            const SizedBox(height: 8),
+                            DeliveryDistanceTracker(
+                              distance: _locationService.calculateDistance(
+                                order.customerLocation!.latitude,
+                                order.customerLocation!.longitude,
+                                order.location!.latitude,
+                                order.location!.longitude,
+                              ),
+                              isDelivered: order.status ==
+                                  OrderStatus.delivered,
+                            ),
+                          ],
+                        ],
+                      ),
+                      // --- QR Code Section ---
+                      order.status.index != 3
+                          ? const SizedBox(height: 20)
+                          : SizedBox(),
+
+                      order.status.index != 3
+                          ? Center(
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.5),
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            border: Border.all(
+                                color: Colors.white.withOpacity(0.6)),
+                            boxShadow: [AppStyles.boxShadow7],
+                          ),
+                          child: QrImageView(
+                            data: order.orderCode ?? 'No Code',
+                            version: QrVersions.auto,
+                            size: 160,
+                            backgroundColor: Colors.transparent,
+                            eyeStyle: const QrEyeStyle(
+                              color: AppColors.primaryDarkColor,
+                              eyeShape: QrEyeShape.square,
+                            ),
+                            dataModuleStyle: const QrDataModuleStyle(
+                              color: AppColors.primaryDarkColor,
+                              dataModuleShape: QrDataModuleShape.square,
+                            ),
+                          ),
+                        ),
+                      )
+                          : SizedBox(),
+                      // --- End QR Code Section ---
+
+                      const SizedBox(height: 20),
+
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+
+                          borderRadius: BorderRadius.all(Radius.circular(16)),
+
+                        ),
+                        child: OrderStatusStepper(
+                          status: order.status,
+                          orderTime: order.createdAt?.toDate(),
+                          deliveryTime: order.deliveryTime?.toDate(),
+                        ),
+                      ),
+                      if (order.status == OrderStatus.delivered) ...[
+                        const SizedBox(height: 20),
+                      ],
+
+                      if (order.status == OrderStatus.delivered) ...[
+                        Row(
+                          children: [
+                            if (!order.isTipAdded)
+                              Expanded(
+                                child: PrimaryButton(
+                                  onTap: () {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            TipScreen(orderId: order.id),
+                                      ),
+                                    );
+                                  },
+                                  text: Translate.get('addTip'),
+                                ),
+                              ),
+                            SizedBox(
+                              width: 5,
+                            ),
                             Expanded(
                               child: PrimaryButton(
                                 onTap: () {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          TipScreen(orderId: order.id),
-                                    ),
-                                  );
+                                  StoreUrlService.openStoreReview();
                                 },
-                                text: Translate.get('addTip'),
+                                text: Translate.get('feedbackUs'),
                               ),
                             ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Expanded(
-                            child: PrimaryButton(
-                              onTap: () {
-                                StoreUrlService.openStoreReview();
-                              },
-                              text: Translate.get('feedbackUs'),
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
+                          ],
+                        )
+                      ],
 
-                    const SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
-                    Text(
-                      Translate.get('items'),
-                      style: CustomTextStyle.size18Weight600Text(),
-                    ),
-                    const SizedBox(height: 10),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: order.cart.length,
-                      itemBuilder: (context, index) {
-                        var item = order.cart[index];
+                      Text(
+                        Translate.get('items'),
+                        style: CustomTextStyle.size18Weight600Text(),
+                      ),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: order.cart.length,
+                        itemBuilder: (context, index) {
+                          var item = order.cart[index];
 
-                        return Container(
-                          margin: EdgeInsets.only(top: 10),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 10,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              ClipRRect(
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(15),
-                                  bottomLeft: Radius.circular(15),
+                          return Container(
+                            margin: EdgeInsets.only(top: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 5),
                                 ),
-                                child: item.images.isNotEmpty
-                                    ? Image.network(
-                                        item.images[0],
-                                        width: 120,
-                                        height: 120,
-                                        fit: BoxFit.cover,
-                                      )
-                                    : Container(
-                                        width: 120,
-                                        height: 120,
-                                        color: Colors.grey[200],
-                                        child: Icon(Icons.fastfood,
-                                            color: Colors.grey[400], size: 40),
-                                      ),
-                              ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            item.name,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          Spacer(),
-                                          Text(
-                                            "${Translate.get('quantity')} ${item.quantity}",
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        item.description,
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.grey[600],
-                                        ),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            '$symbol${item.price.toStringAsFixed(2)}',
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                              color: AppColors.primaryColor,
-                                            ),
-                                          ),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 4,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: AppColors.primaryColor
-                                                  .withOpacity(0.1),
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.watch_later_rounded,
-                                                  color: AppColors.primaryColor,
-                                                ),
-                                                Text(
-                                                  '${item.preparationTime} ${Translate.get('minutes')}',
-                                                  style: TextStyle(
-                                                    fontSize: 13,
-                                                    color:
-                                                        AppColors.primaryColor,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(15),
+                                    bottomLeft: Radius.circular(15),
+                                  ),
+                                  child: item.images.isNotEmpty
+                                      ? Image.network(
+                                    item.images[0],
+                                    width: 120,
+                                    height: 120,
+                                    fit: BoxFit.cover,
+                                  )
+                                      : Container(
+                                    width: 120,
+                                    height: 120,
+                                    color: Colors.grey[200],
+                                    child: Icon(Icons.fastfood,
+                                        color: Colors.grey[400], size: 40),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  ],
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(12),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              item.name,
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            Spacer(),
+                                            Text(
+                                              "${Translate.get(
+                                                  'quantity')} ${item
+                                                  .quantity}",
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Text(
+                                          item.description,
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey[600],
+                                          ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Row(
+                                          mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              '$symbol${item.price
+                                                  .toStringAsFixed(2)}',
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                                color: AppColors.primaryColor,
+                                              ),
+                                            ),
+                                            Container(
+                                              padding: const EdgeInsets
+                                                  .symmetric(
+                                                horizontal: 8,
+                                                vertical: 4,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: AppColors.primaryColor
+                                                    .withOpacity(0.1),
+                                                borderRadius:
+                                                BorderRadius.circular(12),
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.watch_later_rounded,
+                                                    color: AppColors
+                                                        .primaryColor,
+                                                  ),
+                                                  Text(
+                                                    '${item
+                                                        .preparationTime} ${Translate
+                                                        .get('minutes')}',
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      color:
+                                                      AppColors.primaryColor,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 20),
+
+                    ],
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
         );
       },
     );
+  }
+
+  String onlyDigits(String input) {
+    return input.replaceAll(RegExp(r'[^0-9]'), '');
   }
 }

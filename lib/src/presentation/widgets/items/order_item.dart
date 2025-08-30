@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/models/order.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
@@ -35,48 +36,17 @@ class OrderItem extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "${Translate.get('order')} #${order.id}",
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "${order.cart.length} ${Translate.get('items')}",
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  Text(
-                    "$symbol${order.total.toStringAsFixed(2)}",
+                    "${Translate.get('order')} #${onlyDigits(order.id??'837269')}",
                     style: const TextStyle(
                       fontSize: 18,
-                      color: AppColors.primaryColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    order.createdAt != null
-                      ? '${order.createdAt!.toDate().day}/${order.createdAt!.toDate().month}/${order.createdAt!.toDate().year}'
-                      : Translate.get('dateNotAvailable'),
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 12,
-                    ),
-                  ),
+
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
@@ -92,7 +62,73 @@ class OrderItem extends StatelessWidget {
                       ),
                     ),
                   ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Image.asset(
+                    "assets/png/ic_shop.png",
+                    height: 30,
+                    width: 30,
+                  ),
+                  SizedBox(width: 5,),
+                  Text(
+                 'Gate 4',
+                    style: TextStyle(
+                      color: AppColors().secondaryTextColor,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "${order.cart.length} ${Translate.get('items')}",
+                    style:  TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors().secondaryTextColor,
+                    ),
+                  ),
 
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      SvgPicture.asset(
+                        "assets/svg/ic_date.svg",
+                        height: 23,
+                        width: 23,
+                      ),
+                      SizedBox(width: 5,),
+                      Text(
+                        order.createdAt != null
+                          ? '${order.createdAt!.toDate().day}/${order.createdAt!.toDate().month}/${order.createdAt!.toDate().year}'
+                          : Translate.get('dateNotAvailable'),
+                        style: TextStyle(
+                          color: AppColors().secondaryTextColor,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  Text(
+                    "$symbol${order.total.toStringAsFixed(2)}",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      color: AppColors.primaryColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -101,6 +137,11 @@ class OrderItem extends StatelessWidget {
       ),
     );
   }
+
+  String onlyDigits(String input) {
+    return input.replaceAll(RegExp(r'[^0-9]'), '');
+  }
+
 }
 
 class OrderItemShimmer extends StatelessWidget {

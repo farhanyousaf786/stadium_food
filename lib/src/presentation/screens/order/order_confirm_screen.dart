@@ -28,6 +28,7 @@ import '../../../data/repositories/order_repository.dart';
 import '../../../data/services/firebase_storage.dart';
 import '../../../data/services/currency_service.dart';
 import '../../utils/app_styles.dart';
+import '../../widgets/buttons/primary_button.dart';
 
 
 class OrderConfirmScreen extends StatefulWidget {
@@ -345,89 +346,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       },
       child: Scaffold(
         backgroundColor: AppColors.bgColor,
-        bottomNavigationBar: BlocBuilder<OrderBloc, OrderState>(
-          builder: (context, state) {
-            return PriceInfoWidget(
-              // onTap: () async {
-              //   // Check if user is logged in
-              //   final currentUser = FirebaseAuth.instance.currentUser;
-              //   if (currentUser == null) {
-              //     // Show login/signup dialog
-              //     _showAuthDialog(context);
-              //   } else {
-              //     // Check if image is selected
-              //     if (_image != null) {
-              //       // Show loading
-              //       showDialog(
-              //         context: context,
-              //         barrierDismissible: false,
-              //         builder: (context) => const LoadingIndicator(),
-              //       );
-              //
-              //       try {
-              //         // Upload image to firebase storage
-              //         final uploadedImageUrl =
-              //             await _firebaseStorageService.uploadImage(
-              //           "tickets/${DateTime.now().millisecondsSinceEpoch}",
-              //           File(_image!.path),
-              //         );
-              //
-              //         // Hide loading
-              //         Navigator.of(context).pop();
-              //
-              //         // Create seat info with uploaded image URL
-              //         final seatInfo = {
-              //           'ticketImage': uploadedImageUrl,
-              //           'row': '',
-              //           'seatNo': '',
-              //           'stand': '',
-              //           'entrance': '',
-              //           'area': '',
-              //           'seatDetails': '',
-              //         };
-              //
-              //         //  makePayment(OrderRepository.total, seatInfo);
-              //         BlocProvider.of<OrderBloc>(context).add(
-              //           CreateOrder(
-              //             seatInfo: seatInfo,
-              //           ),
-              //         );
-              //       } catch (e) {
-              //         // Hide loading
-              //         Navigator.of(context).pop();
-              //
-              //         ScaffoldMessenger.of(context).showSnackBar(
-              //           SnackBar(
-              //             content: Text(Translate.get('imageUploadError')),
-              //             backgroundColor: AppColors.errorColor,
-              //           ),
-              //         );
-              //       }
-              //     }
-              //     // If no image, validate and use text fields
-              //     else if (_formKey.currentState!.validate()) {
-              //       final seatInfo = {
-              //         'ticketImage': '',
-              //         'row': _rowController.text,
-              //         'seatNo': _seatNoController.text,
-              //         'area': _areaController.text,
-              //         'entrance': _entranceController.text,
-              //         'stand': _standController.text,
-              //         'seatDetails': _seatDetailsController.text,
-              //       };
-              //
-              //       //   makePayment(OrderRepository.total, seatInfo);
-              //       BlocProvider.of<OrderBloc>(context).add(
-              //         CreateOrder(
-              //           seatInfo: seatInfo,
-              //         ),
-              //       );
-              //     }
-              //   }
-              // },
-            );
-          },
-        ),
+
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
@@ -741,6 +660,113 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                         ),
 
                         const SizedBox(height: 20),
+
+                BlocBuilder<OrderBloc, OrderState>(
+                    builder: (context, state) {
+
+                      return Column(
+                        children: [
+                          PriceInfoWidget(),
+                          const SizedBox(height: 20),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 30),
+                            child: PrimaryButton(
+                                text: Translate.get('placeOrder'),
+                                onTap: () async {
+                                  if (OrderRepository.cart.isEmpty) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content:
+                                        Text(Translate.get('cartEmpty')),
+                                        backgroundColor: AppColors.errorColor,
+                                      ),
+                                    );
+                                    return;
+                                  }
+
+                                    // Check if user is logged in
+                                    final currentUser = FirebaseAuth.instance.currentUser;
+                                    if (currentUser == null) {
+                                      // Show login/signup dialog
+                                      _showAuthDialog(context);
+                                    } else {
+                                      // Check if image is selected
+                                      if (_image != null) {
+                                        // Show loading
+                                        showDialog(
+                                          context: context,
+                                          barrierDismissible: false,
+                                          builder: (context) => const LoadingIndicator(),
+                                        );
+
+                                        try {
+                                          // Upload image to firebase storage
+                                          final uploadedImageUrl =
+                                              await _firebaseStorageService.uploadImage(
+                                            "tickets/${DateTime.now().millisecondsSinceEpoch}",
+                                            File(_image!.path),
+                                          );
+
+                                          // Hide loading
+                                          Navigator.of(context).pop();
+
+                                          // Create seat info with uploaded image URL
+                                          final seatInfo = {
+                                            'ticketImage': uploadedImageUrl,
+                                            'row': '',
+                                            'seatNo': '',
+                                            'stand': '',
+                                            'entrance': '',
+                                            'area': '',
+                                            'seatDetails': '',
+                                          };
+
+                                          //  makePayment(OrderRepository.total, seatInfo);
+                                          BlocProvider.of<OrderBloc>(context).add(
+                                            CreateOrder(
+                                              seatInfo: seatInfo,
+                                            ),
+                                          );
+                                        } catch (e) {
+                                          // Hide loading
+                                          Navigator.of(context).pop();
+
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text(Translate.get('imageUploadError')),
+                                              backgroundColor: AppColors.errorColor,
+                                            ),
+                                          );
+                                        }
+                                      }
+                                      // If no image, validate and use text fields
+                                      else if (_formKey.currentState!.validate()) {
+                                        final seatInfo = {
+                                          'ticketImage': '',
+                                          'row': _rowController.text,
+                                          'seatNo': _seatNoController.text,
+                                          'area': _areaController.text,
+                                          'entrance': _entranceController.text,
+                                          'stand': _standController.text,
+                                          'seatDetails': _seatDetailsController.text,
+                                        };
+
+                                        //   makePayment(OrderRepository.total, seatInfo);
+                                        BlocProvider.of<OrderBloc>(context).add(
+                                          CreateOrder(
+                                            seatInfo: seatInfo,
+                                          ),
+                                        );
+                                      }
+
+                                  }
+                                }),
+                          )
+                        ],
+                      );
+                    })
+
+
                       ],
                     ),
                   ),

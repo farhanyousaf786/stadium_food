@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/models/order_status.dart';
 import 'package:stadium_food/src/core/constants/colors.dart';
@@ -71,17 +72,17 @@ class OrderStatusStepper extends StatelessWidget {
       child: Row(
         children: [
           SizedBox(
-            width: 40,
+            width: 50,
             child: Column(
               children: [
                 Container(
-                  width: 24,
-                  height: 24,
+                  width: 30,
+                  height: 30,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isCompleted ? Colors.blue : Colors.grey[200],
+                    color: isCompleted ? AppColors.primaryDarkColor : Colors.grey[200],
                     border: Border.all(
-                      color: isCompleted ? Colors.blue : Colors.grey[300]!,
+                      color: isCompleted ? AppColors.primaryDarkColor : Colors.grey[300]!,
                       width: 2,
                     ),
                   ),
@@ -97,7 +98,7 @@ class OrderStatusStepper extends StatelessWidget {
                   Expanded(
                     child: Container(
                       width: 2,
-                      color: isCompleted ? Colors.blue : Colors.grey[300],
+                      color: isCompleted ? AppColors.primaryDarkColor : Colors.grey[300],
                     ),
                   ),
               ],
@@ -111,19 +112,23 @@ class OrderStatusStepper extends StatelessWidget {
                 Text(
                   label,
                   style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black87,
-                    fontWeight: FontWeight.w500,
+                    fontSize: 18,
+                    color: AppColors.textColor,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(
-                      Icons.access_time,
-                      size: 14,
-                      color: Colors.grey[600],
+                    SvgPicture.asset(
+                      "assets/svg/ic_timer.svg",
+                      colorFilter:  ColorFilter.mode(
+                        Colors.grey[600]!,
+                        BlendMode.srcIn,
+                      ),
+
                     ),
+
                     const SizedBox(width: 4),
                     Text(
                       timeText,
@@ -142,7 +147,7 @@ class OrderStatusStepper extends StatelessWidget {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.blue,
+                      color: AppColors.primaryDarkColor,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(

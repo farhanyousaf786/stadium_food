@@ -153,38 +153,25 @@ class _CartScreenState extends State<CartScreen> {
 
                 // Empty state
                 if (OrderRepository.cart.isEmpty)
-                  Padding(
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.7,
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Container(
-                      alignment: Alignment.center,
-                      height: MediaQuery.of(context).size.height * 0.35,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: AppStyles.largeBorderRadius,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SvgPicture.asset(
-                            "assets/svg/cart.svg",
-                            color: AppColors.starEmptyColor,
-                            height: 100,
-                            width: 100,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            Translate.get('cartEmpty'),
-                            style: CustomTextStyle.size22Weight600Text(),
-                          ),
-                        ],
-                      ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          "assets/png/empty_img.png",
+
+                          height: 100,
+                          width: 100,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          Translate.get('cartEmpty'),
+                          style: CustomTextStyle.size22Weight600Text(AppColors().secondaryTextColor),
+                        ),
+                      ],
                     ),
                   ),
 

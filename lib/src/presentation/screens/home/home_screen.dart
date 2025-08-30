@@ -9,6 +9,7 @@ import 'package:stadium_food/src/data/models/restaurant.dart';
 import 'package:stadium_food/src/data/repositories/order_repository.dart';
 import 'package:stadium_food/src/presentation/screens/home/profile_page/profile_screen.dart';
 import 'package:stadium_food/src/presentation/screens/order/cart_screen.dart';
+import 'package:stadium_food/src/presentation/screens/order/new_cart_screen.dart';
 import 'package:stadium_food/src/presentation/screens/order/order_list_screen.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_styles.dart';
@@ -193,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
             : _selectedIndex == 1
             ? const OrderListScreen()
             : _selectedIndex == 2
-            ? CartScreen(isFromHome: true)
+            ? NewCartScreen()
             : const ProfileScreen(),
       ),
     );

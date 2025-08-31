@@ -59,103 +59,101 @@ class _OrderListScreenState extends State<OrderListScreen>
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: AppColors.bgColor,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 30, 20, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(context),
-              const SizedBox(height: 20),
-              TabBar(
-                controller: _tabController,
-                indicatorColor: AppColors.primaryColor,
-                labelColor: AppColors.primaryColor,
-                unselectedLabelColor: Colors.grey,
-                tabs: [
-                  Tab(text: Translate.get('active')),
-                  Tab(text: Translate.get('completed')),
-                  // Tab(text: Translate.get('cancelled')),
+      body: Stack(
+        children: [
+          Image.asset(
+            'assets/png/order_bg.png',
+            width: double.infinity,
+            height: size.height * 0.25,
+            fit: BoxFit.fill,
+          ),
+
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 30, 20, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(context),
+                  const SizedBox(height: 36),
+                  Container(
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.5),
+                      shape: BoxShape.rectangle,
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      border: Border.all(
+                          color: Colors.white.withOpacity(0.6)),
+                      boxShadow: [AppStyles.boxShadow7],
+                    ),
+                    child: TabBar(
+                      controller: _tabController,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      dividerColor: Colors.transparent,
+                      indicator: BoxDecoration(
+                        color: AppColors.primaryDarkColor, // your primaryColor
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      labelColor: Colors.white,
+                      unselectedLabelColor: Colors.white,
+                      labelStyle: const TextStyle(fontWeight: FontWeight.w600),
+                      tabs:  [
+                            Tab(text: Translate.get('active')),
+                            Tab(text: Translate.get('completed')),
+                        //     // Tab(text: Translate.get('cancelled')),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 60),
+                  Expanded(
+                    child: BlocBuilder<OrderBloc, OrderState>(
+                      builder: (context, state) {
+                        if (state is OrdersFetching) {
+                          return _buildShimmer();
+                        } else if (state is OrdersFetched) {
+                          return TabBarView(
+                            controller: _tabController,
+                            children: [
+                              _buildOrderList(filterOrders(state.orders, 'active')),
+                              _buildOrderList(
+                                  filterOrders(state.orders, 'completed')),
+                            //   _buildOrderList(
+                            //       filterOrders(state.orders, 'cancelled')),
+                            ],
+                          );
+                        } else if (state is OrderFetchingError) {
+                          return Center(
+                            child: Text(
+                              state.message,
+                              style: CustomTextStyle.size16Weight400Text(
+                                AppColors.errorColor,
+                              ),
+                            ),
+                          );
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      },
+                    ),
+                  ),
                 ],
               ),
-              const SizedBox(height: 10),
-              Expanded(
-                child: BlocBuilder<OrderBloc, OrderState>(
-                  builder: (context, state) {
-                    if (state is OrdersFetching) {
-                      return _buildShimmer();
-                    } else if (state is OrdersFetched) {
-                      return TabBarView(
-                        controller: _tabController,
-                        children: [
-                          _buildOrderList(filterOrders(state.orders, 'active')),
-                          _buildOrderList(
-                              filterOrders(state.orders, 'completed')),
-                        //   _buildOrderList(
-                        //       filterOrders(state.orders, 'cancelled')),
-                        ],
-                      );
-                    } else if (state is OrderFetchingError) {
-                      return Center(
-                        child: Text(
-                          state.message,
-                          style: CustomTextStyle.size16Weight400Text(
-                            AppColors.errorColor,
-                          ),
-                        ),
-                      );
-                    } else {
-                      return const SizedBox.shrink();
-                    }
-                  },
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
 
   Widget _buildHeader(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(Translate.get('orders'),
-            style: CustomTextStyle.size25Weight600Text()),
-        InkWell(
-          onTap: () => Navigator.pushNamed(context, "/cart"),
-          borderRadius: AppStyles.defaultBorderRadius,
-          child: Container(
-            width: 45,
-            height: 45,
-            decoration: BoxDecoration(
-              color: AppColors.primaryColor.withOpacity(0.1),
-              borderRadius: AppStyles.defaultBorderRadius,
-              boxShadow: [AppStyles.boxShadow7],
-            ),
-            padding: const EdgeInsets.all(10),
-            child: Badge(
-              backgroundColor: AppColors.errorColor,
-              isLabelVisible: OrderRepository.cart.isNotEmpty,
-              label: Text(
-                OrderRepository.cart.length.toString(),
-                style: CustomTextStyle.size14Weight400Text(Colors.white),
-              ),
-              offset: const Offset(10, -10),
-              child: SvgPicture.asset(
-                "assets/svg/cart.svg",
-                colorFilter: const ColorFilter.mode(
-                  AppColors.primaryColor,
-                  BlendMode.srcIn,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
+    return Center(
+      child: Text(Translate.get('orders'),
+          textAlign: TextAlign.center,
+          style: CustomTextStyle.size25Weight600Text(Colors.white)),
     );
   }
 

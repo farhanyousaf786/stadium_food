@@ -30,7 +30,6 @@ import '../../../data/services/currency_service.dart';
 import '../../utils/app_styles.dart';
 import '../../widgets/buttons/primary_button.dart';
 
-
 class OrderConfirmScreen extends StatefulWidget {
   const OrderConfirmScreen({super.key});
 
@@ -267,7 +266,6 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                     Navigator.pop(context); // Close dialog
                     // Navigate to register without removing previous screens
                     Navigator.pushNamed(context, '/register');
-
                   },
                   child: Text(
                     Translate.get('createAccount'),
@@ -302,6 +300,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return BlocListener<OrderBloc, OrderState>(
       listener: (context, state) {
         if (state is OrderCreated) {
@@ -320,7 +319,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
             Navigator.pushNamedAndRemoveUntil(
               context,
               "/home",
-                  (route) => false,
+              (route) => false,
             );
           });
         } else if (state is OrderCreatingError) {
@@ -346,434 +345,467 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       },
       child: Scaffold(
         backgroundColor: AppColors.bgColor,
-
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const CustomBackButton(color: AppColors.primaryDarkColor,),
-                  const SizedBox(height: 24),
-                  Text(
-                    Translate.get('orderConfirmTitle'),
-                    style: CustomTextStyle.size18Weight600Text(),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    Translate.get('orderConfirmSubtitle'),
-                    style: CustomTextStyle.size14Weight400Text(
-                      AppColors().secondaryTextColor,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        Text(
-                          Translate.get('uploadTicketTitle'),
-                          style: CustomTextStyle.size14Weight400Text(
-                            AppColors().secondaryTextColor,
+        body: SingleChildScrollView(
+          child: Stack(
+            children: [
+              Image.asset(
+                'assets/png/order_confirm_bg.png',
+                width: double.infinity,
+                height: size.height * 0.43,
+                fit: BoxFit.fill,
+              ),
+          
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const CustomBackButton(
+                            color: Colors.white,
                           ),
-                        ),
-                        const SizedBox(height: 16),
 
-                        _image != null
-                            ? Center(
-                                child: Container(
-                                  width: 250,
-                                  height: 250,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    boxShadow: [AppStyles.boxShadow7],
-                                    borderRadius: AppStyles.largeBorderRadius,
-                                  ),
-                                  child: Stack(
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius:
-                                            AppStyles.largeBorderRadius,
-                                        child: Image.file(
-                                          File(_image!.path),
-                                          width: 250,
-                                          height: 250,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      Positioned(
-                                        top: 10,
-                                        right: 10,
-                                        child: InkWell(
-                                          onTap: () {
-                                            setState(() {
-                                              _image = null;
-                                            });
-                                          },
-                                          child: Container(
-                                            width: 30,
-                                            height: 30,
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  Colors.white.withOpacity(0.5),
-                                              borderRadius:
-                                                  AppStyles.largeBorderRadius,
-                                            ),
-                                            child: const Icon(
-                                              Icons.close,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                            : imageUrl != ""
+                          Expanded(
+                            child: Text(
+
+
+                              'Select your occasion',
+                              textAlign: TextAlign.center,
+                              style: CustomTextStyle.size18Weight600Text( Colors.white,),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+
+                      Text(
+                        textAlign: TextAlign.center,
+                        'Please provide your seat information to complete the order',
+                        style: CustomTextStyle.size16Weight400Text(
+                          Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            Text(
+                              Translate.get('uploadTicketTitle'),
+                              style: CustomTextStyle.size16Weight600Text(
+                                Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+          
+                            _image != null
                                 ? Center(
-                                    child: Container(
-                                      width: 250,
-                                      height: 250,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        boxShadow: [AppStyles.boxShadow7],
-                                        borderRadius:
-                                            AppStyles.largeBorderRadius,
+                              child: Container(
+                                width: 250,
+                                height: 250,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.5),
+                                  shape: BoxShape.rectangle,
+                                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                                  border: Border.all(
+                                      color: Colors.white.withOpacity(0.6)),
+                                  boxShadow: [AppStyles.boxShadow7],
+                                ),
+                                child: Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius:
+                                      AppStyles.largeBorderRadius,
+                                      child: Image.file(
+                                        File(_image!.path),
+                                        width: 250,
+                                        height: 250,
+                                        fit: BoxFit.cover,
                                       ),
-                                      child: Stack(
-                                        children: [
-                                          ClipRRect(
+                                    ),
+                                    Positioned(
+                                      top: 10,
+                                      right: 10,
+                                      child: InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            _image = null;
+                                          });
+                                        },
+                                        child: Container(
+                                          width: 30,
+                                          height: 30,
+                                          decoration: BoxDecoration(
+                                            color:
+                                            Colors.white.withOpacity(0.5),
                                             borderRadius:
-                                                AppStyles.largeBorderRadius,
-                                            child: Image.network(
-                                              imageUrl,
-                                              width: 250,
-                                              height: 250,
-                                              fit: BoxFit.cover,
-                                              errorBuilder: (context, error,
-                                                      stackTrace) =>
-                                                  const Center(
-                                                child: Icon(
-                                                  Icons.error,
-                                                  color: Colors.red,
-                                                ),
-                                              ),
-                                            ),
+                                            AppStyles.largeBorderRadius,
                                           ),
-                                          Positioned(
-                                            top: 10,
-                                            right: 10,
-                                            child: InkWell(
-                                              onTap: () {
-                                                setState(() {
-                                                  imageUrl = "";
-                                                });
-                                              },
-                                              child: Container(
-                                                width: 30,
-                                                height: 30,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white
-                                                      .withOpacity(0.5),
-                                                  borderRadius: AppStyles
-                                                      .largeBorderRadius,
-                                                ),
-                                                child: const Icon(
-                                                  Icons.close,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            ),
+                                          child: const Icon(
+                                            Icons.close,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                                : imageUrl != ""
+                                ? Center(
+                              child: Container(
+                                width: 250,
+                                height: 250,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.5),
+                                  shape: BoxShape.rectangle,
+                                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                                  border: Border.all(
+                                      color: Colors.white.withOpacity(0.6)),
+                                  boxShadow: [AppStyles.boxShadow7],
+                                ),
+                                child: Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius:
+                                      AppStyles.largeBorderRadius,
+                                      child: Image.network(
+                                        imageUrl,
+                                        width: 250,
+                                        height: 250,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error,
+                                            stackTrace) =>
+                                        const Center(
+                                          child: Icon(
+                                            Icons.error,
+                                            color: Colors.red,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 10,
+                                      right: 10,
+                                      child: InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            imageUrl = "";
+                                          });
+                                        },
+                                        child: Container(
+                                          width: 30,
+                                          height: 30,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white
+                                                .withOpacity(0.5),
+                                            borderRadius: AppStyles
+                                                .largeBorderRadius,
+                                          ),
+                                          child: const Icon(
+                                            Icons.close,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                                : Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 20),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.5),
+                                      shape: BoxShape.rectangle,
+                                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                                      border: Border.all(
+                                          color: Colors.white.withOpacity(0.6)),
+                                      boxShadow: [AppStyles.boxShadow7],
+                                    ),
+                                    child: InkWell(
+                                      onTap: () {
+                                        _pickImageFromGallery();
+                                      },
+                                      borderRadius:
+                                      AppStyles.largeBorderRadius,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                        children: [
+                                          SvgPicture.asset(
+                                            "assets/svg/gallery.svg",
+                                          ),
+                                          const SizedBox(height: 10),
+                                          Text(
+                                            Translate.get(
+                                                'uploadFromGallery'),
+                                            style: CustomTextStyle
+                                                .size14Weight400Text(Colors.white),
                                           ),
                                         ],
                                       ),
                                     ),
-                                  )
-                                : Row(
-                                    children: [
-                                      Expanded(
-                                        child: Ink(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 20),
-                                          decoration: BoxDecoration(
-                                            color: AppColors().cardColor,
-                                            boxShadow: [AppStyles.boxShadow7],
-                                            borderRadius:
-                                                AppStyles.largeBorderRadius,
-                                          ),
-                                          child: InkWell(
-                                            onTap: () {
-                                              _pickImageFromGallery();
-                                            },
-                                            borderRadius:
-                                                AppStyles.largeBorderRadius,
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                SvgPicture.asset(
-                                                  "assets/svg/gallery.svg",
-                                                ),
-                                                const SizedBox(height: 10),
-                                                Text(
-                                                  Translate.get(
-                                                      'uploadFromGallery'),
-                                                  style: CustomTextStyle
-                                                      .size14Weight400Text(),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 20),
-                                      // from camera
-                                      Expanded(
-                                        child: Ink(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 20),
-                                          decoration: BoxDecoration(
-                                            color: AppColors().cardColor,
-                                            boxShadow: [AppStyles.boxShadow7],
-                                            borderRadius:
-                                                AppStyles.largeBorderRadius,
-                                          ),
-                                          child: InkWell(
-                                            onTap: () {
-                                              _pickImageFromCamera();
-                                            },
-                                            borderRadius:
-                                                AppStyles.largeBorderRadius,
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                SvgPicture.asset(
-                                                  "assets/svg/camera.svg",
-                                                ),
-                                                const SizedBox(height: 10),
-                                                Text(
-                                                  Translate.get('frontCamera'),
-                                                  style: CustomTextStyle
-                                                      .size14Weight400Text(),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-
-                                      const SizedBox(height: 20),
-                                    ],
                                   ),
-                        const SizedBox(height: 20),
-
-                        // OR separator
-                        Row(
-                          children: [
-                            const Expanded(child: Divider(thickness: 1)),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                              child: Text(
-                                Translate.get('or'),
-                                style: CustomTextStyle.size14Weight600Text(
-                                  AppColors().secondaryTextColor,
                                 ),
-                              ),
-                            ),
-                            const Expanded(child: Divider(thickness: 1)),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _buildTextField(
-                                controller: _standController,
-                                label: Translate.get('standLabel'),
-                                hint: Translate.get('standHint'),
-                                icon: Icons.chair_rounded,
-                              ),
-                            ),
-
-
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: _buildTextField(
-
-                                controller: _entranceController,
-                                label: Translate.get('entranceLabel'),
-                                hint: Translate.get('entranceHint'),
-                                icon: Icons.info_outline,
-                              ),
-                            ),
-
-                          ],
-                        ),
-
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child:
-                              _buildTextField(
-                                controller: _areaController,
-                                label: Translate.get('areaLabel'),
-                                hint: Translate.get('areaHint'),
-                                icon: Icons.category_outlined,
-                              ),
-
-
-                            ),
-
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child:
-                              _buildTextField(
-                                controller: _rowController,
-                                label: Translate.get('rowLabel'),
-                                hint: Translate.get('rowHint'),
-                                icon: Icons.view_week_outlined,
-                              ),
-
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        _buildTextField(
-                          controller: _seatNoController,
-                          label: Translate.get('seatLabel'),
-                          hint: Translate.get('seatHint'),
-                          icon: Icons.chair_outlined,
-                          keyboardType: TextInputType.number,
-                        ),
-
-                        const SizedBox(height: 16),
-                        _buildTextField(
-                          controller: _seatDetailsController,
-                          label: Translate.get('additionalDetailsLabel'),
-                          hint: Translate.get('additionalDetailsHint'),
-                          icon: Icons.info_outline,
-                        ),
-
-                        const SizedBox(height: 20),
-
-                BlocBuilder<OrderBloc, OrderState>(
-                    builder: (context, state) {
-
-                      return Column(
-                        children: [
-                          PriceInfoWidget(),
-                          const SizedBox(height: 20),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 30),
-                            child: PrimaryButton(
-                                text: Translate.get('placeOrder'),
-                                onTap: () async {
-                                  if (OrderRepository.cart.isEmpty) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content:
-                                        Text(Translate.get('cartEmpty')),
-                                        backgroundColor: AppColors.errorColor,
-                                      ),
-                                    );
-                                    return;
-                                  }
-
-                                    // Check if user is logged in
-                                    final currentUser = FirebaseAuth.instance.currentUser;
-                                    if (currentUser == null) {
-                                      // Show login/signup dialog
-                                      _showAuthDialog(context);
-                                    } else {
-                                      // Check if image is selected
-                                      if (_image != null) {
-                                        // Show loading
-                                        showDialog(
-                                          context: context,
-                                          barrierDismissible: false,
-                                          builder: (context) => const LoadingIndicator(),
-                                        );
-
-                                        try {
-                                          // Upload image to firebase storage
-                                          final uploadedImageUrl =
-                                              await _firebaseStorageService.uploadImage(
-                                            "tickets/${DateTime.now().millisecondsSinceEpoch}",
-                                            File(_image!.path),
-                                          );
-
-                                          // Hide loading
-                                          Navigator.of(context).pop();
-
-                                          // Create seat info with uploaded image URL
-                                          final seatInfo = {
-                                            'ticketImage': uploadedImageUrl,
-                                            'row': '',
-                                            'seatNo': '',
-                                            'stand': '',
-                                            'entrance': '',
-                                            'area': '',
-                                            'seatDetails': '',
-                                          };
-
-                                          //  makePayment(OrderRepository.total, seatInfo);
-                                          BlocProvider.of<OrderBloc>(context).add(
-                                            CreateOrder(
-                                              seatInfo: seatInfo,
-                                            ),
-                                          );
-                                        } catch (e) {
-                                          // Hide loading
-                                          Navigator.of(context).pop();
-
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(
-                                              content: Text(Translate.get('imageUploadError')),
-                                              backgroundColor: AppColors.errorColor,
-                                            ),
-                                          );
-                                        }
-                                      }
-                                      // If no image, validate and use text fields
-                                      else if (_formKey.currentState!.validate()) {
-                                        final seatInfo = {
-                                          'ticketImage': '',
-                                          'row': _rowController.text,
-                                          'seatNo': _seatNoController.text,
-                                          'area': _areaController.text,
-                                          'entrance': _entranceController.text,
-                                          'stand': _standController.text,
-                                          'seatDetails': _seatDetailsController.text,
-                                        };
-
-                                        //   makePayment(OrderRepository.total, seatInfo);
-                                        BlocProvider.of<OrderBloc>(context).add(
-                                          CreateOrder(
-                                            seatInfo: seatInfo,
+                                const SizedBox(width: 20),
+                                // from camera
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 20),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.5),
+                                      shape: BoxShape.rectangle,
+                                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                                      border: Border.all(
+                                          color: Colors.white.withOpacity(0.6)),
+                                      boxShadow: [AppStyles.boxShadow7],
+                                    ),
+                                    child: InkWell(
+                                      onTap: () {
+                                        _pickImageFromCamera();
+                                      },
+                                      borderRadius:
+                                      AppStyles.largeBorderRadius,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                        children: [
+                                          SvgPicture.asset(
+                                            "assets/svg/camera.svg",
                                           ),
-                                        );
-                                      }
+                                          const SizedBox(height: 10),
+                                          Text(
+                                            Translate.get('frontCamera'),
+                                            style: CustomTextStyle
+                                                .size14Weight400Text(Colors.white),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+          
 
-                                  }
-                                }),
-                          )
-                        ],
-                      );
-                    })
-
-
-                      ],
-                    ),
+                              ],
+                            ),
+                            const SizedBox(height: 50),
+          
+                            // OR separator
+                            Row(
+                              children: [
+                                const Expanded(child: Divider(thickness: 1)),
+                                Padding(
+                                  padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                                  child: Text(
+                                    Translate.get('or'),
+                                    style: CustomTextStyle.size14Weight600Text(
+                                      AppColors().secondaryTextColor,
+                                    ),
+                                  ),
+                                ),
+                                const Expanded(child: Divider(thickness: 1)),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _buildTextField(
+                                    controller: _standController,
+                                    label: Translate.get('standLabel'),
+                                    hint: Translate.get('standHint'),
+                                    icon: Icons.chair_rounded,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: _buildTextField(
+                                    controller: _entranceController,
+                                    label: Translate.get('entranceLabel'),
+                                    hint: Translate.get('entranceHint'),
+                                    icon: Icons.info_outline,
+                                  ),
+                                ),
+                              ],
+                            ),
+          
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _buildTextField(
+                                    controller: _areaController,
+                                    label: Translate.get('areaLabel'),
+                                    hint: Translate.get('areaHint'),
+                                    icon: Icons.category_outlined,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: _buildTextField(
+                                    controller: _rowController,
+                                    label: Translate.get('rowLabel'),
+                                    hint: Translate.get('rowHint'),
+                                    icon: Icons.view_week_outlined,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            _buildTextField(
+                              controller: _seatNoController,
+                              label: Translate.get('seatLabel'),
+                              hint: Translate.get('seatHint'),
+                              icon: Icons.chair_outlined,
+                              keyboardType: TextInputType.number,
+                            ),
+          
+                            const SizedBox(height: 16),
+                            _buildTextField(
+                              controller: _seatDetailsController,
+                              label: Translate.get('additionalDetailsLabel'),
+                              hint: Translate.get('additionalDetailsHint'),
+                              icon: Icons.info_outline,
+                            ),
+          
+                            const SizedBox(height: 20),
+          
+                            BlocBuilder<OrderBloc, OrderState>(
+                                builder: (context, state) {
+                                  return Column(
+                                    children: [
+                                      PriceInfoWidget(),
+                                      const SizedBox(height: 20),
+                                      Padding(
+                                        padding:
+                                        const EdgeInsets.symmetric(horizontal: 30),
+                                        child: PrimaryButton(
+                                            text: Translate.get('placeOrder'),
+                                            onTap: () async {
+                                              if (OrderRepository.cart.isEmpty) {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                        Translate.get('cartEmpty')),
+                                                    backgroundColor:
+                                                    AppColors.errorColor,
+                                                  ),
+                                                );
+                                                return;
+                                              }
+          
+                                              // Check if user is logged in
+                                              final currentUser =
+                                                  FirebaseAuth.instance.currentUser;
+                                              if (currentUser == null) {
+                                                // Show login/signup dialog
+                                                _showAuthDialog(context);
+                                              } else {
+                                                // Check if image is selected
+                                                if (_image != null) {
+                                                  // Show loading
+                                                  showDialog(
+                                                    context: context,
+                                                    barrierDismissible: false,
+                                                    builder: (context) =>
+                                                    const LoadingIndicator(),
+                                                  );
+          
+                                                  try {
+                                                    // Upload image to firebase storage
+                                                    final uploadedImageUrl =
+                                                    await _firebaseStorageService
+                                                        .uploadImage(
+                                                      "tickets/${DateTime.now().millisecondsSinceEpoch}",
+                                                      File(_image!.path),
+                                                    );
+          
+                                                    // Hide loading
+                                                    Navigator.of(context).pop();
+          
+                                                    // Create seat info with uploaded image URL
+                                                    final seatInfo = {
+                                                      'ticketImage': uploadedImageUrl,
+                                                      'row': '',
+                                                      'seatNo': '',
+                                                      'stand': '',
+                                                      'entrance': '',
+                                                      'area': '',
+                                                      'seatDetails': '',
+                                                    };
+          
+                                                    //  makePayment(OrderRepository.total, seatInfo);
+                                                    BlocProvider.of<OrderBloc>(context)
+                                                        .add(
+                                                      CreateOrder(
+                                                        seatInfo: seatInfo,
+                                                      ),
+                                                    );
+                                                  } catch (e) {
+                                                    // Hide loading
+                                                    Navigator.of(context).pop();
+          
+                                                    ScaffoldMessenger.of(context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                        content: Text(Translate.get(
+                                                            'imageUploadError')),
+                                                        backgroundColor:
+                                                        AppColors.errorColor,
+                                                      ),
+                                                    );
+                                                  }
+                                                }
+                                                // If no image, validate and use text fields
+                                                else if (_formKey.currentState!
+                                                    .validate()) {
+                                                  final seatInfo = {
+                                                    'ticketImage': '',
+                                                    'row': _rowController.text,
+                                                    'seatNo': _seatNoController.text,
+                                                    'area': _areaController.text,
+                                                    'entrance':
+                                                    _entranceController.text,
+                                                    'stand': _standController.text,
+                                                    'seatDetails':
+                                                    _seatDetailsController.text,
+                                                  };
+          
+                                                  //   makePayment(OrderRepository.total, seatInfo);
+                                                  BlocProvider.of<OrderBloc>(context)
+                                                      .add(
+                                                    CreateOrder(
+                                                      seatInfo: seatInfo,
+                                                    ),
+                                                  );
+                                                }
+                                              }
+                                            }),
+                                      )
+                                    ],
+                                  );
+                                })
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
                   ),
-                  const SizedBox(height: 20),
-                ],
+                ),
               ),
-            ),
+            ],
+          
           ),
         ),
       ),

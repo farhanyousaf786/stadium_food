@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:stadium_food/src/core/constants/colors.dart';
+import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
 import 'package:stadium_food/src/services/tip_service.dart';
-import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/repositories/order_repository.dart';
 import 'package:stadium_food/src/data/services/currency_service.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/back_button.dart';
 import 'package:stadium_food/src/presentation/widgets/formatted_price_text.dart';
+
+import '../../utils/custom_text_style.dart';
 
 class TipScreen extends StatefulWidget {
   final String? orderId;
@@ -25,9 +27,9 @@ class TipScreen extends StatefulWidget {
 class _TipScreenState extends State<TipScreen> {
   late double _selectedTipPercentage;
   late double _tipAmount;
-  final List<double> _tipPercentages = [6, 10, 14, 18];
-   double _orderTotal=0.0;
+  double _orderTotal = 0.0;
   final TextEditingController _customTipController = TextEditingController();
+  final String tipSymbol = '\$';
 
   @override
   void initState() {
@@ -45,24 +47,8 @@ class _TipScreenState extends State<TipScreen> {
   }
 
   void _calculateTip() {
-    // Convert order total to USD for consistent tip calculation
-    final currentCurrency = CurrencyService.getCurrentCurrency();
-    double orderTotalInUSD = _orderTotal;
-    if (currentCurrency != 'USD') {
-      orderTotalInUSD =
-          CurrencyService.convertToUSD(_orderTotal, currentCurrency);
-    }
+    _tipAmount = (_orderTotal * _selectedTipPercentage / 100).roundToDouble();
 
-    // Calculate tip in USD
-    double tipInUSD =
-        (orderTotalInUSD * _selectedTipPercentage / 100).roundToDouble();
-
-    // Convert tip back to current currency if needed
-    if (currentCurrency != 'USD') {
-      _tipAmount = CurrencyService.convertFromUSD(tipInUSD, currentCurrency);
-    } else {
-      _tipAmount = tipInUSD;
-    }
   }
 
   void _updateTip(double percentage) {
@@ -74,264 +60,164 @@ class _TipScreenState extends State<TipScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
       backgroundColor: AppColors.bgColor,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomBackButton(color: AppColors.primaryColor,),
-              SizedBox(
-                height: 16,
-              ),
-              Text(
-                Translate.get('addTip'),
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              RichText(
-                text: TextSpan(
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 14,
-                  ),
-                  children: [
-                    TextSpan(
-                      text: '${Translate.get('tipDescription')} ',
-                    ),
-                    WidgetSpan(
-                      child: FormattedPriceText(
-                        amount: _orderTotal,
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                    TextSpan(
-                      text: ' ${Translate.get('beforeDiscounts')}',
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              Center(
-                child: Image.asset(
-                  'assets/png/delivery_illustration.png',
-                  height: 200,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: SingleChildScrollView(
+        child: Stack(
+          children: [
+            // Background image
+            Image.asset(
+              'assets/png/tip_bg.png',
+              width: double.infinity,
+              height: size.height * 0.6,
+              fit: BoxFit.fill,
+            ),
+        
+            // Main content
+            SafeArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    Translate.get('tipAmount'),
-                    style: TextStyle(
-                      color: Colors.grey[800],
-                      fontSize: 16,
-                    ),
+                  // Back button
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: CustomBackButton(color: Colors.white),
                   ),
-                  Row(
-                    children: [
-                      FormattedPriceText(
-                        amount: _tipAmount,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            backgroundColor: Colors.transparent,
-                            builder: (context) => Container(
-                              padding: EdgeInsets.only(
-                                bottom: 20,
-                                left: 20,
-                                right: 20,
-                                top: 20,
-                              ),
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20),
-                                ),
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    Translate.get('customTip'),
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    Translate.get('enterCustomTip').replaceAll(
-                                      '{amount}',
-                                      _orderTotal.toStringAsFixed(2),
-                                    ),
-                                    style: TextStyle(
-                                      color: Colors.grey[600],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 24),
-                                  TextField(
-                                    controller: _customTipController,
-                                    keyboardType: TextInputType.number,
-                                    decoration: InputDecoration(
-                                      hintText: Translate.get('enterCustomTip'),
-                                      filled: true,
-                                      fillColor: Colors.grey[100],
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide.none,
-                                      ),
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 12,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 24),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        child: Text(
-                                          Translate.get('cancelTip'),
-                                          style: TextStyle(
-                                            color: Colors.grey,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          final customAmount = double.tryParse(
-                                                  _customTipController.text) ??
-                                              0;
-                                          if (customAmount >= 0 &&
-                                              customAmount <= _orderTotal) {
-                                            setState(() {
-                                              _tipAmount = customAmount;
-                                              _selectedTipPercentage =
-                                                  (customAmount /
-                                                          _orderTotal *
-                                                          100)
-                                                      .roundToDouble();
-                                            });
-                                            Navigator.pop(context);
-                                          } else {
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              SnackBar(
-                                                content: Text(Translate.get(
-                                                    'invalidTipAmount')),
-                                              ),
-                                            );
-                                          }
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor:
-                                              AppColors.primaryColor,
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 24,
-                                            vertical: 12,
-                                          ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                        ),
-                                        child: Text(
-                                          Translate.get('confirmTip'),
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          Translate.get('customTip'),
-                          style: TextStyle(
-                            color: AppColors.primaryColor,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                height: 50,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 0),
-                  itemCount: _tipPercentages.length,
-                  itemBuilder: (context, index) {
-                    final percentage = _tipPercentages[index];
-                    final isSelected = percentage == _selectedTipPercentage;
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: ChoiceChip(
-                        checkmarkColor: Colors.white,
-                        label: Text(
-                          '${percentage.toInt()}%',
-                          style: TextStyle(
-                            color: isSelected ? Colors.white : Colors.black,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        selected: isSelected,
-                        selectedColor: AppColors.primaryColor,
-                        backgroundColor: Colors.grey[200],
-                        onSelected: (selected) {
-                          if (selected) {
-                            _updateTip(percentage);
-                          }
-                        },
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 12),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const Spacer(),
-              Column(
-                children: [
-                  SizedBox(
+        
+                  Container(
                     width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: () async {
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    margin: EdgeInsets.only(top: (size.height * 0.21)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          '100% of your tip goes to your courier.',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.textColor,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Text(
+                          'Tips are based on your order total of ₪$_orderTotal before any discounts or promotions',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: AppColors.textColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+        
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24.0, vertical: 16.0),
+                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(30), bottom: Radius.circular(30)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 10,
+                          offset: Offset(0, -5),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Your order total is',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        FormattedPriceText(
+                          amount: _orderTotal,
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          'Select a tip amount',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+        
+                        // Tip percentage buttons
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildTipButton(6, _selectedTipPercentage == 6),
+                            _buildTipButton(10, _selectedTipPercentage == 10),
+                            _buildTipButton(20, _selectedTipPercentage == 20),
+                            _buildTipButton(25, _selectedTipPercentage == 25),
+                          ],
+                        ),
+        
+                        const SizedBox(height: 24),
+        
+                        // Custom tip input
+                        GestureDetector(
+                          onTap: _showCustomTipDialog,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 16, horizontal: 16),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey[300]!),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.edit_outlined,
+                                    color: Colors.grey[600], size: 20),
+                                const SizedBox(width: 12),
+                                Text(
+                                  'Custom amount',
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                const Spacer(),
+                                FormattedPriceText(
+                                  amount: _tipAmount,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+        
+                        // Action buttons
+                      ],
+                    ),
+                  ),
+        
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40,vertical: 16),
+                    child: PrimaryButton(
+                      onTap: () async {
                         if (widget.orderId != null) {
                           // Update existing order tip
                           final tipService = TipService();
@@ -348,62 +234,222 @@ class _TipScreenState extends State<TipScreen> {
                           );
                         }
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+                      text: 'Add Tip',
+                    ),
+                  ),
+        
+        
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40,vertical: 8),
+                    child: Ink(
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
-                      child: Text(
-                        Translate.get('tipButton'),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                      child: InkWell(
+                        borderRadius: const BorderRadius.all(Radius.circular(10)),
+                        onTap: () {
+                          if (widget.orderId != null) {
+                            Navigator.pop(context);
+                          } else {
+                            // Skip tip for new order
+                            context.read<OrderBloc>().add(UpdateTipEvent(0));
+                            Navigator.pushNamed(
+                              context,
+                              '/order/confirm',
+                            );
+                          }
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(Radius.circular(10))),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 60,
+                            vertical: 20,
+                          ),
+                          child: Text(
+                            'Skip',
+                            textAlign: TextAlign.center,
+                            style: CustomTextStyle.size16Weight600Text(
+                              AppColors.textColor,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: TextButton(
-                      onPressed: () async {
-                        if (widget.orderId != null) {
-
-                          Navigator.pop(context);
-                        } else {
-                          // Skip tip for new order
-                          context
-                              .read<OrderBloc>()
-                              .add(UpdateTipEvent(0));
-                          Navigator.pushNamed(
-                            context,
-                            '/order/confirm',
-                          );
-                        }
-                      },
-                      style: TextButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          side: const BorderSide(color: AppColors.primaryColor),
-                        ),
-                      ),
-                      child: Text(
-                        Translate.get('skipButton'),
-                        style: TextStyle(
-                          color: AppColors.primaryColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
+        
                 ],
               ),
-            ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTipButton(int percentage, bool isSelected) {
+    return GestureDetector(
+      onTap: () => _updateTip(percentage.toDouble()),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primaryColor : Colors.grey[100],
+          borderRadius: BorderRadius.circular(50),
+          border: Border.all(
+            color: isSelected ? AppColors.primaryColor : Colors.grey[300]!,
+            width: 1.5,
           ),
+        ),
+        child: Center(
+          child: Text(
+            '$tipSymbol$percentage%',
+            style: TextStyle(
+              color: isSelected ? Colors.white : Colors.black87,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showCustomTipDialog() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const Text(
+              'Custom Tip',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Enter your custom tip amount',
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 14,
+              ),
+            ),
+            const SizedBox(height: 24),
+            TextField(
+              controller: _customTipController,
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              decoration: InputDecoration(
+                prefixText: '₪',
+                hintText: '0.00',
+                filled: true,
+                fillColor: Colors.grey[100],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
+              ),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 32),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      side: BorderSide(color: Colors.grey[300]!),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      final customAmount =
+                          double.tryParse(_customTipController.text) ?? 0;
+                      if (customAmount >= 0) {
+                        setState(() {
+                          _tipAmount = customAmount;
+                          if (_orderTotal > 0) {
+                            _selectedTipPercentage =
+                                (customAmount / _orderTotal * 100)
+                                    .roundToDouble();
+                          }
+                        });
+                        Navigator.pop(context);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Please enter a valid tip amount'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryColor,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      'Apply',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
         ),
       ),
     );

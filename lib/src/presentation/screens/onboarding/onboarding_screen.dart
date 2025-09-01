@@ -15,19 +15,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final List<OnboardingContent> _contents = [
     OnboardingContent(
-      title: 'Tap. Sit. Enjoy',
+      title: 'Tap. Sit. Order.',
       description:
           'Enjoy food, drinks and merch delivered right to your seat-so you can stay in the action, not in the line.',
       image: 'assets/png/onboarding_1.png',
     ),
     OnboardingContent(
-      title: 'Tap sit Munch',
+      title: 'Tap. Sit. Munch.',
       description:
           'Order from your phone and get everything you need without ever leaving your seat. Enjoy!',
       image: 'assets/png/onboarding_2.png',
     ),
     OnboardingContent(
-      title: 'Stay in action, not in lines',
+      title: 'Tap. Sit. Enjoy.',
       description:
           'Enjoy food, drinks and merch delivered right to your seat-so you can stay in the action, not in the line.',
       image: 'assets/png/onboarding_3.png',
@@ -202,7 +202,7 @@ class OnboardingPage extends StatelessWidget {
               content.title,
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 36,
+                fontSize: 50,
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Lato',
               ),

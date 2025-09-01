@@ -172,20 +172,20 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                   Colors.white),
                             ),
                           ),
-                          if (order.location != null &&
-                              order.customerLocation != null) ...[
-                            const SizedBox(height: 8),
-                            DeliveryDistanceTracker(
-                              distance: _locationService.calculateDistance(
-                                order.customerLocation!.latitude,
-                                order.customerLocation!.longitude,
-                                order.location!.latitude,
-                                order.location!.longitude,
-                              ),
-                              isDelivered: order.status ==
-                                  OrderStatus.delivered,
-                            ),
-                          ],
+                          // if (order.location != null &&
+                          //     order.customerLocation != null) ...[
+                          //   const SizedBox(height: 8),
+                          //   DeliveryDistanceTracker(
+                          //     distance: _locationService.calculateDistance(
+                          //       order.customerLocation!.latitude,
+                          //       order.customerLocation!.longitude,
+                          //       order.location!.latitude,
+                          //       order.location!.longitude,
+                          //     ),
+                          //     isDelivered: order.status ==
+                          //         OrderStatus.delivered,
+                          //   ),
+                          // ],
                         ],
                       ),
                       // --- QR Code Section ---
@@ -435,6 +435,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   }
 
   String onlyDigits(String input) {
-    return input.replaceAll(RegExp(r'[^0-9]'), '');
+    return input.length > 6 ? input.substring(0, 6) : input;
   }
 }

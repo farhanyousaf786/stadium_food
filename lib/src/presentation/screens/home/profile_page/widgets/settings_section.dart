@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:stadium_food/src/bloc/settings/settings_bloc.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/services/language_service.dart';
@@ -25,8 +26,10 @@ class SettingsSection extends StatefulWidget {
 }
 
 class _SettingsSectionState extends State<SettingsSection> {
+
+
   Widget _tile({
-    required IconData icon,
+    required String iconPath,
     required String title,
     required VoidCallback onTap,
   }) {
@@ -43,7 +46,12 @@ class _SettingsSectionState extends State<SettingsSection> {
         ),
         child: Row(
           children: [
-            Icon(icon, color: theme.iconTheme.color),
+            SvgPicture.asset(
+              "assets/svg/$iconPath",
+              height: 28,
+              width: 28,
+
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -142,13 +150,13 @@ class _SettingsSectionState extends State<SettingsSection> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _tile(
-            icon: Icons.language,
+            iconPath: 'ic_lang.svg',
             title: Translate.get('language'),
             onTap: _showLanguagePicker,
           ),
           const SizedBox(height: 12),
           _tile(
-            icon: Icons.info_outline,
+            iconPath: 'ic_about.svg',
             title: 'About app',
             onTap: () {
               showDialog(
@@ -168,7 +176,7 @@ class _SettingsSectionState extends State<SettingsSection> {
           ),
           const SizedBox(height: 12),
           _tile(
-            icon: Icons.description_outlined,
+            iconPath: 'ic_terms.svg',
             title: Translate.get('termsAndConditions'),
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -178,7 +186,7 @@ class _SettingsSectionState extends State<SettingsSection> {
           ),
           const SizedBox(height: 12),
           _tile(
-            icon: Icons.feedback_outlined,
+            iconPath: 'ic_feedback.svg',
             title: Translate.get('feedback'),
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -188,7 +196,7 @@ class _SettingsSectionState extends State<SettingsSection> {
           ),
           const SizedBox(height: 12),
           _tile(
-            icon: Icons.privacy_tip_outlined,
+            iconPath: 'ic_privacy.svg',
             title: 'Privacy policy',
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -198,7 +206,7 @@ class _SettingsSectionState extends State<SettingsSection> {
           ),
           const SizedBox(height: 12),
           _tile(
-            icon: Icons.report_problem_outlined,
+            iconPath: 'ic_report.svg',
             title: Translate.get('reportProblem'),
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(

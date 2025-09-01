@@ -139,7 +139,7 @@ class OrderItem extends StatelessWidget {
   }
 
   String onlyDigits(String input) {
-    return input.replaceAll(RegExp(r'[^0-9]'), '');
+    return input.length > 6 ? input.substring(0, 6) : input;
   }
 
 }

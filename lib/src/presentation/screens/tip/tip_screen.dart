@@ -29,7 +29,7 @@ class _TipScreenState extends State<TipScreen> {
   late double _tipAmount;
   double _orderTotal = 0.0;
   final TextEditingController _customTipController = TextEditingController();
-  final String tipSymbol = '\$';
+  final String tipSymbol = '₪';
 
   @override
   void initState() {

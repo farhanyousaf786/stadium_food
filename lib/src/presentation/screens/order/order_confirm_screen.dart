@@ -371,7 +371,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                             child: Text(
 
 
-                              'Select your occasion',
+                              'Select your seat',
                               textAlign: TextAlign.center,
                               style: CustomTextStyle.size18Weight600Text( Colors.white,),
                             ),

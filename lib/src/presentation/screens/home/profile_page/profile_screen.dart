@@ -159,288 +159,288 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ],
       child: Scaffold(
         backgroundColor: AppColors.bgColor,
-        body: SafeArea(
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Builder(
-                  builder: (context) {
-                    final size = MediaQuery.of(context).size;
-                    final headerHeight = size.height * 0.28;
-                    return Stack(
-                      children: [
-                        // Header background image
-                        SizedBox(
-                          height: headerHeight,
-                          width: double.infinity,
-                          child: Image.asset(
-                            'assets/png/profile_bg.png',
-                            fit: BoxFit.cover,
+        body: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Builder(
+                builder: (context) {
+                  final size = MediaQuery.of(context).size;
+                  final headerHeight = size.height * 0.28;
+                  return Stack(
+                    children: [
+                      // Header background image
+                      SizedBox(
+                        height: headerHeight,
+                        width: double.infinity,
+                        child: Image.asset(
+                          'assets/png/profile_bg.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+
+                      // Content card
+                      Container(
+                        margin: EdgeInsets.only(top: headerHeight - 40),
+                        padding: const EdgeInsets.fromLTRB(16, 56, 16, 16),
+                        decoration: const BoxDecoration(
+                          color: AppColors.bgColor,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(24),
+                            topRight: Radius.circular(24),
                           ),
                         ),
-
-                        // Content card
-                        Container(
-                          margin: EdgeInsets.only(top: headerHeight - 40),
-                          padding: const EdgeInsets.fromLTRB(16, 56, 16, 16),
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(24),
-                              topRight: Radius.circular(24),
-                            ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Name + email + Logout button row
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  // Spacing for avatar overlap
-                                  const SizedBox(width: 88),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          _user != null
-                                              ? _user!.fullName
-                                              : Translate.get('guestUser'),
-                                          style: CustomTextStyle.size18Weight600Text(
-                                            Colors.black87,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          _user != null
-                                              ? _user!.email
-                                              : Translate.get('signInPrompt'),
-                                          style: CustomTextStyle.size14Weight400Text(
-                                            Colors.blueGrey,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  if (_user != null)
-                                    ElevatedButton.icon(
-                                      onPressed: () {
-                                        BlocProvider.of<SettingsBloc>(context).add(Logout());
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.red,
-                                        foregroundColor: Colors.white,
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Name + email + Logout button row
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                // Spacing for avatar overlap
+                                const SizedBox(width: 88),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        _user != null
+                                            ? _user!.fullName
+                                            : Translate.get('guestUser'),
+                                        style: CustomTextStyle.size18Weight600Text(
+                                          Colors.black87,
                                         ),
                                       ),
-                                      icon: const Icon(Icons.logout, size: 18),
-                                      label: Text(Translate.get('logout')),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        _user != null
+                                            ? _user!.email
+                                            : Translate.get('signInPrompt'),
+                                        style: CustomTextStyle.size14Weight400Text(
+                                          Colors.blueGrey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                if (_user != null)
+                                  ElevatedButton.icon(
+                                    onPressed: () {
+                                      BlocProvider.of<SettingsBloc>(context).add(Logout());
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red,
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
                                     ),
+                                    icon: const Icon(Icons.logout, size: 18),
+                                    label: Text(Translate.get('logout')),
+                                  ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            // Stats
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.06),
+                                    blurRadius: 12,
+                                    offset: const Offset(0, 6),
+                                  ),
                                 ],
                               ),
-
-                              const SizedBox(height: 16),
-
-                              // Stats
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(16),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.06),
-                                      blurRadius: 12,
-                                      offset: const Offset(0, 6),
-                                    ),
-                                  ],
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                  child: BlocBuilder<OrderBloc, OrderState>(
-                                    builder: (context, stateOrder) {
-                                      String active = '...';
-                                      String completed = '...';
-                                      if (stateOrder is OrdersFetched) {
-                                        active = filterOrders(stateOrder.orders, 'activeOrders');
-                                        completed = filterOrders(stateOrder.orders, 'completedOrders');
-                                      }
-                                      return Row(
-                                        children: [
-                                          Expanded(
-                                            child: Column(
-                                              children: [
-                                                Text(
-                                                  active.padLeft(2, '0'),
-                                                  style: CustomTextStyle.size27Weight600Text(
-                                                    Colors.black87,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 4),
-                                                Text(
-                                                  Translate.get('activeOrders'),
-                                                  style: CustomTextStyle.size14Weight400Text(
-                                                    Colors.blueGrey,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          Container(
-                                            width: 1,
-                                            height: 36,
-                                            color: Colors.grey.shade300,
-                                          ),
-                                          Expanded(
-                                            child: Column(
-                                              children: [
-                                                Text(
-                                                  completed.padLeft(2, '0'),
-                                                  style: CustomTextStyle.size27Weight600Text(
-                                                    Colors.green,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 4),
-                                                Text(
-                                                  Translate.get('completedOrders'),
-                                                  style: CustomTextStyle.size14Weight400Text(
-                                                    Colors.blueGrey,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-
-                              const SizedBox(height: 24),
-
-                              // Settings Section
-                              Text(
-                                Translate.get('settings'),
-                                style: CustomTextStyle.size16Weight600Text(
-                                  Colors.blueGrey,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              _buildSettingsSection(context),
-
-                              const SizedBox(height: 24),
-
-                              // Favorite Foods Section
-                              Text(
-                                Translate.get('favoritesFoods'),
-                                style: CustomTextStyle.size18Weight600Text(
-                                  Theme.of(context).primaryColor,
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              BlocBuilder<ProfileBloc, ProfileState>(
-                                builder: (context, state) {
-                                  if (state is FetchingFavorites) {
-                                    return Container(
-                                      height: 220,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
-                                      child: const Center(child: LoadingIndicator()),
-                                    );
-                                  } else if (state is FavoritesFetched) {
-                                    if (state.favoriteFoods.isEmpty) {
-                                      return Container(
-                                        height: 220,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(16),
-                                        ),
-                                        child: Center(
-                                          child: Column(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                child: BlocBuilder<OrderBloc, OrderState>(
+                                  builder: (context, stateOrder) {
+                                    String active = '...';
+                                    String completed = '...';
+                                    if (stateOrder is OrdersFetched) {
+                                      active = filterOrders(stateOrder.orders, 'activeOrders');
+                                      completed = filterOrders(stateOrder.orders, 'completedOrders');
+                                    }
+                                    return Row(
+                                      children: [
+                                        Expanded(
+                                          child: Row(
                                             mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
-                                              Icon(
-                                                Icons.favorite_border,
-                                                size: 48,
-                                                color: Theme.of(context)
-                                                    .primaryColor
-                                                    .withOpacity(0.5),
-                                              ),
-                                              const SizedBox(height: 12),
                                               Text(
-                                                Translate.get('noFavorites'),
+                                                active.padLeft(2, '0'),
+                                                style: CustomTextStyle.size27Weight600Text(
+                                                  Colors.black87,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                Translate.get('activeOrders'),
                                                 style: CustomTextStyle.size16Weight400Text(
-                                                  Theme.of(context)
-                                                      .textTheme
-                                                      .bodyMedium
-                                                      ?.color
-                                                      ?.withOpacity(0.7),
+                                                  Colors.blueGrey,
                                                 ),
                                               ),
                                             ],
                                           ),
                                         ),
-                                      );
-                                    }
+                                        Container(
+                                          width: 1,
+                                          height: 36,
+                                          color: Colors.grey.shade300,
+                                        ),
+                                        Expanded(
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                completed.padLeft(2, '0'),
+                                                style: CustomTextStyle.size27Weight600Text(
+                                                  Colors.green,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                Translate.get('completedOrders'),
+                                                style: CustomTextStyle.size16Weight400Text(
+                                                  Colors.blueGrey,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
 
-                                    return SizedBox(
-                                      height: 280,
-                                      child: ListView.builder(
-                                        scrollDirection: Axis.horizontal,
-                                        itemCount: state.favoriteFoods.length,
-                                        itemBuilder: (context, index) {
-                                          return FoodItem(
-                                            food: state.favoriteFoods[index],
-                                            onTap: () {
-                                              Navigator.pushNamed(
-                                                context,
-                                                '/foods/detail',
-                                                arguments: state.favoriteFoods[index],
-                                              );
-                                            },
-                                          );
-                                        },
+                            const SizedBox(height: 24),
+
+                            // Settings Section
+                            Text(
+                              Translate.get('settings'),
+                              style: CustomTextStyle.size16Weight600Text(
+                                Colors.blueGrey,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            _buildSettingsSection(context),
+
+                            const SizedBox(height: 24),
+
+                            // Favorite Foods Section
+                            Text(
+                              Translate.get('favoritesFoods'),
+                              style: CustomTextStyle.size18Weight600Text(
+                                Theme.of(context).primaryColor,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            BlocBuilder<ProfileBloc, ProfileState>(
+                              builder: (context, state) {
+                                if (state is FetchingFavorites) {
+                                  return Container(
+                                    height: 220,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: const Center(child: LoadingIndicator()),
+                                  );
+                                } else if (state is FavoritesFetched) {
+                                  if (state.favoriteFoods.isEmpty) {
+                                    return Container(
+                                      height: 220,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      child: Center(
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.favorite_border,
+                                              size: 48,
+                                              color: Theme.of(context)
+                                                  .primaryColor
+                                                  .withOpacity(0.5),
+                                            ),
+                                            const SizedBox(height: 12),
+                                            Text(
+                                              Translate.get('noFavorites'),
+                                              style: CustomTextStyle.size16Weight400Text(
+                                                Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.color
+                                                    ?.withOpacity(0.7),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     );
                                   }
-                                  return const SizedBox();
-                                },
-                              ),
-                              const SizedBox(height: 24),
-                            ],
-                          ),
-                        ),
 
-                        // Avatar overlapping
-                        Positioned(
-                          top: headerHeight - 80,
-                          left: 24,
-                          child: CircleAvatar(
-                            radius: 40,
-                            backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
-                            backgroundImage: _user?.photoUrl != null
-                                ? NetworkImage(_user!.photoUrl)
-                                : null,
-                            child: _user?.photoUrl != null
-                                ? null
-                                : Icon(
-                                    Icons.person,
-                                    size: 40,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                          ),
+                                  return SizedBox(
+                                    height: 280,
+                                    child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: state.favoriteFoods.length,
+                                      itemBuilder: (context, index) {
+                                        return FoodItem(
+                                          food: state.favoriteFoods[index],
+                                          onTap: () {
+                                            Navigator.pushNamed(
+                                              context,
+                                              '/foods/detail',
+                                              arguments: state.favoriteFoods[index],
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  );
+                                }
+                                return const SizedBox();
+                              },
+                            ),
+                            const SizedBox(height: 24),
+                          ],
                         ),
-                      ],
-                    );
-                  },
-                ),
+                      ),
+
+                      // Avatar overlapping
+                      Positioned(
+                        top: headerHeight - 80,
+                        left: 24,
+                        child: CircleAvatar(
+                          radius: 40,
+                          backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                          backgroundImage: _user?.photoUrl != null
+                              ? NetworkImage(_user!.photoUrl)
+                              : null,
+                          child: _user?.photoUrl != null
+                              ? null
+                              : Icon(
+                                  Icons.person,
+                                  size: 40,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

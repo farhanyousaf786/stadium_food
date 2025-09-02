@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:stadium_food/src/core/constants/colors.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
 import 'package:stadium_food/src/services/tip_service.dart';
 import 'package:stadium_food/src/data/repositories/order_repository.dart';
@@ -94,7 +95,7 @@ class _TipScreenState extends State<TipScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          '100% of your tip goes to your courier.',
+                          Translate.get('tipDescription'),
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
@@ -105,7 +106,7 @@ class _TipScreenState extends State<TipScreen> {
                           height: 8,
                         ),
                         Text(
-                          'Tips are based on your order total of ₪$_orderTotal before any discounts or promotions',
+                          '${Translate.get('yourOrderTotalIs')} ₪$_orderTotal ${Translate.get('beforeDiscounts')}',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 16,
@@ -136,7 +137,7 @@ class _TipScreenState extends State<TipScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Your order total is',
+                          Translate.get('yourOrderTotalIs'),
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.grey[600],
@@ -152,7 +153,7 @@ class _TipScreenState extends State<TipScreen> {
                         ),
                         const SizedBox(height: 24),
                         Text(
-                          'Select a tip amount',
+                          Translate.get('selectTipAmount'),
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
@@ -190,7 +191,7 @@ class _TipScreenState extends State<TipScreen> {
                                     color: Colors.grey[600], size: 20),
                                 const SizedBox(width: 12),
                                 Text(
-                                  'Custom amount',
+                                  Translate.get('customAmount'),
                                   style: TextStyle(
                                     color: Colors.grey[600],
                                     fontSize: 16,
@@ -234,7 +235,7 @@ class _TipScreenState extends State<TipScreen> {
                           );
                         }
                       },
-                      text: 'Add Tip',
+                      text: Translate.get('tipButton'),
                     ),
                   ),
         
@@ -269,7 +270,7 @@ class _TipScreenState extends State<TipScreen> {
                             vertical: 20,
                           ),
                           child: Text(
-                            'Skip',
+                            Translate.get('skipButton'),
                             textAlign: TextAlign.center,
                             style: CustomTextStyle.size16Weight600Text(
                               AppColors.textColor,
@@ -342,8 +343,8 @@ class _TipScreenState extends State<TipScreen> {
                 ),
               ),
             ),
-            const Text(
-              'Custom Tip',
+            Text(
+              Translate.get('customTip'),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -351,7 +352,7 @@ class _TipScreenState extends State<TipScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Enter your custom tip amount',
+              Translate.get('enterCustomTip'),
               style: TextStyle(
                 color: Colors.grey[600],
                 fontSize: 14,
@@ -393,8 +394,8 @@ class _TipScreenState extends State<TipScreen> {
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    child: const Text(
-                      'Cancel',
+                    child: Text(
+                      Translate.get('cancelTip'),
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -421,8 +422,8 @@ class _TipScreenState extends State<TipScreen> {
                         Navigator.pop(context);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Please enter a valid tip amount'),
+                          SnackBar(
+                            content: Text(Translate.get('invalidTipAmount')),
                             backgroundColor: Colors.red,
                           ),
                         );
@@ -436,8 +437,8 @@ class _TipScreenState extends State<TipScreen> {
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'Apply',
+                    child: Text(
+                      Translate.get('apply'),
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,

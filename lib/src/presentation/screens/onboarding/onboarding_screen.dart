@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 import '../../../services/onboarding_service.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -15,21 +16,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final List<OnboardingContent> _contents = [
     OnboardingContent(
-      title: 'Tap. Sit. Order.',
-      description:
-          'Enjoy food, drinks and merch delivered right to your seat-so you can stay in the action, not in the line.',
+      title: Translate.get('onboarding_first_title'),
+      subTitle: Translate.get('onboarding_first_subtitle'),
+      description: Translate.get('onboarding_first_description'),
       image: 'assets/png/onboarding_1.png',
     ),
     OnboardingContent(
-      title: 'Tap. Sit. Munch.',
-      description:
-          'Order from your phone and get everything you need without ever leaving your seat. Enjoy!',
+      title: Translate.get('onboarding_second_title'),
+      subTitle: Translate.get('onboarding_second_subtitle'),
+      description: Translate.get('onboarding_second_description'),
       image: 'assets/png/onboarding_2.png',
     ),
     OnboardingContent(
-      title: 'Tap. Sit. Enjoy.',
-      description:
-          'Enjoy food, drinks and merch delivered right to your seat-so you can stay in the action, not in the line.',
+      title: Translate.get('onboarding_third_title'),
+      subTitle: Translate.get('onboarding_third_subtitle'),
+      description: Translate.get('onboarding_third_description'),
       image: 'assets/png/onboarding_3.png',
     ),
   ];
@@ -80,6 +81,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           )),
 
           Container(
+            width: double.infinity,
             padding: const EdgeInsets.only(top: 20, bottom: 50),
             decoration: const BoxDecoration(color: Colors.white),
             child: Column(
@@ -163,17 +165,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
 class OnboardingContent {
   final String title;
+  final String subTitle;
   final String description;
   final String image;
 
   OnboardingContent({
     required this.title,
+    required this.subTitle,
     required this.description,
     required this.image,
   });
 }
 
-class OnboardingPage extends StatelessWidget {
+class OnboardingPage extends StatefulWidget {
   final OnboardingContent content;
 
   const OnboardingPage({
@@ -182,7 +186,65 @@ class OnboardingPage extends StatelessWidget {
   });
 
   @override
+  State<OnboardingPage> createState() => _OnboardingPageState();
+}
+
+class _OnboardingPageState extends State<OnboardingPage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _headlineController;
+  late Animation<double> _headlineScaleAnimation;
+  late Animation<double> _headlineRotateAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _headlineController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
+
+    // Repeat with a gentle pause, like GoalScreen
+    _headlineController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        Future.delayed(const Duration(milliseconds: 1000), () {
+          if (mounted) _headlineController.reverse();
+        });
+      } else if (status == AnimationStatus.dismissed) {
+        Future.delayed(const Duration(milliseconds: 1000), () {
+          if (mounted) _headlineController.forward();
+        });
+      }
+    });
+
+    _headlineScaleAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _headlineController,
+      curve: Curves.elasticOut,
+    ));
+
+    _headlineRotateAnimation = Tween<double>(
+      begin: -0.1,
+      end: 0.0,
+    ).animate(CurvedAnimation(
+      parent: _headlineController,
+      curve: Curves.elasticOut,
+    ));
+
+    _headlineController.forward();
+  }
+
+  @override
+  void dispose() {
+    _headlineController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final content = widget.content;
     return Stack(
       children: [
         // Background image
@@ -193,23 +255,74 @@ class OnboardingPage extends StatelessWidget {
           ),
         ),
 
-        // Title higher up (like Figma design)
         Align(
           alignment: Alignment.center,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Text(
-              content.title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 50,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Lato',
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center, // 👈 Centers vertically
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Align(
+                alignment: Alignment.center,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: AnimatedBuilder(
+                    animation: _headlineController,
+                    builder: (context, child) {
+                      return Transform.scale(
+                        scale: _headlineScaleAnimation.value,
+                        child: Transform.rotate(
+                          angle: _headlineRotateAnimation.value,
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: TweenAnimationBuilder<double>(
+                      tween: Tween<double>(begin: 0.95, end: 1.05),
+                      duration: const Duration(milliseconds: 1500),
+                      curve: Curves.easeInOut,
+                      builder: (context, scale, child) {
+                        return Transform.scale(
+                          scale: scale,
+                          child: child,
+                        );
+                      },
+                      child: Text(
+                        content.title,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 50,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Lato',
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ),
               ),
-              textAlign: TextAlign.center,
-            ),
+
+              Align(
+                alignment: Alignment.center,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: Text(
+                    content.subTitle,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 25,
+                      // fontWeight: FontWeight.bold,
+                      fontFamily: 'Lato',
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
+        )
+        // Title higher up (like Figma design)
+
       ],
     );
   }

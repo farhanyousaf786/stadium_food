@@ -15,6 +15,7 @@ class AppTranslations {
       'entranceHint': 'Enter entrance number/name',
       'additionalDetailsLabel': 'Additional Details',
       'additionalDetailsHint': 'Any additional information about your seat',
+
       'areaLabel': 'Area',
       'areaHint': 'Enter area name/number',
       'standLabel': 'Stand',
@@ -148,6 +149,9 @@ class AppTranslations {
 
       'register_process_title': 'Complete Your Profile',
 
+      'register_process_subtitle':
+          'This data will be displayed in your account profile for security',
+
       'register_process_first_name': 'First name',
 
       'register_process_last_name': 'Last name',
@@ -228,10 +232,17 @@ class AppTranslations {
       'onboarding_first_title': 'Tap, Sit, \nEnjoy',
 
       'onboarding_first_description': 'Order from your phone and get everything you need \nwithout ever leaving your seat. Enjoy!',
+      'onboarding_first_subtitle': 'One small tap – a big experience',
 
       'onboarding_second_title': 'Skip the lines. Never \nMiss a Moment.',
 
       'onboarding_second_description': 'Enjoy food, drinks and merch delivered right to your seat - so \nyou can stay in the action, not the line.',
+      'onboarding_second_subtitle': 'Order with a tap – enjoy the game',
+
+      'onboarding_third_title': 'Tap. Sit. Enjoy.',
+
+      'onboarding_third_description': 'Enjoy food, drinks and merch delivered right to your seat-so you can stay in the action, not in the line.',
+      'onboarding_third_subtitle': '(No standing up. No waiting. No missing out)',
 
       'onboarding_button_next': 'Next',
 
@@ -289,11 +300,16 @@ class AppTranslations {
 
       'beforeDiscounts': 'before any discounts or promotions.',
 
+      'yourOrderTotalIs': 'Your order total is',
+
+      'selectTipAmount': 'Select a tip amount',
+
       'tipButton': 'Add Tip',
 
       'skipButton': 'Skip',
 
       'tipAmount': 'Tip Amount',
+      'customAmount': 'Custom amount',
 
       'customTip': 'Custom Tip',
 
@@ -305,6 +321,29 @@ class AppTranslations {
 
       'invalidTipAmount': 'Please enter a valid tip amount',
 
+      // Order Confirm Screen (EN)
+      'selectYourSeat': 'Select your seat',
+      'provideSeatInfo': 'Please provide your seat information to complete the order',
+      'uploadTicketTitle': 'Upload your ticket',
+      'uploadFromGallery': 'Upload from gallery',
+      'frontCamera': 'Front camera',
+      'or': 'OR',
+      // Removed duplicate standLabel/standHint (defined earlier)
+      // Duplicate seat/entrance/area labels and hints removed; earlier definitions retained
+      // Duplicate placeOrder and cartEmpty removed; using general definitions
+      'orderSuccess': 'Order placed successfully',
+      'imageUploadError': 'Failed to upload image. Please try again.',
+      'paymentSuccess': 'Payment Successful',
+      'paymentFailed': 'Payment Failed',
+      'selectPayment': 'Select a payment method',
+      'accountRequired': 'Account Required',
+      'loginOrRegister': 'Please login or register to place your order',
+      'login': 'Login',
+      'createAccount': 'Create Account',
+      'cancel': 'Cancel',
+      'pleaseEnter': 'Please enter',
+      'amount': 'Amount',
+
       'orderConfirmTitle': 'Confirm Your Order',
 
       'orderConfirmSubtitle':
@@ -312,53 +351,16 @@ class AppTranslations {
       'Please provide your seat information to complete the order',
 
 
-
       'detailsLabel': 'Additional Details',
 
       'detailsHint': 'Any special requests or notes (optional)',
 
-      'uploadTicketTitle': 'Upload Ticket',
-
       'uploadTicketDesc':
-
       'Upload your ticket image to automatically fill seat details',
-
       'uploadFromCamera': 'Take Photo',
-
-      'frontCamera': 'Front Camera',
-
-      'uploadFromGallery': 'Choose from Gallery',
-
       'ticketExtractSuccess': 'Ticket information extracted successfully',
-
       'ticketExtractError': 'Error processing ticket',
-
-      'imageUploadError': 'Failed to upload image. Please try again.',
-
-      'orderSuccess': 'Order created successfully',
-
-      'paymentSuccess': 'Payment Successful!',
-
-      'paymentFailed': 'Payment Failed',
-
-      'selectPayment': 'Select Payment Method',
-
-      'accountRequired': 'Account Required',
-
-      'loginOrRegister':
-
-      'You need to be logged in to place an order. Please login or create an account to continue.',
-
-      'login': 'Login',
-
-      'createAccount': 'Create Account',
-
-      'cancel': 'Cancel',
-
-      'or': 'OR',
-
       'noTicketInfoFound':
-
       'No ticket information found. Please try again or enter details manually.',
 
       'reviews': 'Reviews',
@@ -573,6 +575,12 @@ class AppTranslations {
 
       'feedback': 'Feedback',
 
+      'aboutApp': 'About app',
+
+      'privacyPolicy': 'Privacy Policy',
+
+      'aboutAppDescription': 'Fan Munch - Stadium Food Delivery App',
+
       'guestUser': 'Guest User',
 
 
@@ -772,6 +780,9 @@ class AppTranslations {
 
       'register_process_title': 'השלם את הפרופיל שלך',
 
+      'register_process_subtitle':
+          'נתונים אלה יוצגו בפרופיל החשבון שלך לצורך אבטחה',
+
       'register_process_first_name': 'שם פרטי',
 
       'register_process_last_name': 'שם משפחה',
@@ -852,10 +863,17 @@ class AppTranslations {
       'onboarding_first_title': "תשב. תזמין. תנשנש.",
 
       'onboarding_first_description': "נותנים לך להישאר במשחק.\nבלי תורים. בלי לחץ!",
+      'onboarding_first_subtitle': 'טאפ קטן – חוויה גדולה',
 
       'onboarding_second_title': "דלג על התורים. אל תפספס אף רגע!",
 
       'onboarding_second_description': "תהנה מאוכל, משקאות ומרצ'נדייז שיגיעו ישירות למושב שלך - \nכדי שתוכל להישאר באקשן, לא בתור.",
+      'onboarding_second_subtitle': 'הזמנה בנגיעה – המשחק ממשיך',
+
+      'onboarding_third_title': "תזמין. תשב. תהנה.",
+
+      'onboarding_third_description': "תהנה מאוכל, משקאות ומוצרים עד הכיסא שלך – \nכדי שתישאר במשחק, לא בתור.",
+      'onboarding_third_subtitle': '(בלי לקום. בלי לחכות. בלי לפספס)',
 
       'onboarding_button_next': "הבא",
 
@@ -943,11 +961,16 @@ class AppTranslations {
 
       'beforeDiscounts': 'לפני הנחות ומבצעים.',
 
+      'yourOrderTotalIs': 'סכום ההזמנה שלך הוא',
+
+      'selectTipAmount': 'בחר סכום טיפ',
+
       'tipButton': 'הוסף טיפ',
 
       'skipButton': 'דלג',
 
       'tipAmount': 'סכום הטיפ',
+      'customAmount': 'סכום מותאם אישית',
 
       'customTip': 'טיפ מותאם אישית',
 
@@ -959,6 +982,29 @@ class AppTranslations {
 
       'invalidTipAmount': 'אנא הזן סכום טיפ תקין',
 
+      // Order Confirm Screen (HE)
+      'selectYourSeat': 'בחר את המושב שלך',
+      'provideSeatInfo': 'אנא הזן את פרטי המושב שלך כדי להשלים את ההזמנה',
+      'uploadTicketTitle': 'העלה את הכרטיס שלך',
+      'uploadFromGallery': 'העלה מהגלריה',
+      'frontCamera': 'מצלמה קדמית',
+      'or': 'או',
+
+      'placeOrder': 'בצע הזמנה',
+
+      'orderSuccess': 'ההזמנה בוצעה בהצלחה',
+      'imageUploadError': 'העלאת התמונה נכשלה. נסה שוב.',
+      'paymentSuccess': 'התשלום בוצע בהצלחה',
+      'paymentFailed': 'התשלום נכשל',
+      'selectPayment': 'בחר שיטת תשלום',
+      'accountRequired': 'נדרשת התחברות',
+      'loginOrRegister': 'אנא התחבר או הירשם כדי לבצע הזמנה',
+      'login': 'התחבר',
+      'createAccount': 'צור חשבון',
+      'cancel': 'ביטול',
+      'pleaseEnter': 'אנא הזן',
+      'amount': 'סכום',
+
       'orderConfirmTitle': 'אשר את ההזמנה שלך',
 
       'orderConfirmSubtitle': 'אנא ספק את פרטי המושב שלך להשלמת ההזמנה',
@@ -967,47 +1013,12 @@ class AppTranslations {
 
       'detailsHint': 'בקשות מיוחדות או הערות (לא חובה)',
 
-      'uploadTicketTitle': 'העלה כרטיס',
-
       'uploadTicketDesc':
-
       'העלה את תמונת הכרטיס שלך למילוי אוטומטי של פרטי המושב',
-
-      'uploadFromCamera': 'מצלמה',
-
-      'frontCamera': 'מצלמה',
-
-      'uploadFromGallery': 'בחר מהגלריה',
 
       'ticketExtractSuccess': 'פרטי הכרטיס חולצו בהצלחה',
 
       'ticketExtractError': 'שגיאה בעיבוד הכרטיס',
-
-      'imageUploadError': 'העלאת התמונה נכשלה. אנא נסה שוב.',
-
-      'placeOrder': 'בצע הזמנה',
-
-      'orderSuccess': 'ההזמנה נוצרה בהצלחה',
-
-      'paymentSuccess': 'התשלום הצליח!',
-
-      'paymentFailed': 'התשלום נכשל',
-
-      'selectPayment': 'בחר אמצעי תשלום',
-
-      'accountRequired': 'נדרש חשבון',
-
-      'loginOrRegister':
-
-      'עליך להתחבר כדי לבצע הזמנה. אנא התחבר או צור חשבון חדש כדי להמשיך.',
-
-      'login': 'התחבר',
-
-      'createAccount': 'צור חשבון',
-
-      'cancel': 'ביטול',
-
-      'or': 'או',
 
       'noTicketInfoFound':
 
@@ -1184,6 +1195,12 @@ class AppTranslations {
       'termsAndConditions': 'תנאים והגבלות',
 
       'feedback': 'משוב',
+
+      'aboutApp': 'על האפליקציה',
+
+      'privacyPolicy': 'מדיניות פרטיות',
+
+      'aboutAppDescription': 'Fan Munch - אפליקציית משלוחי מזון באצטדיון',
 
       'guestUser': 'משתמש אורח',
 

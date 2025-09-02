@@ -51,6 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Stack(
               fit: StackFit.expand,
               children: [
+
                 Image.asset(
                   'assets/png/login_img.png',
                   fit: BoxFit.fill,
@@ -70,11 +71,23 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      Image.asset(
-                        'assets/png/logo.png',
-                        width: 120,
-                        height: 120,
+                      Container(
+
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.5),
+                          shape: BoxShape.circle,
+                          // borderRadius: BorderRadius.all(Radius.circular(10)),
+                          border: Border.all(
+                              color: Colors.white.withOpacity(0.6)),
+                          boxShadow: [AppStyles.boxShadow7],
+                        ),
+                        child:  Image.asset(
+                          'assets/png/logo.png',
+                          width: 120,
+                          height: 120,
+                        ),
                       ),
+
                     ],
                   ),
                 ),
@@ -137,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
-                                  'Email',
+                                  Translate.get('email'),
                                   style: CustomTextStyle
                                       .size14Weight400Text()
                                       .copyWith(color: Colors.black87),
@@ -182,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
-                                  'Password',
+                                  Translate.get('password'),
                                   style: CustomTextStyle
                                       .size14Weight400Text()
                                       .copyWith(color: Colors.black87),

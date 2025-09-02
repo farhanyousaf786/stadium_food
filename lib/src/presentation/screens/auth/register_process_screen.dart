@@ -88,97 +88,111 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
           },
           child: Scaffold(
             backgroundColor: AppColors.bgColor,
-            resizeToAvoidBottomInset: false,
-            body: Stack(
-              children: [
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.only(bottom: 60, left: 25, right: 25),
-                    child: PrimaryButton(
-                      text: Translate.get('register_process_next'),
-                      onTap: () {
-                        // validate form
-                        if (!_formKey.currentState!.validate()) {
-                          return;
-                        }
-
-                        // save data to hive
-                        var box = Hive.box('myBox');
-                        box.put('firstName', _firstNameController.text.trim());
-                        box.put('lastName', _lastNameController.text.trim());
-                        box.put('phone', _phoneController.text.trim());
-                        box.put('fcmToken', _fcmToken);
-
-                        // update user profile in Firebase
-                        _userProfileBloc.add(UpdateUserProfile(
-                          fcmToken: _fcmToken,
-                          firstName: _firstNameController.text.trim(),
-                          lastName: _lastNameController.text.trim(),
-                          phone: _phoneController.text.trim(),
-                        ));
-                      },
+            body: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Header (match login look)
+                  SizedBox(
+                    height: 350,
+                    width: double.infinity,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Image.asset(
+                          'assets/png/login_img.png',
+                          fit: BoxFit.fill,
+                        ),
+                        Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                Translate.get('register_process_title'),
+                                textAlign: TextAlign.center,
+                                style: CustomTextStyle
+                                    .size20Weight600Text()
+                                    .copyWith(color: Colors.white, fontSize: 24),
+                              ),
+                              const SizedBox(height: 12),
+                              Image.asset(
+                                'assets/png/logo.png',
+                                width: 120,
+                                height: 120,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-                SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25),
+
+                  // Content
+                  Padding(
+                    padding: const EdgeInsets.all(25.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(
-                          height: MediaQuery.of(context).padding.top + 40,
-                        ),
-                        // check if previous page exists
-                        if (ModalRoute.of(context)!.canPop) ...[
-                          const CustomBackButton(color: AppColors.primaryDarkColor,),
-                        ],
-                        const SizedBox(height: 20),
                         Text(
-                          "Fill in your bio to get \nstarted",
-                          style: CustomTextStyle.size25Weight600Text(),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          "This data will be displayed in your account \nprofile for security",
+                          Translate.get('register_process_subtitle'),
                           style: CustomTextStyle.size14Weight400Text(),
                         ),
                         const SizedBox(height: 20),
-                        // form fields, first name, last name, mobile number
                         Form(
                           key: _formKey,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           child: Column(
                             children: [
+                              // First name
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  Translate.get('register_process_first_name'),
+                                  style: CustomTextStyle
+                                      .size14Weight400Text()
+                                      .copyWith(color: Colors.black87),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
                               Container(
                                 decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
                                   boxShadow: [AppStyles.boxShadow7],
                                 ),
                                 child: TextFormField(
                                   controller: _firstNameController,
                                   validator: (value) {
                                     if (value!.isEmpty) {
-                                      return Translate.get('register_process_error_first_name');
+                                      return Translate.get(
+                                          'register_process_error_first_name');
                                     }
                                     return null;
                                   },
                                   decoration: InputDecoration(
+                                    prefixIcon: const Icon(
+                                      Icons.person_outline,
+                                      color: AppColors.primaryDarkColor,
+                                    ),
                                     fillColor: AppColors().cardColor,
                                     filled: true,
-                                    hintText: Translate.get('register_process_first_name'),
-                                    hintStyle:
-                                        CustomTextStyle.size14Weight400Text(
-                                      AppColors().secondaryTextColor,
+                                    hintText: Translate.get(
+                                        'register_process_first_name'),
+                                    hintStyle: CustomTextStyle
+                                        .size14Weight400Text()
+                                        .copyWith(color: Colors.grey),
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
-                                    contentPadding: const EdgeInsets.only(
-                                      left: 20,
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
-                                    enabledBorder:
-                                        AppStyles().defaultEnabledBorder,
-                                    focusedBorder:
-                                        AppStyles.defaultFocusedBorder(),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          color: Color(0xFF4169E1), width: 1),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
                                     errorBorder: AppStyles.defaultErrorBorder,
                                     focusedErrorBorder:
                                         AppStyles.defaultFocusedErrorBorder,
@@ -186,33 +200,56 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
                                 ),
                               ),
                               const SizedBox(height: 20),
+                              // Last name
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  Translate.get('register_process_last_name'),
+                                  style: CustomTextStyle
+                                      .size14Weight400Text()
+                                      .copyWith(color: Colors.black87),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
                               Container(
                                 decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
                                   boxShadow: [AppStyles.boxShadow7],
                                 ),
                                 child: TextFormField(
                                   controller: _lastNameController,
                                   validator: (value) {
                                     if (value!.isEmpty) {
-                                      return Translate.get('register_process_error_last_name');
+                                      return Translate.get(
+                                          'register_process_error_last_name');
                                     }
                                     return null;
                                   },
                                   decoration: InputDecoration(
+                                    prefixIcon: const Icon(
+                                      Icons.person_outline,
+                                      color: AppColors.primaryDarkColor,
+                                    ),
                                     fillColor: AppColors().cardColor,
                                     filled: true,
-                                    hintText: Translate.get('register_process_last_name'),
-                                    hintStyle:
-                                        CustomTextStyle.size14Weight400Text(
-                                      AppColors().secondaryTextColor,
+                                    hintText: Translate.get(
+                                        'register_process_last_name'),
+                                    hintStyle: CustomTextStyle
+                                        .size14Weight400Text()
+                                        .copyWith(color: Colors.grey),
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
-                                    contentPadding: const EdgeInsets.only(
-                                      left: 20,
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
-                                    enabledBorder:
-                                        AppStyles().defaultEnabledBorder,
-                                    focusedBorder:
-                                        AppStyles.defaultFocusedBorder(),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          color: Color(0xFF4169E1), width: 1),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
                                     errorBorder: AppStyles.defaultErrorBorder,
                                     focusedErrorBorder:
                                         AppStyles.defaultFocusedErrorBorder,
@@ -220,34 +257,57 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
                                 ),
                               ),
                               const SizedBox(height: 20),
+                              // Phone
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  Translate.get('register_process_mobile'),
+                                  style: CustomTextStyle
+                                      .size14Weight400Text()
+                                      .copyWith(color: Colors.black87),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
                               Container(
                                 decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
                                   boxShadow: [AppStyles.boxShadow7],
                                 ),
                                 child: TextFormField(
                                   controller: _phoneController,
                                   validator: (value) {
                                     if (!validatePhoneNumber(value!)) {
-                                      return Translate.get('register_process_error_phone');
+                                      return Translate.get(
+                                          'register_process_error_phone');
                                     }
                                     return null;
                                   },
                                   keyboardType: TextInputType.phone,
                                   decoration: InputDecoration(
+                                    prefixIcon: const Icon(
+                                      Icons.phone_rounded,
+                                      color: AppColors.primaryDarkColor,
+                                    ),
                                     fillColor: AppColors().cardColor,
                                     filled: true,
-                                    hintText: Translate.get('register_process_mobile'),
-                                    hintStyle:
-                                        CustomTextStyle.size14Weight400Text(
-                                      AppColors().secondaryTextColor,
+                                    hintText:
+                                        Translate.get('register_process_mobile'),
+                                    hintStyle: CustomTextStyle
+                                        .size14Weight400Text()
+                                        .copyWith(color: Colors.grey),
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
-                                    contentPadding: const EdgeInsets.only(
-                                      left: 20,
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
-                                    enabledBorder:
-                                        AppStyles().defaultEnabledBorder,
-                                    focusedBorder:
-                                        AppStyles.defaultFocusedBorder(),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          color: Color(0xFF4169E1), width: 1),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
                                     errorBorder: AppStyles.defaultErrorBorder,
                                     focusedErrorBorder:
                                         AppStyles.defaultFocusedErrorBorder,
@@ -257,11 +317,43 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
                             ],
                           ),
                         ),
+
+                        const SizedBox(height: 30),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 60),
+                          child: PrimaryButton(
+                            text: Translate.get('register_process_next'),
+                            onTap: () {
+                              // validate form
+                              if (!_formKey.currentState!.validate()) {
+                                return;
+                              }
+
+                              // save data to hive
+                              var box = Hive.box('myBox');
+                              box.put('firstName',
+                                  _firstNameController.text.trim());
+                              box.put('lastName',
+                                  _lastNameController.text.trim());
+                              box.put('phone', _phoneController.text.trim());
+                              box.put('fcmToken', _fcmToken);
+
+                              // update user profile in Firebase
+                              _userProfileBloc.add(UpdateUserProfile(
+                                fcmToken: _fcmToken,
+                                firstName: _firstNameController.text.trim(),
+                                lastName: _lastNameController.text.trim(),
+                                phone: _phoneController.text.trim(),
+                              ));
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ));

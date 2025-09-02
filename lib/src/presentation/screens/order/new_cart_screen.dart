@@ -123,6 +123,7 @@ class _NewCartScreenState extends State<NewCartScreen> {
                   if (OrderRepository.cart.isEmpty)
                     Container(
                       height: MediaQuery.of(context).size.height * 0.7,
+                      width: double.infinity,
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Column(
                         mainAxisSize: MainAxisSize.max,

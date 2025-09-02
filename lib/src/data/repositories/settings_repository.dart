@@ -17,10 +17,13 @@ class SettingsRepository {
   // Log out the user
   Future<void> logout() async {
     await _auth.signOut();
-    FirebaseAuthService(_auth).signOut();
-    bool isDarkMode = await Hive.box('myBox').get('isDarkMode');
+   // FirebaseAuthService(_auth).signOut();
+   // bool isDarkMode = await Hive.box('myBox').get('isDarkMode');
+   String lang= Hive.box('myBox').get('language', defaultValue: 'en');
     await Hive.box('myBox').clear();
-    await Hive.box('myBox').put('isDarkMode', isDarkMode);
+    await Hive.box('myBox').put('language', lang);
+
+   // await Hive.box('myBox').put('isDarkMode', isDarkMode);
   }
   
   // Delete user account completely (both Firestore document and Firebase Auth account)
@@ -45,9 +48,11 @@ class SettingsRepository {
         }
         
         // 3. Clear local data
-        bool isDarkMode = await Hive.box('myBox').get('isDarkMode');
+      //  bool isDarkMode = await Hive.box('myBox').get('isDarkMode');
+        String lang= Hive.box('myBox').get('language', defaultValue: 'en');
         await Hive.box('myBox').clear();
-        await Hive.box('myBox').put('isDarkMode', isDarkMode);
+        await Hive.box('myBox').put('language', lang);
+      //  await Hive.box('myBox').put('isDarkMode', isDarkMode);
         logout();
       } else {
         throw Exception('No user is currently signed in');

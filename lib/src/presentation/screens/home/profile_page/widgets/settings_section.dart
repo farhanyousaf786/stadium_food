@@ -157,13 +157,13 @@ class _SettingsSectionState extends State<SettingsSection> {
           const SizedBox(height: 12),
           _tile(
             iconPath: 'ic_about.svg',
-            title: 'About app',
+            title: Translate.get('aboutApp'),
             onTap: () {
               showDialog(
                 context: context,
                 builder: (ctx) => AlertDialog(
-                  title: const Text('About app'),
-                  content: const Text('Fan Munch - Stadium Food Delivery App'),
+                  title: Text(Translate.get('aboutApp')),
+                  content: Text(Translate.get('aboutAppDescription')),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(ctx),
@@ -197,7 +197,7 @@ class _SettingsSectionState extends State<SettingsSection> {
           const SizedBox(height: 12),
           _tile(
             iconPath: 'ic_privacy.svg',
-            title: 'Privacy policy',
+            title: Translate.get('privacyPolicy'),
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(Translate.get('comingSoon'))),

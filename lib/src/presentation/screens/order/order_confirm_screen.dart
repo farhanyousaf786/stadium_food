@@ -3,8 +3,6 @@ import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -12,7 +10,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:http/http.dart' as http;
-import 'package:geolocator/geolocator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/back_button.dart';
 import 'package:stadium_food/src/presentation/widgets/loading_indicator.dart';
@@ -21,8 +18,6 @@ import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:hive/hive.dart';
-
-import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../../data/repositories/order_repository.dart';
 import '../../../data/services/firebase_storage.dart';
@@ -81,7 +76,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
           if (value == null || value.isEmpty) {
             if (controller == _seatDetailsController)
               return null; // Optional field
-            return 'Please enter ${label.toLowerCase()}';
+            return '${Translate.get('pleaseEnter')} ${label.toLowerCase()}';
           }
           return null;
         },
@@ -371,7 +366,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                             child: Text(
 
 
-                              'Select your seat',
+                              Translate.get('selectYourSeat'),
                               textAlign: TextAlign.center,
                               style: CustomTextStyle.size18Weight600Text( Colors.white,),
                             ),
@@ -382,7 +377,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
 
                       Text(
                         textAlign: TextAlign.center,
-                        'Please provide your seat information to complete the order',
+                        Translate.get('provideSeatInfo'),
                         style: CustomTextStyle.size16Weight400Text(
                           Colors.white,
                         ),
@@ -395,6 +390,14 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                             Text(
                               Translate.get('uploadTicketTitle'),
                               style: CustomTextStyle.size16Weight600Text(
+                                Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              Translate.get('uploadTicketDesc'),
+                              textAlign: TextAlign.center,
+                              style: CustomTextStyle.size14Weight400Text(
                                 Colors.white,
                               ),
                             ),
@@ -584,7 +587,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                           ),
                                           const SizedBox(height: 10),
                                           Text(
-                                            Translate.get('frontCamera'),
+                                            Translate.get('uploadFromCamera'),
                                             style: CustomTextStyle
                                                 .size14Weight400Text(Colors.white),
                                           ),

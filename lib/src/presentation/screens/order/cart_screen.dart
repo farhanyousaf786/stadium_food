@@ -189,7 +189,7 @@ class _CartScreenState extends State<CartScreen> {
                             return Column(
                               children: [
                                 Dismissible(
-                                  key: Key(OrderRepository.cart[index].name),
+                                  key: Key(OrderRepository.cart[index].id),
                                   onDismissed: (direction) {
                                     BlocProvider.of<OrderBloc>(context).add(
                                       RemoveCompletelyFromCart(

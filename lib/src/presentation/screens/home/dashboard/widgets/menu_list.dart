@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stadium_food/src/bloc/menu/menu_bloc.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
+import 'package:stadium_food/src/data/services/language_service.dart';
 import 'package:stadium_food/src/data/models/food.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 
@@ -82,6 +83,9 @@ class _MenuListState extends State<MenuList> {
                   itemCount: _menuItems.length,
                   itemBuilder: (context, index) {
                     final food = _menuItems[index];
+                    final lang = LanguageService.getCurrentLanguage();
+                    final localizedName = food.nameFor(lang);
+
                     return Container(
                         width: 180,
                         margin: const EdgeInsets.only(right: 16),
@@ -127,7 +131,7 @@ class _MenuListState extends State<MenuList> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      food.name,
+                                      localizedName,
                                       style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
@@ -135,6 +139,7 @@ class _MenuListState extends State<MenuList> {
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
+                                
                                     const SizedBox(height: 4),
                                     FormattedPriceText(
                                       amount: food.price,

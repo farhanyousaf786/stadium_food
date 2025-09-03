@@ -8,13 +8,16 @@ class Food extends Equatable {
   final String id;
   final List<String> allergens;
   final String category;
+  final Map<String, String> categoryMap;
   final DateTime createdAt;
   final Map<String, dynamic> customization;
   final String description;
+  final Map<String, String> descriptionMap;
   final List<Map<String, dynamic>> extras;
   final List<String> images;
   final bool isAvailable;
   final String name;
+  final Map<String, String> nameMap;
   final Map<String, dynamic> nutritionalInfo;
   final int preparationTime;
   final double price;
@@ -32,13 +35,16 @@ class Food extends Equatable {
     required this.id,
     required this.allergens,
     required this.category,
+    this.categoryMap = const {},
     required this.createdAt,
     required this.customization,
     required this.description,
+    this.descriptionMap = const {},
     required this.extras,
     required this.images,
     required this.isAvailable,
     required this.name,
+    this.nameMap = const {},
     required this.nutritionalInfo,
     required this.preparationTime,
     required this.price,
@@ -60,9 +66,15 @@ class Food extends Equatable {
               .toList() ??
           [],
       category: map['category'] ?? '',
+      categoryMap: (map['categoryMap'] as Map<String, dynamic>?)
+              ?.map((key, value) => MapEntry(key, value?.toString() ?? '')) ??
+          {},
       createdAt: (map['createdAt'] as Timestamp).toDate(),
       customization: (map['customization'] as Map<String, dynamic>?) ?? {},
       description: map['description'] ?? '',
+      descriptionMap: (map['descriptionMap'] as Map<String, dynamic>?)
+              ?.map((key, value) => MapEntry(key, value?.toString() ?? '')) ??
+          {},
       extras: (map['extras'] as List<dynamic>?)
               ?.map((x) => Map<String, dynamic>.from(x))
               .toList() ??
@@ -73,6 +85,9 @@ class Food extends Equatable {
           [],
       isAvailable: map['isAvailable'] ?? true,
       name: map['name'] ?? '',
+      nameMap: (map['nameMap'] as Map<String, dynamic>?)
+              ?.map((key, value) => MapEntry(key, value?.toString() ?? '')) ??
+          {},
       nutritionalInfo: (map['nutritionalInfo'] as Map<String, dynamic>?) ?? {},
       preparationTime: map['preparationTime'] ?? 15,
       price: (map['price'] ?? 0).toDouble(),
@@ -111,10 +126,12 @@ class Food extends Equatable {
       'createdAt': createdAt,
       'customization': customization,
       'description': description,
+      'descriptionMap': descriptionMap,
       'extras': extras,
       'images': images,
       'isAvailable': isAvailable,
       'name': name,
+      'nameMap': nameMap,
       'nutritionalInfo': nutritionalInfo,
       'preparationTime': preparationTime,
       'price': price,
@@ -136,6 +153,25 @@ class Food extends Equatable {
     DocumentReference ref = FirebaseFirestore.instance
         .doc('/stadiums/$stadiumId/shops/${shopIds.first}/menuItems/$id');
     return favorites.contains(ref);
+  }
+
+  // Localization helpers
+  String nameFor(String languageCode) {
+    final value = nameMap[languageCode];
+    // if (value != null && value.trim().isNotEmpty) return value;
+    return value ??'';
+  }
+
+  String descriptionFor(String languageCode) {
+    final value = descriptionMap[languageCode];
+    // if (value != null && value.trim().isNotEmpty) return value;
+    return value ??'';
+  }
+
+  String categoryFor(String languageCode) {
+    final value = categoryMap[languageCode];
+    // if (value != null && value.trim().isNotEmpty) return value;
+    return value??'';
   }
 
   @override

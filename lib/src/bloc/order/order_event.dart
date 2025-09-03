@@ -11,6 +11,13 @@ class AddToCart extends OrderEvent {
   AddToCart(this.food);
 }
 
+class AddToCartQty extends OrderEvent {
+  final Food food;
+  final int qty;
+
+  AddToCartQty(this.food,this.qty);
+}
+
 class RemoveFromCart extends OrderEvent {
   final Food food;
 

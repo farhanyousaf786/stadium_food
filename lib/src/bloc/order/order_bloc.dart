@@ -23,6 +23,13 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       orderRepository.addToCart(event.food);
       emit(CartUpdated(OrderRepository.cart));
     });
+
+    on<AddToCartQty>((event, emit) {
+      emit(OrderInitial());
+      orderRepository.addToCartQty(event.food,event.qty);
+      emit(CartUpdated(OrderRepository.cart));
+    });
+
     on<RemoveFromCart>((event, emit) {
       emit(OrderInitial());
       orderRepository.removeFromCart(event.food);

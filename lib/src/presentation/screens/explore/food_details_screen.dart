@@ -10,6 +10,7 @@ import 'package:stadium_food/src/bloc/profile/profile_bloc.dart';
 import 'package:stadium_food/src/bloc/testimonial/testimonial_bloc.dart';
 import 'package:stadium_food/src/data/models/food.dart';
 import 'package:stadium_food/src/data/models/testimonial.dart';
+import 'package:stadium_food/src/data/services/language_service.dart';
 import 'package:stadium_food/src/presentation/widgets/bullet_point.dart';
 import 'package:stadium_food/src/presentation/widgets/formatted_price_text.dart';
 import 'package:stadium_food/src/presentation/widgets/image_placeholder.dart';
@@ -17,7 +18,9 @@ import 'package:stadium_food/src/presentation/widgets/buttons/like_button.dart';
 import 'package:stadium_food/src/presentation/widgets/items/testimonial_item.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
+import '../../../data/repositories/order_repository.dart';
 import '../../widgets/buttons/back_button.dart';
+import '../../widgets/items/cart_item.dart';
 
 class FoodDetailsScreen extends StatefulWidget {
   final Food food;
@@ -31,6 +34,7 @@ class FoodDetailsScreen extends StatefulWidget {
 class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
   List<Testimonial> testimonials = [];
   double rating = 0;
+  int qty=1;
 
   Widget _dot(bool active) {
     return Container(
@@ -64,6 +68,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = LanguageService.getCurrentLanguage();
     return BlocListener<TestimonialBloc, TestimonialState>(
       listener: (context, state) {
         if (state is TestimonialsFetched) {
@@ -107,8 +112,9 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
               ),
               onSwipe: () {
                 BlocProvider.of<OrderBloc>(context).add(
-                  AddToCart(widget.food),
+                  AddToCartQty(widget.food,qty),
                 );
+
                 Navigator.pushNamed(context, '/cart');
               },
             ),
@@ -167,7 +173,9 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                       Positioned(
                         left: 16,
                         top: 16,
-                        child: CustomBackButton(color: AppColors.primaryDarkColor,),
+                        child: CustomBackButton(
+                          color: AppColors.primaryDarkColor,
+                        ),
                       ),
                       Positioned(
                         right: 16,
@@ -240,7 +248,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                       // title centered
                       Center(
                         child: Text(
-                          widget.food.name,
+                          widget.food.nameFor(lang),
                           style: CustomTextStyle.size27Weight600Text(),
                           textAlign: TextAlign.center,
                         ),
@@ -254,16 +262,18 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                       ),
                       const SizedBox(height: 8),
 
-                      Text(
-                        widget.food.description.isNotEmpty
-                            ? widget.food.description
-                            : Translate.get('noDescriptionAvailable'),
-                        style: CustomTextStyle.size14Weight400Text(
-                          widget.food.description.isNotEmpty
-                              ? null
-                              : AppColors().secondaryTextColor,
+                      Center(
+                        child: Text(
+                          widget.food.descriptionFor(lang).isNotEmpty
+                              ? widget.food.descriptionFor(lang)
+                              : Translate.get('noDescriptionAvailable'),
+                          style: CustomTextStyle.size14Weight400Text(
+                            widget.food.descriptionFor(lang).isNotEmpty
+                                ? null
+                                : AppColors().secondaryTextColor,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 24),
 
@@ -276,8 +286,45 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                               .copyWith(fontSize: 26),
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 20),
 
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          UpdateQuantityButton(
+                            backgroundColor: AppColors.primaryDarkColor,
+                            iconColor: Colors.white,
+                            icon: Icons.remove,
+                            onTap: () {
+                              setState(() {
+                                if (qty > 1) {
+                                  qty--;
+                                }
+                              });
+                            },
+                          ),
+                          const SizedBox(width: 10),
+                          // Live quantity text
+
+                          Text(qty.toString(),
+                              style: CustomTextStyle.size16Weight600Text(
+                                AppColors().secondaryTextColor,
+                              )),
+                          const SizedBox(width: 10),
+                          UpdateQuantityButton(
+                            backgroundColor: AppColors.primaryDarkColor,
+                            iconColor: Colors.white,
+                            icon: Icons.add,
+                            onTap: () {
+                              setState(() {
+                                qty++;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 8),
                       // allergens
                       widget.food.allergens.isNotEmpty
                           ? Text(

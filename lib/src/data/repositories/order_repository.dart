@@ -79,6 +79,22 @@ class OrderRepository {
     updateHive();
   }
 
+  void addToCartQty(Food food,qty) {
+
+  // Add new item
+  if (cart.contains(food)) {
+    final q = (qty is int) ? qty : int.tryParse(qty.toString()) ?? 0;
+    if (q <= 0) return;
+    cart[cart.indexOf(food)].quantity += q;
+  } else {
+    cart.add(food);
+    final q = (qty is int) ? qty : int.tryParse(qty.toString()) ?? 0;
+    if (q <= 0) return;
+    food.quantity += q;
+  }
+  updateHive();
+}
+
   void removeFromCart(Food food) {
     if (cart.contains(food)) {
       if (food.quantity > 1) {

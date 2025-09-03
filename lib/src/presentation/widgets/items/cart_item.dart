@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:stadium_food/src/data/models/food.dart';
+import 'package:stadium_food/src/data/services/language_service.dart';
 import 'package:stadium_food/src/data/services/firestore_db.dart';
 import 'package:stadium_food/src/presentation/widgets/image_placeholder.dart';
 import 'package:stadium_food/src/presentation/widgets/formatted_price_text.dart';
@@ -22,6 +23,8 @@ class CartItem extends StatefulWidget {
 class _CartItemState extends State<CartItem> {
   @override
   Widget build(BuildContext context) {
+    final lang = LanguageService.getCurrentLanguage();
+    final localizedName = widget.food.nameFor(lang);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -56,7 +59,7 @@ class _CartItemState extends State<CartItem> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                widget.food.name,
+                localizedName,
                 style: CustomTextStyle.size18Weight600Text(),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -101,8 +104,7 @@ class _CartItemState extends State<CartItem> {
                       context: context,
                       builder: (context) => AlertDialog(
                         title: const Text('Remove Item'),
-                        content:
-                            Text('Remove ${widget.food.name} from cart?'),
+                        content: Text('Remove $localizedName from cart?'),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(context),
@@ -135,9 +137,8 @@ class _CartItemState extends State<CartItem> {
                 child: BlocBuilder<OrderBloc, OrderState>(
                   builder: (context, state) {
                     final qty = widget.food.quantity;
-                    final twoDigits = qty.toString().padLeft(2, '0');
                     return Text(
-                      twoDigits,
+                      qty.toString(),
                       style: CustomTextStyle.size16Weight600Text(
                         AppColors().secondaryTextColor,
                       ),

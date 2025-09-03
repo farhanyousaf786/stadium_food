@@ -346,7 +346,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
               Image.asset(
                 'assets/png/order_confirm_bg.png',
                 width: double.infinity,
-                height: size.height * 0.43,
+                height: size.height * 0.45,
                 fit: BoxFit.fill,
               ),
           

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:stadium_food/src/bloc/order_detail/order_detail_bloc.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/models/order.dart';
@@ -17,6 +18,9 @@ import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:stadium_food/src/presentation/widgets/order_status_stepper.dart';
+import 'package:stadium_food/src/data/services/language_service.dart';
+import 'package:stadium_food/src/presentation/widgets/items/cart_item.dart';
+import 'package:stadium_food/src/data/repositories/order_repository.dart';
 import '../../../data/services/currency_service.dart';
 import '../../../services/location_service.dart';
 import '../../widgets/buttons/primary_button.dart';
@@ -288,6 +292,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         itemCount: order.cart.length,
                         itemBuilder: (context, index) {
                           var item = order.cart[index];
+                          final lang = LanguageService.getCurrentLanguage();
+                          final localizedName = item.nameFor(lang);
+                          final localizedDescription = item.descriptionFor(lang);
 
                           return Container(
                             margin: EdgeInsets.only(top: 10),
@@ -334,7 +341,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                         Row(
                                           children: [
                                             Text(
-                                              item.name,
+                                              localizedName,
                                               style: const TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.bold,
@@ -356,7 +363,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                         ),
                                         const SizedBox(height: 6),
                                         Text(
-                                          item.description,
+                                          localizedDescription,
                                           style: TextStyle(
                                             fontSize: 14,
                                             color: Colors.grey[600],
@@ -412,6 +419,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                             ),
                                           ],
                                         ),
+                                        const SizedBox(height: 8),
+                                        // Cart quantity controls
+
                                       ],
                                     ),
                                   ),

@@ -74,7 +74,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
         ),
         validator: (value) {
           if (value == null || value.isEmpty) {
-            if (controller == _seatDetailsController)
+            if (controller == _seatDetailsController || controller == _areaController)
               return null; // Optional field
             return '${Translate.get('pleaseEnter')} ${label.toLowerCase()}';
           }
@@ -182,6 +182,10 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
   @override
   void initState() {
     super.initState();
+    // Default Stand selection to Gallery if not set
+    if (_standController.text.isEmpty) {
+      _standController.text = Translate.get('standOptionGallery');
+    }
   }
 
   // Show dialog to prompt user to login or register
@@ -623,22 +627,84 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                             Row(
                               children: [
                                 Expanded(
-                                  child: _buildTextField(
-                                    controller: _standController,
-                                    label: Translate.get('standLabel'),
-                                    hint: Translate.get('standHint'),
-                                    icon: Icons.chair_rounded,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.05),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 5),
+                                        ),
+                                      ],
+                                    ),
+                                    child: FormField<String>(
+                                      validator: (_) {
+                                        if (_standController.text.isEmpty) {
+                                          return '${Translate.get('pleaseEnter')} ${Translate.get('standLabel').toLowerCase()}';
+                                        }
+                                        return null;
+                                      },
+                                      builder: (formState) {
+                                        final gallery = Translate.get('standOptionGallery');
+                                        final main = Translate.get('standOptionMain');
+                                        return InputDecorator(
+                                          decoration: InputDecoration(
+                                            fillColor: AppColors().cardColor,
+                                            filled: true,
+                                            labelText: Translate.get('standLabel'),
+                                            hintText: Translate.get('standHint'),
+                                            labelStyle: const TextStyle(
+                                              color: AppColors.primaryColor,
+                                            ),
+                                            hintStyle: CustomTextStyle.size14Weight400Text(
+                                              AppColors().secondaryTextColor,
+                                            ),
+                                            enabledBorder: AppStyles().defaultEnabledBorder,
+                                            focusedBorder: AppStyles.defaultFocusedBorder(),
+                                            errorText: formState.errorText,
+                                          ),
+                                          isEmpty: _standController.text.isEmpty,
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              CheckboxListTile(
+                                                contentPadding: EdgeInsets.zero,
+                                                checkColor: AppColors.primaryColor,
+                                                controlAffinity: ListTileControlAffinity.leading,
+                                                title: Text(gallery),
+                                                value: _standController.text == gallery,
+                                                onChanged: (checked) {
+                                                  setState(() {
+                                                    _standController.text = (checked ?? false) ? gallery : '';
+                                                    formState.didChange(_standController.text);
+                                                  });
+                                                },
+                                              ),
+                                              CheckboxListTile(
+
+                                                contentPadding: EdgeInsets.zero,
+                                                checkColor: AppColors.primaryColor,
+                                                controlAffinity: ListTileControlAffinity.leading,
+                                                title: Text(main),
+                                                value: _standController.text == main,
+                                                onChanged: (checked) {
+                                                  setState(() {
+                                                    _standController.text = (checked ?? false) ? main : '';
+                                                    formState.didChange(_standController.text);
+                                                  });
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    ),
                                   ),
                                 ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: _buildTextField(
-                                    controller: _entranceController,
-                                    label: Translate.get('entranceLabel'),
-                                    hint: Translate.get('entranceHint'),
-                                    icon: Icons.info_outline,
-                                  ),
-                                ),
+
+
                               ],
                             ),
           
@@ -648,8 +714,8 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                 Expanded(
                                   child: _buildTextField(
                                     controller: _areaController,
-                                    label: Translate.get('areaLabel'),
-                                    hint: Translate.get('areaHint'),
+                                    label: '${Translate.get('areaLabel')} (${Translate.get('optional')})',
+                                    hint: '${Translate.get('areaHint')} (${Translate.get('optional')})',
                                     icon: Icons.category_outlined,
                                   ),
                                 ),
@@ -665,12 +731,27 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                               ],
                             ),
                             const SizedBox(height: 16),
-                            _buildTextField(
-                              controller: _seatNoController,
-                              label: Translate.get('seatLabel'),
-                              hint: Translate.get('seatHint'),
-                              icon: Icons.chair_outlined,
-                              keyboardType: TextInputType.number,
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _buildTextField(
+                                    controller: _seatNoController,
+                                    label: Translate.get('seatLabel'),
+                                    hint: Translate.get('seatHint'),
+                                    icon: Icons.chair_outlined,
+                                    keyboardType: TextInputType.number,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: _buildTextField(
+                                    controller: _entranceController,
+                                    label: Translate.get('entranceLabel'),
+                                    hint: Translate.get('entranceHint'),
+                                    icon: Icons.info_outline,
+                                  ),
+                                ),
+                              ],
                             ),
           
                             const SizedBox(height: 16),

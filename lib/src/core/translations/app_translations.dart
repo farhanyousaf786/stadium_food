@@ -20,6 +20,8 @@ class AppTranslations {
       'areaHint': 'Enter area name/number',
       'standLabel': 'Stand',
       'standHint': 'Enter stand name/number',
+      'standOptionGallery': 'Gallery',
+      'standOptionMain': 'Main',
       'rowLabel': 'Row',
       'rowHint': 'Enter your row number',
       'seatLabel': 'Seat',
@@ -343,6 +345,7 @@ class AppTranslations {
       'cancel': 'Cancel',
       'pleaseEnter': 'Please enter',
       'amount': 'Amount',
+      'optional': 'optional',
 
       'orderConfirmTitle': 'Confirm Your Order',
 
@@ -499,7 +502,8 @@ class AppTranslations {
 
       'favoritesFoods': 'Favorite Foods',
 
-
+      'otherRelatedItems': 'Other Related items',
+      'addMore': 'Add More',
 
       'removeFromCart': 'Remove from Cart',
 
@@ -654,6 +658,8 @@ class AppTranslations {
       'areaHint': 'הכנס שם/מספר גוש',
       'standLabel': 'יציע',
       'standHint': 'הכנס שם/מספר יציע',
+      'standOptionGallery': 'גלריה',
+      'standOptionMain': 'אולם',
       'rowLabel': 'שורה',
       'rowHint': 'הזן את מספר השורה שלך',
       'seatLabel': 'מושב',
@@ -989,9 +995,10 @@ class AppTranslations {
       'uploadFromGallery': 'העלה מהגלריה',
       'frontCamera': 'מצלמה קדמית',
       'or': 'או',
-
+      'total': 'סה"כ',
       'placeOrder': 'בצע הזמנה',
-
+      'otherRelatedItems': 'פריטים קשורים נוספים',
+      'addMore': 'הוסף עוד',
       'orderSuccess': 'ההזמנה בוצעה בהצלחה',
       'imageUploadError': 'העלאת התמונה נכשלה. נסה שוב.',
       'paymentSuccess': 'התשלום בוצע בהצלחה',
@@ -1004,6 +1011,7 @@ class AppTranslations {
       'cancel': 'ביטול',
       'pleaseEnter': 'אנא הזן',
       'amount': 'סכום',
+      'optional': 'לא חובה',
 
       'orderConfirmTitle': 'אשר את ההזמנה שלך',
 
@@ -1118,7 +1126,7 @@ class AppTranslations {
 
       'discount': 'הנחה',
 
-      'total': 'סה״כ',
+
 
       'orders': 'הזמנות',
 

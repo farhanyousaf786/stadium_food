@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
+import '../../../data/models/food.dart';
+import '../../../data/repositories/food_repository.dart';
+import '../../../data/services/language_service.dart';
 import '../../../services/location_service.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
@@ -16,6 +19,8 @@ import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../widgets/formatted_price_text.dart';
+
 class NewCartScreen extends StatefulWidget {
 
 
@@ -27,6 +32,29 @@ class NewCartScreen extends StatefulWidget {
 
 class _NewCartScreenState extends State<NewCartScreen> {
   final LocationService _locationService = LocationService();
+
+  Future<List<Food>> _fetchRelatedFoods() async {
+    if (OrderRepository.cart.isEmpty) return [];
+
+    final firstItem = OrderRepository.cart.first;
+    final stadiumId = firstItem.stadiumId;
+    final shopId = firstItem.shopIds.isNotEmpty ? firstItem.shopIds.first : '';
+    if (stadiumId.isEmpty || shopId.isEmpty) return [];
+
+    final foods = await FoodRepository().fetchFoods(stadiumId, shopId);
+    // Exclude items already in cart and prioritize same category
+    final cartIds = OrderRepository.cart.map((f) => f.id).toSet();
+    final sameCategory = foods
+        .where((f) => f.category == firstItem.category && !cartIds.contains(f.id))
+        .toList();
+    final others = foods
+        .where((f) => f.category != firstItem.category && !cartIds.contains(f.id))
+        .toList();
+    return [
+      ...sameCategory,
+      ...others,
+    ];
+  }
 
   @override
   void initState() {
@@ -214,6 +242,134 @@ class _NewCartScreenState extends State<NewCartScreen> {
                           SizedBox(
                             height: 30,
                           ),
+
+                          if (OrderRepository.cart.isNotEmpty) ...[
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                child: Text(
+                                  Translate.get('otherRelatedItems'),
+                                  style: CustomTextStyle.size16Weight600Text(AppColors().secondaryTextColor),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              height: 200,
+                              child: FutureBuilder<List<Food>>(
+                                future: _fetchRelatedFoods(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                    return const Center(child: CircularProgressIndicator());
+                                  }
+                                  if (snapshot.hasError) {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                      child: Text(
+                                        Translate.get('noFoodFound'),
+                                        style: CustomTextStyle.size14Weight400Text(AppColors().secondaryTextColor),
+                                      ),
+                                    );
+                                  }
+                                  final items = snapshot.data ?? [];
+                                  if (items.isEmpty) {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                      child: Text(
+                                        Translate.get('noFoodFound'),
+                                        style: CustomTextStyle.size14Weight400Text(AppColors().secondaryTextColor),
+                                      ),
+                                    );
+                                  }
+
+                                  return ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                                    itemCount: items.length.clamp(0, 10),
+                                    itemBuilder: (context, index) {
+                                      final food = items[index];
+                                      final lang = LanguageService.getCurrentLanguage();
+                                      final localizedName = food.nameFor(lang);
+
+                                      return Container(
+                                          width: 180,
+                                          margin: const EdgeInsets.only(right: 16),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(8),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withOpacity(0.05),
+                                                blurRadius: 10,
+                                                offset: const Offset(0, 5),
+                                              ),
+                                            ],
+                                          ),
+                                          child: InkWell(
+                                            onTap: () {
+                                              Navigator.pushNamed(
+                                                context,
+                                                '/foods/detail',
+                                                arguments: food,
+                                              );
+                                            },
+                                            borderRadius: BorderRadius.circular(8),
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                // Food Image
+                                                ClipRRect(
+                                                  borderRadius: const BorderRadius.vertical(
+                                                    top: Radius.circular(8),
+                                                    bottom: Radius.circular(8),
+                                                  ),
+                                                  child: Image.network(
+                                                    food.images.first,
+                                                    height: 120,
+                                                    width: double.infinity,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.all(12),
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        localizedName,
+                                                        style: const TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight: FontWeight.w600,
+                                                        ),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow.ellipsis,
+                                                      ),
+
+                                                      const SizedBox(height: 4),
+                                                      FormattedPriceText(
+                                                        amount: food.price,
+                                                        style: TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight: FontWeight.w600,
+                                                          color: AppColors.primaryColor,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ));
+                                    },
+                                  );
+
+                                },
+                              ),
+                            ),
+
+                            const SizedBox(height: 24),
+                          ],
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 30),
                             child: OrderRepository.cart.isNotEmpty

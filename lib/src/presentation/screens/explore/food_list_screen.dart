@@ -6,6 +6,7 @@ import '../../../bloc/food/food_bloc.dart';
 import '../../../data/models/food.dart';
 import '../../../data/models/shop.dart';
 import '../../../data/models/stadium.dart';
+import '../../../data/services/language_service.dart';
 import '../../widgets/buttons/back_button.dart';
 import '../../utils/custom_text_style.dart';
 import '../../utils/app_colors.dart';
@@ -82,6 +83,7 @@ class _FoodListScreenState extends State<FoodListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = LanguageService.getCurrentLanguage();
     return BlocListener<FoodBloc, FoodState>(
       listener: (context, state) {
         if (state is FoodError) {
@@ -319,7 +321,7 @@ class _FoodListScreenState extends State<FoodListScreen> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                food.name,
+                                              food.nameFor(lang),
                                                 style: const TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.bold,
@@ -329,7 +331,7 @@ class _FoodListScreenState extends State<FoodListScreen> {
                                               ),
                                               const SizedBox(height: 4),
                                               Text(
-                                                food.description,
+                                                food.descriptionFor(lang),
                                                 style: TextStyle(
                                                   fontSize: 14,
                                                   color: Colors.grey[600],

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
+import 'package:stadium_food/src/data/services/language_service.dart';
 import '../../../services/onboarding_service.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -14,7 +16,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  final List<OnboardingContent> _contents = [
+  List<OnboardingContent> get _contents => [
     OnboardingContent(
       title: Translate.get('onboarding_first_title'),
       subTitle: Translate.get('onboarding_first_subtitle'),
@@ -56,6 +58,45 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 itemBuilder: (context, index) {
                   return OnboardingPage(content: _contents[index]);
                 },
+              ),
+              Positioned(
+                top: 10,
+                right: 10,
+                child: SafeArea(
+                  child: PopupMenuButton<String>(
+                    icon: Container(
+                      width: 45,
+                      height: 45,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(22.5),
+                        border: Border.all(color: Colors.white.withOpacity(0.25)),
+                      ),
+                      child: SvgPicture.asset(
+                        "assets/svg/ic_lang.svg",
+                        colorFilter: const ColorFilter.mode(
+                          Colors.white,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                    ),
+                    onSelected: (String languageCode) {
+                      LanguageService.setLanguage(languageCode);
+                      setState(() {});
+                    },
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                      const PopupMenuItem<String>(
+                        value: 'en',
+                        child: Text('English'),
+                      ),
+                      const PopupMenuItem<String>(
+                        value: 'he',
+                        child: Text('Hebrew'),
+                      ),
+                    ],
+                  ),
+                ),
               ),
               Positioned(
                 bottom: 0,

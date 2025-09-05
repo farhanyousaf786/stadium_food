@@ -231,20 +231,20 @@ class AppTranslations {
 
       // Onboarding Screens
 
-      'onboarding_first_title': 'Tap, Sit, \nEnjoy',
+      'onboarding_first_title': 'Tap. Sit. Enjoy',
 
       'onboarding_first_description': 'Order from your phone and get everything you need \nwithout ever leaving your seat. Enjoy!',
       'onboarding_first_subtitle': 'One small tap – a big experience',
 
-      'onboarding_second_title': 'Skip the lines. Never \nMiss a Moment.',
+      'onboarding_second_title': 'Tap. Sit. Order',
 
       'onboarding_second_description': 'Enjoy food, drinks and merch delivered right to your seat - so \nyou can stay in the action, not the line.',
       'onboarding_second_subtitle': 'Order with a tap – enjoy the game',
 
-      'onboarding_third_title': 'Tap. Sit. Enjoy.',
+      'onboarding_third_title': 'Tap. Sit. Munch',
 
       'onboarding_third_description': 'Enjoy food, drinks and merch delivered right to your seat-so you can stay in the action, not in the line.',
-      'onboarding_third_subtitle': '(No standing up. No waiting. No missing out)',
+      'onboarding_third_subtitle': 'No standing up. No waiting. No missing out',
 
       'onboarding_button_next': 'Next',
 
@@ -871,15 +871,14 @@ class AppTranslations {
       'onboarding_first_description': "נותנים לך להישאר במשחק.\nבלי תורים. בלי לחץ!",
       'onboarding_first_subtitle': 'טאפ קטן – חוויה גדולה',
 
-      'onboarding_second_title': "דלג על התורים. אל תפספס אף רגע!",
-
+      'onboarding_second_title': "בֶּרֶז. לָשֶׁבֶת. לְהַזמִין",
       'onboarding_second_description': "תהנה מאוכל, משקאות ומרצ'נדייז שיגיעו ישירות למושב שלך - \nכדי שתוכל להישאר באקשן, לא בתור.",
       'onboarding_second_subtitle': 'הזמנה בנגיעה – המשחק ממשיך',
 
-      'onboarding_third_title': "תזמין. תשב. תהנה.",
+      'onboarding_third_title': "בֶּרֶז. לָשֶׁבֶת. לִלְעוֹס",
 
       'onboarding_third_description': "תהנה מאוכל, משקאות ומוצרים עד הכיסא שלך – \nכדי שתישאר במשחק, לא בתור.",
-      'onboarding_third_subtitle': '(בלי לקום. בלי לחכות. בלי לפספס)',
+      'onboarding_third_subtitle': 'בלי לקום. בלי לחכות. בלי לפספס',
 
       'onboarding_button_next': "הבא",
 

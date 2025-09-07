@@ -278,157 +278,192 @@ class _CartScreenState extends State<CartScreen> {
                           height: 30,
                         ),
                         // Related items section
-                        if (OrderRepository.cart.isNotEmpty) ...[
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Text(
-                                Translate.get('otherRelatedItems'),
-                                style: CustomTextStyle.size16Weight600Text(AppColors().secondaryTextColor),
+                        // if (OrderRepository.cart.isNotEmpty) ...[
+                        //   Align(
+                        //     alignment: Alignment.centerLeft,
+                        //     child: Padding(
+                        //       padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        //       child: Text(
+                        //         Translate.get('otherRelatedItems'),
+                        //         style: CustomTextStyle.size16Weight600Text(AppColors().secondaryTextColor),
+                        //       ),
+                        //     ),
+                        //   ),
+                        //   const SizedBox(height: 12),
+                        //   SizedBox(
+                        //     height: 200,
+                        //     child: FutureBuilder<List<Food>>(
+                        //       future: _fetchRelatedFoods(),
+                        //       builder: (context, snapshot) {
+                        //         if (snapshot.connectionState == ConnectionState.waiting) {
+                        //           return const Center(child: CircularProgressIndicator());
+                        //         }
+                        //         if (snapshot.hasError) {
+                        //           return Padding(
+                        //             padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        //             child: Text(
+                        //               Translate.get('noFoodFound'),
+                        //               style: CustomTextStyle.size14Weight400Text(AppColors().secondaryTextColor),
+                        //             ),
+                        //           );
+                        //         }
+                        //         final items = snapshot.data ?? [];
+                        //         if (items.isEmpty) {
+                        //           return Padding(
+                        //             padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        //             child: Text(
+                        //               Translate.get('noFoodFound'),
+                        //               style: CustomTextStyle.size14Weight400Text(AppColors().secondaryTextColor),
+                        //             ),
+                        //           );
+                        //         }
+                        //
+                        //        return ListView.builder(
+                        //           scrollDirection: Axis.horizontal,
+                        //           padding: const EdgeInsets.symmetric(horizontal: 16),
+                        //           itemCount: items.length.clamp(0, 10),
+                        //           itemBuilder: (context, index) {
+                        //             final food = items[index];
+                        //             final lang = LanguageService.getCurrentLanguage();
+                        //             final localizedName = food.nameFor(lang);
+                        //
+                        //             return Container(
+                        //                 width: 180,
+                        //                 margin: const EdgeInsets.only(right: 16),
+                        //                 decoration: BoxDecoration(
+                        //                   color: Colors.white,
+                        //                   borderRadius: BorderRadius.circular(8),
+                        //                   boxShadow: [
+                        //                     BoxShadow(
+                        //                       color: Colors.black.withOpacity(0.05),
+                        //                       blurRadius: 10,
+                        //                       offset: const Offset(0, 5),
+                        //                     ),
+                        //                   ],
+                        //                 ),
+                        //                 child: InkWell(
+                        //                   onTap: () {
+                        //                     Navigator.pushNamed(
+                        //                       context,
+                        //                       '/foods/detail',
+                        //                       arguments: food,
+                        //                     );
+                        //                   },
+                        //                   borderRadius: BorderRadius.circular(8),
+                        //                   child: Column(
+                        //                     crossAxisAlignment: CrossAxisAlignment.start,
+                        //                     children: [
+                        //                       // Food Image
+                        //                       ClipRRect(
+                        //                         borderRadius: const BorderRadius.vertical(
+                        //                           top: Radius.circular(8),
+                        //                           bottom: Radius.circular(8),
+                        //                         ),
+                        //                         child: Image.network(
+                        //                           food.images.first,
+                        //                           height: 120,
+                        //                           width: double.infinity,
+                        //                           fit: BoxFit.cover,
+                        //                         ),
+                        //                       ),
+                        //                       Padding(
+                        //                         padding: const EdgeInsets.all(12),
+                        //                         child: Column(
+                        //                           crossAxisAlignment: CrossAxisAlignment.start,
+                        //                           children: [
+                        //                             Text(
+                        //                               localizedName,
+                        //                               style: const TextStyle(
+                        //                                 fontSize: 16,
+                        //                                 fontWeight: FontWeight.w600,
+                        //                               ),
+                        //                               maxLines: 1,
+                        //                               overflow: TextOverflow.ellipsis,
+                        //                             ),
+                        //
+                        //                             const SizedBox(height: 4),
+                        //                             FormattedPriceText(
+                        //                               amount: food.price,
+                        //                               style: TextStyle(
+                        //                                 fontSize: 16,
+                        //                                 fontWeight: FontWeight.w600,
+                        //                                 color: AppColors.primaryColor,
+                        //                               ),
+                        //                             ),
+                        //                           ],
+                        //                         ),
+                        //                       ),
+                        //                     ],
+                        //                   ),
+                        //                 ));
+                        //           },
+                        //         );
+                        //
+                        //       },
+                        //     ),
+                        //   ),
+                        //
+                        //   const SizedBox(height: 24),
+                        // ],
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 30),
+                          child: Ink(
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.all(Radius.circular(10)),
+                            ),
+                            child: InkWell(
+                              borderRadius: const BorderRadius.all(Radius.circular(10)),
+                              onTap: () {
+
+                              },
+                              child: Container(
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.all(Radius.circular(10))),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 60,
+                                  vertical: 20,
+                                ),
+                                child: Text(
+                                  Translate.get('continueShopping'),
+                                  textAlign: TextAlign.center,
+                                  style: CustomTextStyle.size16Weight600Text(
+                                    AppColors().textColor,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 12),
-                          SizedBox(
-                            height: 200,
-                            child: FutureBuilder<List<Food>>(
-                              future: _fetchRelatedFoods(),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState == ConnectionState.waiting) {
-                                  return const Center(child: CircularProgressIndicator());
-                                }
-                                if (snapshot.hasError) {
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                                    child: Text(
-                                      Translate.get('noFoodFound'),
-                                      style: CustomTextStyle.size14Weight400Text(AppColors().secondaryTextColor),
-                                    ),
-                                  );
-                                }
-                                final items = snapshot.data ?? [];
-                                if (items.isEmpty) {
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                                    child: Text(
-                                      Translate.get('noFoodFound'),
-                                      style: CustomTextStyle.size14Weight400Text(AppColors().secondaryTextColor),
-                                    ),
-                                  );
-                                }
-
-                               return ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                                  itemCount: items.length.clamp(0, 10),
-                                  itemBuilder: (context, index) {
-                                    final food = items[index];
-                                    final lang = LanguageService.getCurrentLanguage();
-                                    final localizedName = food.nameFor(lang);
-
-                                    return Container(
-                                        width: 180,
-                                        margin: const EdgeInsets.only(right: 16),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(8),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black.withOpacity(0.05),
-                                              blurRadius: 10,
-                                              offset: const Offset(0, 5),
-                                            ),
-                                          ],
-                                        ),
-                                        child: InkWell(
-                                          onTap: () {
-                                            Navigator.pushNamed(
-                                              context,
-                                              '/foods/detail',
-                                              arguments: food,
-                                            );
-                                          },
-                                          borderRadius: BorderRadius.circular(8),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              // Food Image
-                                              ClipRRect(
-                                                borderRadius: const BorderRadius.vertical(
-                                                  top: Radius.circular(8),
-                                                  bottom: Radius.circular(8),
-                                                ),
-                                                child: Image.network(
-                                                  food.images.first,
-                                                  height: 120,
-                                                  width: double.infinity,
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.all(12),
-                                                child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      localizedName,
-                                                      style: const TextStyle(
-                                                        fontSize: 16,
-                                                        fontWeight: FontWeight.w600,
-                                                      ),
-                                                      maxLines: 1,
-                                                      overflow: TextOverflow.ellipsis,
-                                                    ),
-
-                                                    const SizedBox(height: 4),
-                                                    FormattedPriceText(
-                                                      amount: food.price,
-                                                      style: TextStyle(
-                                                        fontSize: 16,
-                                                        fontWeight: FontWeight.w600,
-                                                        color: AppColors.primaryColor,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ));
-                                  },
-                                );
-
-                              },
-                            ),
-                          ),
-
-                          const SizedBox(height: 24),
-                        ],
+                        ),
+                        SizedBox(height: 20,),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 30),
                           child: OrderRepository.cart.isNotEmpty
                               ? PrimaryButton(
-                                  text: Translate.get('placeOrder'),
-                                  onTap: () async {
-                                    if (OrderRepository.cart.isEmpty) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content:
-                                              Text(Translate.get('cartEmpty')),
-                                          backgroundColor: AppColors.errorColor,
-                                        ),
-                                      );
-                                      return;
-                                    }
+                              text: Translate.get('goToCheckout'),
+                              onTap: () async {
+                                if (OrderRepository.cart.isEmpty) {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          Translate.get('cartEmpty')),
+                                      backgroundColor:
+                                      AppColors.errorColor,
+                                    ),
+                                  );
+                                  return;
+                                }
 
-                                    // Find nearest shop before proceeding
-                                    try {
-                                      await _findNearestShopAndNavigate(context);
-                                    } catch (e) {
-                                      await _handleLocationError(context, e);
-                                    }
-                                  })
+                                // Find nearest shop before proceeding
+                                try {
+                                  await _findNearestShopAndNavigate(
+                                      context);
+                                } catch (e) {
+                                  await _handleLocationError(context, e);
+                                }
+                              })
                               : SizedBox(),
                         ),
                         const SizedBox(height: 40),

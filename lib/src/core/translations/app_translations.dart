@@ -11,6 +11,10 @@ class AppTranslations {
 
   static const Map<String, Map<String, String>> translations = {
     'en': {
+
+      'continueShopping':'Continue Shopping',
+      'goToCheckout':'Proceed To Checkout',
+
       'entranceLabel': 'Entrance',
       'entranceHint': 'Enter entrance number/name',
       'additionalDetailsLabel': 'Additional Details',
@@ -541,7 +545,7 @@ class AppTranslations {
 
       'noOrdersFound': 'No orders found',
 
-      'continueShopping': 'Continue Shopping',
+
 
       'active': 'Active',
 
@@ -648,6 +652,10 @@ class AppTranslations {
     },
 
     'he': {
+      'continueShopping':'המשך קנייה',
+      'goToCheckout':'לתשלום',
+
+
       'feedbackUs': 'מָשׁוֹב',
 
       'entranceLabel': 'שער',
@@ -1175,7 +1183,7 @@ class AppTranslations {
 
       'noOrdersFound': 'לא נמצאו הזמנות',
 
-      'continueShopping': 'המשך קנייה',
+
 
       'active': 'פעיל',
 

@@ -2,15 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/models/order.dart';
+import 'package:stadium_food/src/data/models/shop.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../data/services/currency_service.dart';
+import '../../../data/repositories/shop_repository.dart';
 
 class OrderItem extends StatelessWidget {
   final Order order;
   const OrderItem({super.key, required this.order});
+
+  // Simple in-memory cache for shop fetches keyed by "stadiumId:shopId"
+  static final Map<String, Future<Shop>> _shopFutureCache = {};
+
+  Future<Shop> _getShop(String stadiumId, String shopId) {
+    final key = '$stadiumId:$shopId';
+    return _shopFutureCache.putIfAbsent(
+      key,
+      () => ShopRepository().fetchShop(stadiumId, shopId),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,22 +78,50 @@ class OrderItem extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 10),
-              Row(
-                children: [
-                  Image.asset(
-                    "assets/png/ic_shop.png",
-                    height: 30,
-                    width: 30,
-                  ),
-                  SizedBox(width: 5,),
-                  Text(
-                 'Gate 4',
-                    style: TextStyle(
-                      color: AppColors().secondaryTextColor,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
+              FutureBuilder<Shop>(
+                future: _getShop(order.stadiumId, order.shopId),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Row(
+                      children: [
+                        Image.asset(
+                          "assets/png/ic_shop.png",
+                          height: 30,
+                          width: 30,
+                        ),
+                        const SizedBox(width: 5),
+                        Container(
+                          height: 14,
+                          width: 80,
+                          decoration: BoxDecoration(
+                            color: AppColors.shimmerBaseColor,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                  final shopName = snapshot.hasData && snapshot.data != null
+                      ? snapshot.data!.name
+                      : Translate.get('shopNameUnavailable');
+                  return Row(
+                    children: [
+                      Image.asset(
+                        "assets/png/ic_shop.png",
+                        height: 30,
+                        width: 30,
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        shopName,
+                        style: TextStyle(
+                          color: AppColors().secondaryTextColor,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 10),
               Row(

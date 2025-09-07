@@ -668,7 +668,22 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                     final gallery =
                                         Translate.get('standOptionGallery');
                                     final main = Translate.get('standOptionMain');
-                                    return InputDecorator(
+                                    return DropdownButtonFormField<String>(
+                                      value: _standController.text.isEmpty
+                                          ? null
+                                          : _standController.text,
+                                      items: <String>[gallery, main]
+                                          .map((value) => DropdownMenuItem<String>(
+                                                value: value,
+                                                child: Text(value),
+                                              ))
+                                          .toList(),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _standController.text = value ?? '';
+                                          formState.didChange(_standController.text);
+                                        });
+                                      },
                                       decoration: InputDecoration(
                                         fillColor: AppColors().cardColor,
                                         filled: true,
@@ -677,59 +692,12 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                         labelStyle: const TextStyle(
                                           color: AppColors.primaryColor,
                                         ),
-                                        hintStyle:
-                                            CustomTextStyle.size14Weight400Text(
+                                        hintStyle: CustomTextStyle.size14Weight400Text(
                                           AppColors().secondaryTextColor,
                                         ),
-                                        enabledBorder:
-                                            AppStyles().defaultEnabledBorder,
-                                        focusedBorder:
-                                            AppStyles.defaultFocusedBorder(),
+                                        enabledBorder: AppStyles().defaultEnabledBorder,
+                                        focusedBorder: AppStyles.defaultFocusedBorder(),
                                         errorText: formState.errorText,
-                                      ),
-                                      isEmpty: _standController.text.isEmpty,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          CheckboxListTile(
-                                            contentPadding: EdgeInsets.zero,
-                                            checkColor: AppColors.primaryColor,
-                                            controlAffinity:
-                                                ListTileControlAffinity.leading,
-                                            title: Text(gallery),
-                                            value:
-                                                _standController.text == gallery,
-                                            onChanged: (checked) {
-                                              setState(() {
-                                                _standController.text =
-                                                    (checked ?? false)
-                                                        ? gallery
-                                                        : '';
-                                                formState.didChange(
-                                                    _standController.text);
-                                              });
-                                            },
-                                          ),
-                                          CheckboxListTile(
-                                            contentPadding: EdgeInsets.zero,
-                                            checkColor: AppColors.primaryColor,
-                                            controlAffinity:
-                                                ListTileControlAffinity.leading,
-                                            title: Text(main),
-                                            value: _standController.text == main,
-                                            onChanged: (checked) {
-                                              setState(() {
-                                                _standController.text =
-                                                    (checked ?? false)
-                                                        ? main
-                                                        : '';
-                                                formState.didChange(
-                                                    _standController.text);
-                                              });
-                                            },
-                                          ),
-                                        ],
                                       ),
                                     );
                                   },

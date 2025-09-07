@@ -39,6 +39,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var lang=LanguageService.getCurrentLanguage();
     return Scaffold(
       backgroundColor: Colors.black,
       body: Column(

@@ -302,7 +302,7 @@ class AppTranslations {
 
       'tipDescription':
 
-      '100% of your tip goes to your courier. Tips are based on your order total of',
+      '100% of your tip goes to your courier. Tips are based on your order total of.',
 
       'beforeDiscounts': 'before any discounts or promotions.',
 
@@ -883,7 +883,7 @@ class AppTranslations {
       'onboarding_second_description': "תהנה מאוכל, משקאות ומרצ'נדייז שיגיעו ישירות למושב שלך - \nכדי שתוכל להישאר באקשן, לא בתור.",
       'onboarding_second_subtitle': 'תישאר בכיסא - אנחנו כבר באים!',
 
-      'onboarding_third_title': "תשב. תלחץ. תחווה.",
+      'onboarding_third_title': "תשב. תזמין. תחווה.",
 
       'onboarding_third_description': "תהנה מאוכל, משקאות ומוצרים עד הכיסא שלך – \nכדי שתישאר במשחק, לא בתור.",
       'onboarding_third_subtitle': 'בלי לקום. בלי לחכות. בלי לפספס',
@@ -970,7 +970,7 @@ class AppTranslations {
 
       'tipDescription':
 
-      '100% מהטיפ שלך מגיע לשליח שלך. הטיפים מבוססים על סך ההזמנה שלך',
+      '100% מהטיפ שלך מגיע לשליח שלך. הטיפים מבוססים על סך ההזמנה שלך.',
 
       'beforeDiscounts': 'לפני הנחות ומבצעים.',
 
@@ -1123,7 +1123,7 @@ class AppTranslations {
 
       'items': 'פריטים',
 
-      'quantity': 'כמות',
+      'quantity': 'כמות:',
 
       'subtotal': 'סכום ביניים',
 

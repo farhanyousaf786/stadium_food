@@ -385,38 +385,38 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                 color: AppColors.primaryColor,
                                               ),
                                             ),
-                                            Container(
-                                              padding: const EdgeInsets
-                                                  .symmetric(
-                                                horizontal: 8,
-                                                vertical: 4,
-                                              ),
-                                              decoration: BoxDecoration(
-                                                color: AppColors.primaryColor
-                                                    .withOpacity(0.1),
-                                                borderRadius:
-                                                BorderRadius.circular(12),
-                                              ),
-                                              child: Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.watch_later_rounded,
-                                                    color: AppColors
-                                                        .primaryColor,
-                                                  ),
-                                                  Text(
-                                                    '${item
-                                                        .preparationTime} ${Translate
-                                                        .get('minutes')}',
-                                                    style: TextStyle(
-                                                      fontSize: 13,
-                                                      color:
-                                                      AppColors.primaryColor,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
+                                            // Container(
+                                            //   padding: const EdgeInsets
+                                            //       .symmetric(
+                                            //     horizontal: 8,
+                                            //     vertical: 4,
+                                            //   ),
+                                            //   decoration: BoxDecoration(
+                                            //     color: AppColors.primaryColor
+                                            //         .withOpacity(0.1),
+                                            //     borderRadius:
+                                            //     BorderRadius.circular(12),
+                                            //   ),
+                                            //   child: Row(
+                                            //     children: [
+                                            //       Icon(
+                                            //         Icons.watch_later_rounded,
+                                            //         color: AppColors
+                                            //             .primaryColor,
+                                            //       ),
+                                            //       Text(
+                                            //         '${item
+                                            //             .preparationTime} ${Translate
+                                            //             .get('minutes')}',
+                                            //         style: TextStyle(
+                                            //           fontSize: 13,
+                                            //           color:
+                                            //           AppColors.primaryColor,
+                                            //         ),
+                                            //       ),
+                                            //     ],
+                                            //   ),
+                                            // ),
                                           ],
                                         ),
                                         const SizedBox(height: 8),

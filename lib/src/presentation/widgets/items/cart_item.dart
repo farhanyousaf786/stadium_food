@@ -65,20 +65,11 @@ class _CartItemState extends State<CartItem> {
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 6),
-              Row(
-                children: [
-                  Text(
-                    'Price ',
-                    style: CustomTextStyle.size14Weight400Text(
-                      AppColors().secondaryTextColor,
-                    ),
-                  ),
-                  FormattedPriceText(
-                    amount: widget.food.price,
-                    style:
-                        CustomTextStyle.size16Weight600Text(AppColors.primaryColor),
-                  ),
-                ],
+
+              FormattedPriceText(
+                amount: widget.food.price,
+                style:
+                    CustomTextStyle.size16Weight600Text(AppColors.primaryColor),
               ),
             ],
           ),

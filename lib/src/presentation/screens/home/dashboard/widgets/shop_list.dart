@@ -51,16 +51,16 @@ class _ShopListState extends State<ShopList> {
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              TextButton(
-                onPressed: () {},
-                child: Text(
-                  Translate.get('viewAll'),
-                  style: const TextStyle(
-                    color: AppColors.primaryColor,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              )
+              // TextButton(
+              //   onPressed: () {},
+              //   child: Text(
+              //     Translate.get('viewAll'),
+              //     style: const TextStyle(
+              //       color: AppColors.primaryColor,
+              //       fontWeight: FontWeight.w600,
+              //     ),
+              //   ),
+              // )
             ],
           ),
         ),

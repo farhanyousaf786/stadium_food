@@ -902,7 +902,9 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                         }
                                       }
                                     }),
-                              )
+                              ),
+
+                              SizedBox(height: 50,),
                             ],
                           );
                         })

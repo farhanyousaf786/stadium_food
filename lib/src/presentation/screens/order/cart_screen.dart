@@ -415,7 +415,11 @@ class _CartScreenState extends State<CartScreen> {
                             child: InkWell(
                               borderRadius: const BorderRadius.all(Radius.circular(10)),
                               onTap: () {
-
+                                Navigator.pushNamedAndRemoveUntil(
+                                  context,
+                                  "/home",
+                                      (route) => false,
+                                );
                               },
                               child: Container(
                                 width: double.infinity,

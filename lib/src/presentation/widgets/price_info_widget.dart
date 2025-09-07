@@ -10,17 +10,14 @@ import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 
 class PriceInfoWidget extends StatelessWidget {
-
   const PriceInfoWidget({
     super.key,
-
   });
 
   @override
   Widget build(BuildContext context) {
     return IntrinsicHeight(
       child: Container(
-
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: AppStyles.largeBorderRadius,
@@ -104,51 +101,82 @@ class PriceInfoWidget extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Divider(
-                color:   AppColors().secondaryTextColor,  // line color
-                thickness: 1,          // line thickness
-                    // empty space after line
+                color: AppColors().secondaryTextColor, // line color
+                thickness: 1, // line thickness
+                // empty space after line
               ),
               const SizedBox(height: 10),
+              Text(
+                Translate.get('total'),
+                style: CustomTextStyle.size22Weight600Text(
+                  AppColors().secondaryTextColor,
+                ),
+              ),
+              const SizedBox(height: 16),
               // Total in all three currencies
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    Translate.get('total'),
-                    style: CustomTextStyle.size22Weight600Text(
-                      AppColors().secondaryTextColor,
-                    ),
-                  ),
-                  SizedBox(width: 24,),
                   Expanded(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        FormattedPriceText(
-                          amount: OrderRepository.total,
-                          currencyCode: 'NIS',
-                          style: CustomTextStyle.size16Weight600Text(AppColors().secondaryTextColor),
+                        Container(
+                          padding:
+                              EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [AppStyles().largeBoxShadow],
+                            color: AppColors.primaryColor,
+                          ),
+                          child: FormattedPriceText(
+                            amount: OrderRepository.total,
+                            currencyCode: 'USD',
+                            style: CustomTextStyle.size16Weight600Text(
+                                Colors.white),
+                          ),
                         ),
                         const SizedBox(height: 4),
-                        FormattedPriceText(
-                          amount: OrderRepository.total,
-                          currencyCode: 'USD',
-                          style: CustomTextStyle.size16Weight600Text(AppColors().secondaryTextColor),
+                        Container(
+                          padding:
+                          EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [AppStyles().largeBoxShadow],
+                            color: AppColors.primaryColor,
+                          ),
+                          child: FormattedPriceText(
+                            amount: OrderRepository.total,
+                            currencyCode: 'NIS',
+                            style: CustomTextStyle.size16Weight600Text(
+                                Colors.white),
+                          ),
                         ),
+
                         const SizedBox(height: 4),
-                        FormattedPriceText(
-                          amount: OrderRepository.total,
-                          currencyCode: 'EUR',
-                          style: CustomTextStyle.size16Weight600Text(AppColors().secondaryTextColor),
+                        Container(
+                          padding:
+                          EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [AppStyles().largeBoxShadow],
+                            color: AppColors.primaryColor,
+                          ),
+                          child: FormattedPriceText(
+                            amount: OrderRepository.total,
+                            currencyCode: 'EUR',
+                            style: CustomTextStyle.size16Weight600Text(
+                                Colors.white),
+                          ),
                         ),
+
                       ],
                     ),
                   ),
                 ],
               ),
-
             ],
           ),
         ),

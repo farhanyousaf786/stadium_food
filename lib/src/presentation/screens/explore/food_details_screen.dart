@@ -115,7 +115,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                   AddToCartQty(widget.food,qty),
                 );
 
-                Navigator.pushNamed(context, '/cart');
+                Navigator.pushReplacementNamed(context, '/cart');
               },
             ),
           ),

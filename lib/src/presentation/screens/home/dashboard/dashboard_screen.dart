@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stadium_food/src/bloc/menu/menu_bloc.dart';
 import 'package:stadium_food/src/bloc/offer/offer_bloc.dart';
+import 'package:stadium_food/src/bloc/category/category_bloc.dart';
 import 'package:stadium_food/src/data/repositories/offer_repository.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'widgets/category_list.dart';
@@ -26,43 +27,51 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-        create: (context) => OfferBloc(
-              offerRepository: OfferRepository(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => OfferBloc(
+            offerRepository: OfferRepository(),
+          ),
+        ),
+        BlocProvider(
+          create: (_) => CategoryBloc()..add(LoadCategories()),
+        ),
+      ],
+      child: Scaffold(
+        backgroundColor: AppColors.bgColor,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TopBar(
+              onSearch: _handleSearch,
+              searchController: _searchController,
             ),
-        child: Scaffold(
-          backgroundColor: AppColors.bgColor,
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TopBar(
-                onSearch: _handleSearch,
-                searchController: _searchController,
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 24),
-                        OffersList(),
-                        const SizedBox(height: 24),
-                        const CategoryList(),
-                        const SizedBox(height: 24),
-                        const MenuList(),
-                        const SizedBox(height: 24),
-                        const ShopList(),
-                        const SizedBox(height: 50),
-                      ],
-                    ),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 24),
+                      OffersList(),
+                      const SizedBox(height: 24),
+                      const CategoryList(),
+                      const SizedBox(height: 24),
+                      const MenuList(),
+                      const SizedBox(height: 24),
+                      const ShopList(),
+                      const SizedBox(height: 50),
+                    ],
                   ),
                 ),
               ),
-            ],
-          ),
-        ));
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override

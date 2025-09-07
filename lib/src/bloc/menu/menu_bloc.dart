@@ -10,43 +10,16 @@ part 'menu_state.dart';
 class MenuBloc extends Bloc<MenuEvent, MenuState> {
   final MenuRepository menuRepository = MenuRepository();
   List<Food> _allFoods = [];
-  String _currentCategory = 'All';
+  String _currentCategoryId = 'All';
   String _searchQuery = '';
 
   void _filterAndEmitMenuItems(Emitter<MenuState> emit) {
     List<Food> filteredFoods = _allFoods;
 
-    // Apply category filter
-    if (_currentCategory != 'All') {
+    // Apply category filter by category ID stored on Food.category
+    if (_currentCategoryId != 'All') {
       filteredFoods = filteredFoods.where((food) {
-        final normalizedFoodCategory = food.category.toLowerCase().trim();
-        final normalizedTargetCategory = _currentCategory.toLowerCase().trim();
-
-        // Handle special categories
-        switch (normalizedTargetCategory) {
-          case 'snacks & street food':
-            return normalizedFoodCategory.contains('snack') ||
-                normalizedFoodCategory.contains('street');
-          case 'salads & soups':
-            return normalizedFoodCategory.contains('salad') ||
-                normalizedFoodCategory.contains('soup');
-          case 'pizza, pasta & burgers':
-            return normalizedFoodCategory.contains('pizza') ||
-                normalizedFoodCategory.contains('pasta') ||
-                normalizedFoodCategory.contains('burger');
-          case 'grill & bbq':
-            return normalizedFoodCategory.contains('grill') ||
-                normalizedFoodCategory.contains('bbq');
-          case 'vegetarian / vegan':
-            return normalizedFoodCategory.contains('vegetarian') ||
-                normalizedFoodCategory.contains('vegan');
-          case 'drinks & beverages':
-            return normalizedFoodCategory.contains('drink') ||
-                normalizedFoodCategory.contains('beverage');
-          default:
-            return normalizedFoodCategory
-                .contains(normalizedTargetCategory.replaceAll('& ', ''));
-        }
+        return food.category == _currentCategoryId;
       }).toList();
     }
 
@@ -66,12 +39,10 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
       try {
         Map<String, dynamic> map = await menuRepository.fetchStadiumMenu(
           event.stadiumId,
-
         );
         _allFoods = map["menuItems"] as List<Food>;
         emit(MenuLoaded(
           foods: _allFoods,
-
         ));
       } catch (e) {
         debugPrint(e.toString());
@@ -80,7 +51,7 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
     });
 
     on<FilterMenuByCategory>((event, emit) async {
-      _currentCategory = event.category;
+      _currentCategoryId = event.category;
       _filterAndEmitMenuItems(emit);
     });
 

@@ -100,31 +100,31 @@ class _CartItemState extends State<CartItem> {
                 icon: Icons.remove,
                 onTap: () {
                   if (widget.food.quantity == 1) {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Remove Item'),
-                        content: Text('Remove $localizedName from cart?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('Cancel'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              BlocProvider.of<OrderBloc>(context).add(
-                                RemoveFromCart(widget.food),
-                              );
-                              Navigator.pop(context);
-                            },
-                            child: const Text(
-                              'Remove',
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
+                    // showDialog(
+                    //   context: context,
+                    //   builder: (context) => AlertDialog(
+                    //     title: const Text('Remove Item'),
+                    //     content: Text('Remove $localizedName from cart?'),
+                    //     actions: [
+                    //       TextButton(
+                    //         onPressed: () => Navigator.pop(context),
+                    //         child: const Text('Cancel'),
+                    //       ),
+                    //       TextButton(
+                    //         onPressed: () {
+                    //           BlocProvider.of<OrderBloc>(context).add(
+                    //             RemoveFromCart(widget.food),
+                    //           );
+                    //           Navigator.pop(context);
+                    //         },
+                    //         child: const Text(
+                    //           'Remove',
+                    //           style: TextStyle(color: Colors.red),
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // );
                   } else {
                     BlocProvider.of<OrderBloc>(context).add(
                       RemoveFromCart(widget.food),

@@ -199,6 +199,31 @@ class OrderRepository {
       }
     }
 
+    try {
+      if (selectedShopId != null) {
+        final shopDoc = await _firestore
+            .collection('shops')
+            .doc(selectedShopId)
+            .get();
+
+        if (shopDoc.exists) {
+          final fcmToken = shopDoc.data()?['shopUserFcmToken'];
+          if (fcmToken != null) {
+            final userName = box.get('firstName') ?? 'Customer';
+            await NotificationServiceClass().sendNotification(
+              fcmToken,
+              'New Order Received',
+              'You have a new order from $userName at Seat ${order.seatInfo['seatNo']}',
+            );
+          }
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error sending notification: $e");
+      }
+    }
+
     cart.clear();
     updateHive();
 

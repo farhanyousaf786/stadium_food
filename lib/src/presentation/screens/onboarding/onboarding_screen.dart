@@ -331,7 +331,7 @@ class _OnboardingPageState extends State<OnboardingPage>
                         content.title,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 50,
+                          fontSize: 40,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Lato',
                         ),
@@ -351,7 +351,7 @@ class _OnboardingPageState extends State<OnboardingPage>
                     content.subTitle,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 25,
+                      fontSize: 20,
                       // fontWeight: FontWeight.bold,
                       fontFamily: 'Lato',
                     ),

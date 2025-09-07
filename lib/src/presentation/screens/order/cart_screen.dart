@@ -21,6 +21,7 @@ import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../widgets/formatted_price_text.dart';
+import 'package:stadium_food/src/data/services/currency_service.dart';
 
 class CartScreen extends StatefulWidget {
   final bool isFromHome;
@@ -60,6 +61,8 @@ class _CartScreenState extends State<CartScreen> {
   @override
   void initState() {
     super.initState();
+
+    CurrencyService.refreshRates();
   }
 
   Future<String?> _loadNearbyData() async {
@@ -439,4 +442,5 @@ class _CartScreenState extends State<CartScreen> {
       ),
     );
   }
+
 }

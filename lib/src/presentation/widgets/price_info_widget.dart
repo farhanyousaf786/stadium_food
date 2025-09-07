@@ -41,6 +41,7 @@ class PriceInfoWidget extends StatelessWidget {
                   ),
                   FormattedPriceText(
                     amount: OrderRepository.subtotal,
+                    currencyCode: 'NIS',
                     style: CustomTextStyle.size16Weight400Text(
                       AppColors().secondaryTextColor,
                     ),
@@ -58,6 +59,7 @@ class PriceInfoWidget extends StatelessWidget {
                   ),
                   FormattedPriceText(
                     amount: OrderRepository.deliveryFee,
+                    currencyCode: 'NIS',
                     style: CustomTextStyle.size16Weight400Text(
                       AppColors().secondaryTextColor,
                     ),
@@ -75,6 +77,7 @@ class PriceInfoWidget extends StatelessWidget {
                   ),
                   FormattedPriceText(
                     amount: OrderRepository.tip,
+                    currencyCode: 'NIS',
                     style: CustomTextStyle.size16Weight400Text(
                       AppColors().secondaryTextColor,
                     ),
@@ -92,6 +95,7 @@ class PriceInfoWidget extends StatelessWidget {
                   ),
                   FormattedPriceText(
                     amount: OrderRepository.discount,
+                    currencyCode: 'NIS',
                     style: CustomTextStyle.size16Weight400Text(
                       AppColors().secondaryTextColor,
                     ),
@@ -105,8 +109,10 @@ class PriceInfoWidget extends StatelessWidget {
                     // empty space after line
               ),
               const SizedBox(height: 10),
+              // Total in all three currencies
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     Translate.get('total'),
@@ -114,11 +120,27 @@ class PriceInfoWidget extends StatelessWidget {
                       AppColors().secondaryTextColor,
                     ),
                   ),
-                  FormattedPriceText(
-                    amount: OrderRepository.total,
-                    style: CustomTextStyle.size22Weight600Text(
-                      AppColors().secondaryTextColor,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      FormattedPriceText(
+                        amount: OrderRepository.total,
+                        currencyCode: 'NIS',
+                        style: CustomTextStyle.size16Weight600Text(AppColors().secondaryTextColor),
+                      ),
+                      const SizedBox(height: 4),
+                      FormattedPriceText(
+                        amount: OrderRepository.total,
+                        currencyCode: 'USD',
+                        style: CustomTextStyle.size16Weight600Text(AppColors().secondaryTextColor),
+                      ),
+                      const SizedBox(height: 4),
+                      FormattedPriceText(
+                        amount: OrderRepository.total,
+                        currencyCode: 'EUR',
+                        style: CustomTextStyle.size16Weight600Text(AppColors().secondaryTextColor),
+                      ),
+                    ],
                   ),
                 ],
               ),

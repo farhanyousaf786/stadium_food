@@ -866,16 +866,16 @@ class AppTranslations {
 
       // Onboarding Screens
 
-      'onboarding_first_title': "תשב. תזמין. תנשנש.",
+      'onboarding_first_title': "תשב. תזמין. תתפנק.",
 
-      'onboarding_first_description': "נותנים לך להישאר במשחק.\nבלי תורים. בלי לחץ!",
-      'onboarding_first_subtitle': 'טאפ קטן – חוויה גדולה',
+      'onboarding_first_description': 'אל תפספס אף רגע מהמשחק!',
+      'onboarding_first_subtitle': 'לחיצה קטנה - חוויה גדולה!',
 
-      'onboarding_second_title': "בֶּרֶז. לָשֶׁבֶת. לְהַזמִין",
+      'onboarding_second_title':'תשב. תזמין. תהנה.',
       'onboarding_second_description': "תהנה מאוכל, משקאות ומרצ'נדייז שיגיעו ישירות למושב שלך - \nכדי שתוכל להישאר באקשן, לא בתור.",
-      'onboarding_second_subtitle': 'הזמנה בנגיעה – המשחק ממשיך',
+      'onboarding_second_subtitle': 'תישאר בכיסא - אנחנו כבר באים!',
 
-      'onboarding_third_title': "בֶּרֶז. לָשֶׁבֶת. לִלְעוֹס",
+      'onboarding_third_title': "תשב. תלחץ. תחווה.",
 
       'onboarding_third_description': "תהנה מאוכל, משקאות ומוצרים עד הכיסא שלך – \nכדי שתישאר במשחק, לא בתור.",
       'onboarding_third_subtitle': 'בלי לקום. בלי לחכות. בלי לפספס',
@@ -1081,7 +1081,7 @@ class AppTranslations {
 
       'guest': 'אורח',
 
-      'whatToEat': 'מה תרצה לנשנש?',
+      'whatToEat': 'מה תרצה היום?',
 
       'allCategories': 'כל הקטגוריות',
 

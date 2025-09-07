@@ -103,16 +103,16 @@ class _TipScreenState extends State<TipScreen> {
                           ),
                         ),
                         SizedBox(
-                          height: 8,
+                          height: 10,
                         ),
-                        Text(
-                          '${Translate.get('yourOrderTotalIs')} ₪$_orderTotal ${Translate.get('beforeDiscounts')}',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: AppColors.textColor,
-                          ),
-                        ),
+                        // Text(
+                        //   '${Translate.get('yourOrderTotalIs')} ₪$_orderTotal ${Translate.get('beforeDiscounts')}',
+                        //   textAlign: TextAlign.center,
+                        //   style: TextStyle(
+                        //     fontSize: 16,
+                        //     color: AppColors.textColor,
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -305,7 +305,7 @@ class _TipScreenState extends State<TipScreen> {
         ),
         child: Center(
           child: Text(
-            '$tipSymbol$percentage%',
+            '$percentage%',
             style: TextStyle(
               color: isSelected ? Colors.white : Colors.black87,
               fontSize: 16,

@@ -97,60 +97,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
   XFile? _image;
   String imageUrl = '';
 
-  Future<void> _processTicketImage(XFile image) async {
-    final apiKey = 'AIzaSyAFZnhuiVzNJZeq5lmzw2-jgdeWQ3BxXaM';
 
-    // Convert image to base64
-    final base64Image = base64Encode(await File(image.path).readAsBytes());
-
-    // API URL
-    final url = Uri.parse(
-        'https://vision.googleapis.com/v1/images:annotate?key=$apiKey');
-
-    // Request body
-    final body = jsonEncode({
-      "requests": [
-        {
-          "image": {"content": base64Image},
-          "features": [
-            {
-              "type": "TEXT_DETECTION"
-            } // You can also try DOCUMENT_TEXT_DETECTION
-          ]
-        }
-      ]
-    });
-
-    // Send request
-    final response = await http.post(
-      url,
-      headers: {"Content-Type": "application/json"},
-      body: body,
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final text = data['responses'][0]['fullTextAnnotation']?['text'] ?? '';
-      print("Extracted Text:\n$text");
-      String cleanText = text
-          .replaceAll('\n', ' ') // Replace newlines with space
-          .replaceAll(RegExp(r'[^a-zA-Z0-9\s]'), '') // Remove special chars
-          .toLowerCase();
-
-      final seatRegex = RegExp(
-        r"seat\s+\w{1,3}",
-        caseSensitive: false,
-      );
-      final seatMatch = seatRegex.firstMatch(cleanText);
-      if (seatMatch != null) {
-        print("Seat Number: ${seatMatch.group(2)}");
-      } else {
-        print("Seat not found");
-      }
-    } else {
-      print("Error: ${response.body}");
-    }
-  }
 
   // pick image from gallery
   Future<void> _pickImageFromGallery() async {
@@ -160,7 +107,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     );
 
     if (_image != null) {
-      await _processTicketImage(_image!);
+
     }
 
     setState(() {});
@@ -174,7 +121,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     );
 
     if (_image != null) {
-      await _processTicketImage(_image!);
+
     }
 
     setState(() {});

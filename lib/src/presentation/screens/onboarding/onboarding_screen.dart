@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
-import 'package:stadium_food/src/data/services/language_service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:stadium_food/src/bloc/language/language_bloc.dart';
 import '../../../services/onboarding_service.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -39,8 +40,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var lang=LanguageService.getCurrentLanguage();
-    return Scaffold(
+        return BlocBuilder<LanguageBloc, LanguageState>(
+      builder: (context, state) {
+        return Scaffold(
       backgroundColor: Colors.black,
       body: Column(
         children: [
@@ -83,8 +85,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ),
                     ),
                     onSelected: (String languageCode) {
-                      LanguageService.setLanguage(languageCode);
-                      setState(() {});
+                      context.read<LanguageBloc>().add(LanguageSelected(languageCode));
                     },
                     itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                       const PopupMenuItem<String>(
@@ -201,6 +202,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
         ],
       ),
+    );
+      },
     );
   }
 }

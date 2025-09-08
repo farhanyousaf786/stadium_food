@@ -141,6 +141,10 @@ class OrderRepository {
   }
 
   Future<model.Order> createOrder(Map<String, dynamic> seatInfo) async {
+    // Pre-generate a document ID so we can use it as the Order.id
+    final docRef = _firestore.collection('orders').doc();
+    final generatedId = docRef.id;
+
     final model.Order order = model.Order(
       cart: [...cart],
       subtotal: subtotal,
@@ -165,13 +169,11 @@ class OrderRepository {
         'userId': box.get('id') ?? '',
       },
       seatInfo: seatInfo,
+      id: generatedId,
     );
 
-    // Save order to firestore
-    await _db.addDocument(
-      'orders',
-      order.toMap(),
-    );
+    // Save order to Firestore using the pre-generated ID
+    await _db.addUserDocument('orders', generatedId, order.toMap());
 
     // Send notification to delivery user
     try {

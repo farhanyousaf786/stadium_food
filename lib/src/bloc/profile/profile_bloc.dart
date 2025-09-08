@@ -1,8 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:stadium_food/src/data/models/food.dart';
-import 'package:stadium_food/src/data/models/order_status.dart';
-import 'package:stadium_food/src/data/repositories/order_repository.dart';
 import 'package:stadium_food/src/data/repositories/profile_repository.dart';
 
 part 'profile_event.dart';

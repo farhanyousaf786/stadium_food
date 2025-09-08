@@ -53,7 +53,7 @@ class OrderItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "${Translate.get('order')} #${onlyDigits(order.id??'837269')}",
+                    "${Translate.get('order')} #${onlyDigits(order.id)}",
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,

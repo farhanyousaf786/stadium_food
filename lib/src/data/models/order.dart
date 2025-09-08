@@ -25,7 +25,7 @@ class Order extends Equatable {
   final GeoPoint? location;
   final GeoPoint? customerLocation;
 
-  String? id;
+  final String id;
 
   Order({
     required this.cart,
@@ -47,10 +47,11 @@ class Order extends Equatable {
     required this.orderCode,
     this.location,
     this.customerLocation,
+    required this.id,
   });
 
   factory Order.fromMap(String id, Map<String, dynamic> map) {
-    var order = Order(
+    return Order(
       cart: List<Food>.from(
         map['cart']?.map(
               (x) => Food.fromMap(x['id'] as String, x as Map<String, dynamic>),
@@ -75,9 +76,8 @@ class Order extends Equatable {
       orderCode: map['orderCode'] ?? '',
       location: map['location'] as GeoPoint?,
       customerLocation: map['customerLocation'] as GeoPoint?,
+      id: id,
     );
-    order.id = id;
-    return order;
   }
 
   Map<String, dynamic> toMap() {
@@ -98,6 +98,7 @@ class Order extends Equatable {
       'stadiumId': stadiumId,
       'shopId': shopId,
       'orderId': orderId,
+      'id': id,
       'status': status.index,
       'createdAt': createdAt,
       'deliveryTime': deliveryTime,

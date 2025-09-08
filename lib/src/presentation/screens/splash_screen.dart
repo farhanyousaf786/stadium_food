@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stadium_food/src/presentation/screens/onboarding/onboarding_screen.dart';
 import 'package:stadium_food/src/presentation/screens/server.dart';
-import 'package:stadium_food/src/presentation/screens/goal/goal_screen.dart';
 
 import '../utils/app_colors.dart';
 

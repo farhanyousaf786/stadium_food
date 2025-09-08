@@ -3,7 +3,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/models/order_status.dart';
 import 'package:stadium_food/src/core/constants/colors.dart';
-import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 
 class OrderStatusStepper extends StatelessWidget {
   final OrderStatus status;
@@ -215,9 +214,4 @@ class OrderStatusStepper extends StatelessWidget {
     return months[month - 1];
   }
 
-  String _calculateRemainingTime(DateTime deliveryTime) {
-    final now = DateTime.now();
-    final difference = deliveryTime.difference(now);
-    return '${difference.inMinutes} min';
-  }
 }

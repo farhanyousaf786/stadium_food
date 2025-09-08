@@ -15,6 +15,7 @@ import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:stadium_food/src/bloc/order_detail/order_detail_bloc.dart';
 import 'package:stadium_food/src/bloc/profile/profile_bloc.dart';
 import 'package:stadium_food/src/bloc/register/register_bloc.dart';
+import 'package:stadium_food/src/bloc/language/language_bloc.dart';
 
 import 'package:stadium_food/src/bloc/settings/settings_bloc.dart';
 import 'package:stadium_food/src/bloc/testimonial/testimonial_bloc.dart';
@@ -92,6 +93,9 @@ Future<void> main() async {
           create: (context) => OfferBloc(
             offerRepository: OfferRepository(),
           ),
+        ),
+        BlocProvider(
+          create: (context) => LanguageBloc()..add(LanguageLoadStarted()),
         ),
       ],
       child: const MyApp(),

@@ -42,9 +42,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.order.id != null) {
-      context.read<OrderDetailBloc>().add(FetchOrderDetail(widget.order.id!));
-    }
+    context.read<OrderDetailBloc>().add(FetchOrderDetail(widget.order.id));
     // _getCurrentLocation();
   }
 
@@ -170,8 +168,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         children: [
                           Center(
                             child: Text(
-                              "${Translate.get('order')} #${onlyDigits(
-                                  order.id ?? '87651')}",
+                              "${Translate.get('order')} #${onlyDigits(order.id)}",
                               style: CustomTextStyle.size22Weight600Text(
                                   Colors.white),
                             ),
@@ -210,7 +207,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                             boxShadow: [AppStyles.boxShadow7],
                           ),
                           child: QrImageView(
-                            data: order.orderCode ?? 'No Code',
+                            data: order.orderCode,
                             version: QrVersions.auto,
                             size: 160,
                             backgroundColor: Colors.transparent,

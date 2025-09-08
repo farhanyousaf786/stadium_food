@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
-import '../../../data/models/food.dart';
-import '../../../data/repositories/food_repository.dart';
-import '../../../data/services/language_service.dart';
 import '../../../services/location_service.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/repositories/order_repository.dart';
 import 'package:stadium_food/src/data/repositories/shop_repository.dart';
-import 'package:stadium_food/src/presentation/widgets/buttons/back_button.dart';
 import 'package:stadium_food/src/presentation/widgets/items/cart_item.dart';
 import 'package:stadium_food/src/presentation/widgets/price_info_widget.dart';
 import 'package:stadium_food/src/presentation/widgets/dialogs/location_permission_dialog.dart';
@@ -19,7 +15,6 @@ import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../widgets/formatted_price_text.dart';
 
 class NewCartScreen extends StatefulWidget {
   const NewCartScreen({
@@ -33,30 +28,6 @@ class NewCartScreen extends StatefulWidget {
 class _NewCartScreenState extends State<NewCartScreen> {
   final LocationService _locationService = LocationService();
 
-  Future<List<Food>> _fetchRelatedFoods() async {
-    if (OrderRepository.cart.isEmpty) return [];
-
-    final firstItem = OrderRepository.cart.first;
-    final stadiumId = firstItem.stadiumId;
-    final shopId = firstItem.shopIds.isNotEmpty ? firstItem.shopIds.first : '';
-    if (stadiumId.isEmpty || shopId.isEmpty) return [];
-
-    final foods = await FoodRepository().fetchFoods(stadiumId, shopId);
-    // Exclude items already in cart and prioritize same category
-    final cartIds = OrderRepository.cart.map((f) => f.id).toSet();
-    final sameCategory = foods
-        .where(
-            (f) => f.category == firstItem.category && !cartIds.contains(f.id))
-        .toList();
-    final others = foods
-        .where(
-            (f) => f.category != firstItem.category && !cartIds.contains(f.id))
-        .toList();
-    return [
-      ...sameCategory,
-      ...others,
-    ];
-  }
 
   @override
   void initState() {

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:stadium_food/src/bloc/language/language_bloc.dart';
 import 'package:stadium_food/src/bloc/settings/settings_bloc.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
-import 'package:stadium_food/src/data/services/language_service.dart';
 import '../../../../../data/models/user.dart';
 
 class SettingsSection extends StatefulWidget {
@@ -74,7 +75,8 @@ class _SettingsSectionState extends State<SettingsSection> {
       backgroundColor: Colors.transparent,
       builder: (context) {
         final theme = Theme.of(context);
-        String current = LanguageService.getCurrentLanguage();
+        final languageBloc = BlocProvider.of<LanguageBloc>(context);
+        final currentLanguage = languageBloc.state.locale.languageCode;
         return Container(
           decoration: const BoxDecoration(
             color: Colors.white,
@@ -101,20 +103,24 @@ class _SettingsSectionState extends State<SettingsSection> {
               const SizedBox(height: 12),
               RadioListTile<String>(
                 value: 'en',
-                groupValue: current,
+                groupValue: currentLanguage,
                 title: const Text('English'),
                 onChanged: (val) {
+                  if (val != null) {
+                    languageBloc.add(LanguageSelected(val));
+                  }
                   Navigator.pop(context);
-                  if (val != null) widget.settingsBloc.add(ChangeLanguage(val));
                 },
               ),
               RadioListTile<String>(
                 value: 'he',
-                groupValue: current,
+                groupValue: currentLanguage,
                 title: const Text('Hebrew'),
                 onChanged: (val) {
+                  if (val != null) {
+                    languageBloc.add(LanguageSelected(val));
+                  }
                   Navigator.pop(context);
-                  if (val != null) widget.settingsBloc.add(ChangeLanguage(val));
                 },
               ),
               const SizedBox(height: 8),

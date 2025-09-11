@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 
 class GooglePayButton extends StatelessWidget {
   final VoidCallback onPressed;
@@ -27,10 +28,13 @@ class GooglePayButton extends StatelessWidget {
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(Icons.android, size: 22, color: Colors.white),
-            SizedBox(width: 8),
-            Text('Pay with Google Pay', style: TextStyle(fontWeight: FontWeight.w600)),
+          children: [
+            const Icon(Icons.g_mobiledata_rounded, size: 22, color: Colors.white),
+            const SizedBox(width: 8),
+            Text(
+              Translate.get('payWithGooglePay'),
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
           ],
         ),
       ),

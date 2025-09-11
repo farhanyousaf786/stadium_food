@@ -153,8 +153,10 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     final int stripeFixedFee = (30 * 3.7).round(); // ~30¢ to agorot (approx.)
     final int totalStripeFees = stripePercentageFee + stripeFixedFee;
 
-    final double platformShare = amountInCents == 0 ? 0 : basePlatformFees / amountInCents;
-    final double vendorShare = amountInCents == 0 ? 0 : vendorAmount / amountInCents;
+    final double platformShare =
+        amountInCents == 0 ? 0 : basePlatformFees / amountInCents;
+    final double vendorShare =
+        amountInCents == 0 ? 0 : vendorAmount / amountInCents;
 
     final int platformStripeFee = (totalStripeFees * platformShare).round();
     final int vendorStripeFee = (totalStripeFees * vendorShare).round();
@@ -180,7 +182,6 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       'vendorStripeFeeInCents': vendorStripeFee,
       'finalPlatformFeeInCents': finalPlatformFee,
       'finalVendorAmountInCents': finalVendorAmount,
-
       'amountMajor': amountMajor,
       'deliveryFeeMajor': deliveryFeeMajor,
       'tipAmountMajor': tipAmountMajor,
@@ -873,11 +874,6 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
 
                                           makePayment(
                                               OrderRepository.total, seatInfo);
-                                          // BlocProvider.of<OrderBloc>(context).add(
-                                          //   CreateOrder(
-                                          //     seatInfo: seatInfo,
-                                          //   ),
-                                          // );
                                         }
                                       }
                                     }),
@@ -885,8 +881,8 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                               const SizedBox(height: 12),
                               // Wallet pay buttons
                               Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 30),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 30),
                                 child: Column(
                                   children: [
                                     ApplePayButton(
@@ -970,86 +966,120 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                       },
                                     ),
                                     const SizedBox(height: 8),
-                                    GooglePayButton(
-                                      onPressed: () async {
-                                        // Same flow as Apple Pay button
-                                        if (OrderRepository.cart.isEmpty) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                  Translate.get('cartEmpty')),
-                                              backgroundColor:
-                                                  AppColors.errorColor,
-                                            ),
-                                          );
-                                          return;
-                                        }
+                                    Platform.isAndroid
+                                        ? GooglePayButton(
+                                            onPressed: () async {
+                                              final scaffoldMessenger =
+                                                  ScaffoldMessenger.of(context);
+                                              final googlePaySupported =
+                                                  await Stripe.instance
+                                                      .isPlatformPaySupported(
+                                                          googlePay:
+                                                              IsGooglePaySupportedParams());
 
-                                        final currentUser =
-                                            FirebaseAuth.instance.currentUser;
-                                        if (currentUser == null) {
-                                          _showAuthDialog(context);
-                                        } else {
-                                          if (_image != null) {
-                                            showDialog(
-                                              context: context,
-                                              barrierDismissible: false,
-                                              builder: (context) =>
-                                                  const LoadingIndicator(),
-                                            );
-                                            try {
-                                              final uploadedImageUrl =
-                                                  await _firebaseStorageService
-                                                      .uploadImage(
-                                                "tickets/${DateTime.now().millisecondsSinceEpoch}",
-                                                File(_image!.path),
-                                              );
-                                              Navigator.of(context).pop();
-                                              final seatInfo = {
-                                                'ticketImage': uploadedImageUrl,
-                                                'row': '',
-                                                'seatNo': '',
-                                                'stand': '',
-                                                'entrance': '',
-                                                'area': '',
-                                                'seatDetails': '',
-                                              };
-                                              await makePayment(
-                                                  OrderRepository.total,
-                                                  seatInfo);
-                                            } catch (_) {
-                                              Navigator.of(context).pop();
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                SnackBar(
-                                                  content: Text(Translate.get(
-                                                      'imageUploadError')),
-                                                  backgroundColor:
-                                                      AppColors.errorColor,
-                                                ),
-                                              );
-                                            }
-                                          } else if (_formKey.currentState!
-                                              .validate()) {
-                                            final seatInfo = {
-                                              'ticketImage': '',
-                                              'row': _rowController.text,
-                                              'seatNo': _seatNoController.text,
-                                              'area': _areaController.text,
-                                              'entrance':
-                                                  _entranceController.text,
-                                              'stand': _standController.text,
-                                              'seatDetails':
-                                                  _seatDetailsController.text,
-                                            };
-                                            await makePayment(
-                                                OrderRepository.total,
-                                                seatInfo);
-                                          }
-                                        }
-                                      },
-                                    ),
+                                              if (googlePaySupported) {
+                                                // Same flow as Apple Pay button
+                                                if (OrderRepository
+                                                    .cart.isEmpty) {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                          Translate.get(
+                                                              'cartEmpty')),
+                                                      backgroundColor:
+                                                          AppColors.errorColor,
+                                                    ),
+                                                  );
+                                                  return;
+                                                }
+
+                                                final currentUser = FirebaseAuth
+                                                    .instance.currentUser;
+                                                if (currentUser == null) {
+                                                  _showAuthDialog(context);
+                                                } else {
+                                                  if (_image != null) {
+                                                    showDialog(
+                                                      context: context,
+                                                      barrierDismissible: false,
+                                                      builder: (context) =>
+                                                          const LoadingIndicator(),
+                                                    );
+                                                    try {
+                                                      final uploadedImageUrl =
+                                                          await _firebaseStorageService
+                                                              .uploadImage(
+                                                        "tickets/${DateTime.now().millisecondsSinceEpoch}",
+                                                        File(_image!.path),
+                                                      );
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                      final seatInfo = {
+                                                        'ticketImage':
+                                                            uploadedImageUrl,
+                                                        'row': '',
+                                                        'seatNo': '',
+                                                        'stand': '',
+                                                        'entrance': '',
+                                                        'area': '',
+                                                        'seatDetails': '',
+                                                      };
+                                                      await makeGooglePayment(
+                                                          OrderRepository.total,
+                                                          seatInfo);
+                                                    } catch (_) {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                        SnackBar(
+                                                          content: Text(
+                                                              Translate.get(
+                                                                  'imageUploadError')),
+                                                          backgroundColor:
+                                                              AppColors
+                                                                  .errorColor,
+                                                        ),
+                                                      );
+                                                    }
+                                                  } else if (_formKey
+                                                      .currentState!
+                                                      .validate()) {
+                                                    final seatInfo = {
+                                                      'ticketImage': '',
+                                                      'row':
+                                                          _rowController.text,
+                                                      'seatNo':
+                                                          _seatNoController
+                                                              .text,
+                                                      'area':
+                                                          _areaController.text,
+                                                      'entrance':
+                                                          _entranceController
+                                                              .text,
+                                                      'stand':
+                                                          _standController.text,
+                                                      'seatDetails':
+                                                          _seatDetailsController
+                                                              .text,
+                                                    };
+                                                    await makeGooglePayment(
+                                                        OrderRepository.total,
+                                                        seatInfo);
+                                                  }
+                                                }
+                                              } else {
+                                                if (context.mounted) {
+                                                  scaffoldMessenger.showSnackBar(
+                                                    SnackBar(content: Text('Google pay is not supported on this device')),
+                                                  );
+                                                }
+                                              }
+                                            },
+                                          )
+                                        : SizedBox(),
                                   ],
                                 ),
                               ),
@@ -1078,33 +1108,76 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
         'ils',
       );
 
-
       await Stripe.instance
           .initPaymentSheet(
             paymentSheetParameters: SetupPaymentSheetParameters(
-              paymentIntentClientSecret: (paymentIntent?['clientSecret'] ?? paymentIntent?['client_secret']) as String,
+              paymentIntentClientSecret: (paymentIntent?['clientSecret'] ??
+                  paymentIntent?['client_secret']) as String,
               style: ThemeMode.dark,
               merchantDisplayName: 'Fan Munch',
-              // Only enable Apple Pay on iOS to avoid assertion when merchantIdentifier isn't configured
-              applePay: Platform.isIOS
-                  ? const PaymentSheetApplePay(
-                      merchantCountryCode: 'IL',
-                    )
-                  : null,
-              // Only enable Google Pay on Android
-              googlePay: Platform.isAndroid
-                  ? PaymentSheetGooglePay(
-                      merchantCountryCode: 'US',
-                      testEnv: true,
-                      buttonType: PlatformButtonType.book,
-                    )
-                  : null,
             ),
           )
           .then((value) {});
 
       // STEP 3: Display Payment sheet
       displayPaymentSheet(seatInfo);
+    } catch (err) {
+      throw Exception(err);
+    }
+  }
+
+  Future<void> makeGooglePayment(
+      double total, Map<String, String> seatInfo) async {
+    try {
+      // STEP 1: Create Payment Intent
+      paymentIntent = await createPaymentIntent(
+        total.toString(),
+        'ils',
+      );
+
+      await Stripe.instance.confirmPlatformPayPaymentIntent(
+          clientSecret: (paymentIntent?['clientSecret'] ??
+              paymentIntent?['client_secret']) as String,
+          confirmParams: PlatformPayConfirmParams.googlePay(
+            googlePay: GooglePayParams(
+              testEnv: true,
+              merchantName: 'Fan Munch',
+              merchantCountryCode: 'US',
+              currencyCode: 'ils',
+            ),
+          ));
+
+      BlocProvider.of<OrderBloc>(context).add(
+        CreateOrder(
+          seatInfo: seatInfo,
+        ),
+      );
+
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.check_circle,
+                color: Colors.green,
+                size: 100.0,
+              ),
+              const SizedBox(height: 10.0),
+              Text(
+                Translate.get('paymentSuccess'),
+                style: CustomTextStyle.size18Weight600Text(),
+              ),
+              const SizedBox(height: 10.0),
+              Text(
+                "Amount: ${CurrencyService.getCurrencySymbol(CurrencyService.getCurrentCurrency())}${OrderRepository.total.toStringAsFixed(2)}",
+                style: CustomTextStyle.size16Weight400Text(),
+              ),
+            ],
+          ),
+        ),
+      );
     } catch (err) {
       throw Exception(err);
     }
@@ -1126,7 +1199,8 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       print('[PAYMENT] Client-side split: ' + jsonEncode(split));
 
       final response = await http.post(
-        Uri.parse('https://fans-munch-app-2-22c94417114b.herokuapp.com/api/stripe/create-intent'),
+        Uri.parse(
+            'https://fans-munch-app-2-22c94417114b.herokuapp.com/api/stripe/create-intent'),
         headers: const {'Content-Type': 'application/json'},
         body: jsonEncode({
           'amount': amountMajor,
@@ -1159,8 +1233,10 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       // Print raw server response for debugging
       // ignore: avoid_print
       print('[PAYMENT] Server create-intent response: ' + text);
-      if (response.statusCode >= 400 || (data is Map && data['success'] == false)) {
-        throw Exception((data is Map ? data['error'] : null) ?? 'Failed to create payment intent');
+      if (response.statusCode >= 400 ||
+          (data is Map && data['success'] == false)) {
+        throw Exception((data is Map ? data['error'] : null) ??
+            'Failed to create payment intent');
       }
       // Server returns { success, intentId, clientSecret, mode }
       return data;

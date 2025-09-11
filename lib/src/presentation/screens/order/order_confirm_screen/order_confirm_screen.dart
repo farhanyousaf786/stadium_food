@@ -885,7 +885,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                     const EdgeInsets.symmetric(horizontal: 30),
                                 child: Column(
                                   children: [
-                                    Platform.isIOS?     ApplePayButton(
+                                    Platform.isIOS?    ApplePayButton(
                                       onPressed: () async {
                                         // Mirror the same flow as Place Order button
                                         if (OrderRepository.cart.isEmpty) {
@@ -1208,7 +1208,10 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
               ],
               merchantCountryCode: 'US',
               currencyCode: 'ils',
-              cartItems: [],
+              cartItems: [ ApplePayCartSummaryItem.immediate(
+                label: 'Fan Munch Order',
+                amount: total.toString(),
+              )],
             ),
           ),
 

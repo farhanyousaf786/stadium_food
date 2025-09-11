@@ -352,6 +352,9 @@ class AppTranslations {
       'pleaseEnter': 'Please enter',
       'amount': 'Amount',
       'optional': 'optional',
+      // Location errors
+      'locationServiceDisabled': 'Location services are disabled. Please enable them and try again.',
+      'locationError': 'Unable to get your location. Please try again.',
 
       'orderConfirmTitle': 'Confirm Your Order',
 

@@ -7,6 +7,8 @@ import '../../../data/models/food.dart';
 import '../../../data/models/shop.dart';
 import '../../../data/models/stadium.dart';
 import '../../../data/services/language_service.dart';
+import '../../../data/models/category.dart';
+import '../../../data/repositories/category_repository.dart';
 import '../../widgets/buttons/back_button.dart';
 import '../../utils/custom_text_style.dart';
 import '../../utils/app_colors.dart';
@@ -26,7 +28,10 @@ class _FoodListScreenState extends State<FoodListScreen> {
   final List<Food> _foods = [];
   List<Food> _filteredFoods = [];
   final TextEditingController _searchController = TextEditingController();
+  // Holds category ids (from Food.category). We display localized labels for these.
   List<String> _categories = ['All'];
+  // Map of category id -> localized label
+  final Map<String, String> _categoryLabels = {};
   String _selectedCategory = 'All';
 
   // Food type filter
@@ -37,6 +42,8 @@ class _FoodListScreenState extends State<FoodListScreen> {
     'vegan': false,
   };
 
+  final CategoryRepository _categoryRepository = CategoryRepository();
+
   @override
   void initState() {
     super.initState();
@@ -44,6 +51,7 @@ class _FoodListScreenState extends State<FoodListScreen> {
           shopId: widget.shop.id,
           stadiumId: widget.stadium.id,
         ));
+    _loadCategoryLabels();
   }
 
   void _filterFoods(String query) {
@@ -98,6 +106,8 @@ class _FoodListScreenState extends State<FoodListScreen> {
             _filteredFoods = _foods;
             _updateCategories(_foods);
           });
+          // Refresh category labels when foods update (handles language change too)
+          _loadCategoryLabels();
         }
       },
       child: GestureDetector(
@@ -207,7 +217,9 @@ class _FoodListScreenState extends State<FoodListScreen> {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 8.0),
                                     child: Text(
-                                      category,
+                                      category == 'All'
+                                          ? Translate.get('all')
+                                          : (_categoryLabels[category] ?? category),
                                       style: TextStyle(
                                         fontSize: 16,
                                         color: Colors.grey[600],
@@ -414,11 +426,45 @@ class _FoodListScreenState extends State<FoodListScreen> {
   }
 
   void _updateCategories(List<Food> foods) {
-    final categories = foods.map((food) => food.category).toSet().toList();
-    categories.sort();
+    final String lang = LanguageService.getCurrentLanguage();
+    // Unique category ids
+    final List<String> categories = foods
+        .map((food) => food.category)
+        .where((id) => id.trim().isNotEmpty)
+        .toSet()
+        .toList()
+      ..sort();
+
+    // Build id -> localized label map using the first food that matches each id
+    final Map<String, String> labels = {};
+    for (final id in categories) {
+      final Food sample = foods.firstWhere((f) => f.category == id, orElse: () => foods.first);
+      final String localized = sample.categoryFor(lang).isNotEmpty
+          ? sample.categoryFor(lang)
+          : id; // fallback to id if no localized value
+      labels[id] = localized;
+    }
+
     setState(() {
+      _categoryLabels
+        ..clear()
+        ..addAll(labels);
       _categories = ['All', ...categories];
     });
+  }
+
+  Future<void> _loadCategoryLabels() async {
+    try {
+      final String lang = LanguageService.getCurrentLanguage();
+      final List<FoodCategory> categories = await _categoryRepository
+          .fetchCategoriesScoped(stadiumId: widget.stadium.id, shopId: widget.shop.id);
+      if (!mounted) return;
+      setState(() {
+        _categoryLabels.addAll({for (final c in categories) c.docId: c.localizedName(lang)});
+      });
+    } catch (_) {
+      // Silently ignore; fallback to showing IDs
+    }
   }
 
   @override

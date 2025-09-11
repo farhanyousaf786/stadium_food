@@ -60,9 +60,7 @@ class _MenuListState extends State<MenuList> {
           ),
         ),
         const SizedBox(height: 16),
-        SizedBox(
-          height: 200,
-          child: BlocBuilder<MenuBloc, MenuState>(
+        BlocBuilder<MenuBloc, MenuState>(
             builder: (context, state) {
               if (state is MenuLoading) {
                 return const MenuShimmer();
@@ -77,84 +75,101 @@ class _MenuListState extends State<MenuList> {
                   );
                 }
 
-                return ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: _menuItems.length,
-                  itemBuilder: (context, index) {
-                    final food = _menuItems[index];
-                    final lang = LanguageService.getCurrentLanguage();
-                    final localizedName = food.nameFor(lang);
+                return LayoutBuilder(
+                  builder: (context, constraints) {
+                    final double width = constraints.maxWidth;
+                    final int crossAxisCount = width >= 1000
+                        ? 4
+                        : width >= 700
+                            ? 3
+                            : 2;
 
-                    return Container(
-                        width: 180,
-                        margin: const EdgeInsets.only(right: 16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 5),
+                    return GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        mainAxisSpacing: 12,
+                        crossAxisSpacing: 12,
+                        childAspectRatio: 0.9,
+                      ),
+                      itemCount: _menuItems.length,
+                      itemBuilder: (context, index) {
+                        final food = _menuItems[index];
+                        final lang = LanguageService.getCurrentLanguage();
+                        final localizedName = food.nameFor(lang);
+
+                        return Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              '/foods/detail',
-                              arguments: food,
-                            );
-                          },
-                          borderRadius: BorderRadius.circular(8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Food Image
-                              ClipRRect(
-                                borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(8),
-                                  bottom: Radius.circular(8),
-                                ),
-                                child: Image.network(
-                                  food.images.first,
-                                  height: 120,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(12),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      localizedName,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  '/foods/detail',
+                                  arguments: food,
+                                );
+                              },
+                              borderRadius: BorderRadius.circular(8),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  // Food Image
+                                  Expanded(
+                                    child: ClipRRect(
+                                      borderRadius: const BorderRadius.vertical(
+                                        top: Radius.circular(8),
                                       ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                
-                                    const SizedBox(height: 4),
-                                    FormattedPriceText(
-                                      amount: food.price,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.primaryColor,
+                                      child: Image.network(
+                                        food.images.first,
+                                        width: double.infinity,
+                                        fit: BoxFit.cover,
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  SizedBox(height: 10,),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        localizedName,
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+
+                                      const SizedBox(height: 4),
+                                      FormattedPriceText(
+                                        amount: food.price,
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.primaryColor,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 10,),
+                                ],
                               ),
-                            ],
-                          ),
-                        ));
+                            ));
+                      },
+                    );
                   },
                 );
               }
@@ -166,7 +181,7 @@ class _MenuListState extends State<MenuList> {
               return const SizedBox();
             },
           ),
-        ),
+        
       ],
     );
   }

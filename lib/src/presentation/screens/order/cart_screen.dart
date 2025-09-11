@@ -23,6 +23,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../widgets/formatted_price_text.dart';
 import 'package:stadium_food/src/data/services/currency_service.dart';
 
+import '../../widgets/loading_indicator.dart';
+
 class CartScreen extends StatefulWidget {
   final bool isFromHome;
 
@@ -81,6 +83,12 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Future<void> _findNearestShopAndNavigate(BuildContext context) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) =>
+      const LoadingIndicator(),
+    );
     await LocationService.checkLocationPermission();
     final position = await _locationService.getCurrentLocation();
     final nearestDeliveryUserId = await _loadNearbyData();
@@ -92,6 +100,8 @@ class _CartScreenState extends State<CartScreen> {
     OrderRepository.customerLocation =
         GeoPoint(position.latitude, position.longitude);
     if (context.mounted) {
+      Navigator.of(context)
+          .pop();
       Navigator.pushNamed(context, "/tip");
     }
   }
@@ -465,7 +475,10 @@ class _CartScreenState extends State<CartScreen> {
                                   await _findNearestShopAndNavigate(
                                       context);
                                 } catch (e) {
+                                  Navigator.of(context)
+                                      .pop();
                                   await _handleLocationError(context, e);
+
                                 }
                               })
                               : SizedBox(),

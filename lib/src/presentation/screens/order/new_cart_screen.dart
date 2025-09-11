@@ -15,6 +15,8 @@ import 'package:stadium_food/src/presentation/utils/app_styles.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../widgets/loading_indicator.dart';
+
 
 class NewCartScreen extends StatefulWidget {
   const NewCartScreen({
@@ -50,6 +52,13 @@ class _NewCartScreenState extends State<NewCartScreen> {
   }
 
   Future<void> _findNearestShopAndNavigate(BuildContext context) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) =>
+      const LoadingIndicator(),
+    );
+
     await LocationService.checkLocationPermission();
     final position = await _locationService.getCurrentLocation();
     final nearestDeliveryUserId = await _loadNearbyData();
@@ -61,6 +70,8 @@ class _NewCartScreenState extends State<NewCartScreen> {
     OrderRepository.customerLocation =
         GeoPoint(position.latitude, position.longitude);
     if (context.mounted) {
+      Navigator.of(context)
+          .pop();
       Navigator.pushNamed(context, "/tip");
     }
   }
@@ -434,6 +445,8 @@ class _NewCartScreenState extends State<NewCartScreen> {
                                         await _findNearestShopAndNavigate(
                                             context);
                                       } catch (e) {
+                                        Navigator.of(context)
+                                            .pop();
                                         await _handleLocationError(context, e);
                                       }
                                     })

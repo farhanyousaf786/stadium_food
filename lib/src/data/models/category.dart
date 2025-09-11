@@ -26,7 +26,9 @@ class FoodCategory extends Equatable {
         : <String, String>{};
 
     return FoodCategory(
-      docId: (json['docId'] ??'').toString(),
+      docId: (docId != null && docId.isNotEmpty)
+          ? docId
+          : (json['docId'] ?? '').toString(),
       icon: (json['icon'] ?? '').toString(),
       nameMap: parsedNameMap,
     );

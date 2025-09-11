@@ -1130,7 +1130,8 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
         headers: const {'Content-Type': 'application/json'},
         body: jsonEncode({
           'amount': amountMajor,
-          'currency': 'ils',
+          'currency': currency,
+          'automaticPaymentMethods': true,
           'vendorConnectedAccountId': 'acct_1S570jKWPD2pzAyo',
           'deliveryFee': OrderRepository.deliveryFee,
           'tipAmount': OrderRepository.tip,

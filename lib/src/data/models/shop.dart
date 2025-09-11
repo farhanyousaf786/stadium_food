@@ -13,6 +13,7 @@ class Shop {
   final String stadiumId;
   final String stadiumName;
   final List<String> admins;
+  final bool shopAvailability;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -29,6 +30,7 @@ class Shop {
     required this.stadiumName,
     required this.shopUserFcmToken,
     required this.admins,
+    required this.shopAvailability,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -47,6 +49,7 @@ class Shop {
       stadiumName: map['stadiumName'] ?? '',
       shopUserFcmToken: map['shopUserFcmToken'] ?? '',
       admins: List<String>.from(map['admins'] ?? []),
+      shopAvailability: map['shopAvailability'] ?? true,
       createdAt: (map['createdAt'] as Timestamp).toDate(),
       updatedAt: (map['updatedAt'] as Timestamp).toDate(),
     );

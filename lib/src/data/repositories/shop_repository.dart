@@ -32,6 +32,7 @@ class ShopRepository {
       final querySnapshot = await _firestore
           .collection('shops')
           .where('stadiumId', isEqualTo: stadiumId)
+          .where('shopAvailability', isEqualTo: true)
           .get();
 
       if (querySnapshot.docs.isEmpty) {

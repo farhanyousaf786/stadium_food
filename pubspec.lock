@@ -81,14 +81,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.0"
-  chat_gpt_sdk:
-    dependency: "direct main"
-    description:
-      name: chat_gpt_sdk
-      sha256: "3f78ebcd66cd22ed2407f4e69e7a612552670719382ab089e040338aa9d5aec0"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.8"
   checked_yaml:
     dependency: transitive
     description:
@@ -503,10 +495,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_stripe
-      sha256: a474b283f4b07e8973687514bf48762e618073b0d6b7acc45cea9a60466d4f8c
+      sha256: febc0ad31f26fb4c7710fd907519b1f7a15f02536f03c4879cb0f9c3ae032e6f
       url: "https://pub.dev"
     source: hosted
-    version: "11.5.0"
+    version: "12.0.2"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -537,10 +529,10 @@ packages:
     dependency: transitive
     description:
       name: freezed_annotation
-      sha256: c2e2d632dd9b8a2b7751117abcfc2b4888ecfe181bd9fca7170d9ef02e595fe2
+      sha256: "7294967ff0a6d98638e7acb774aac3af2550777accd8149c90af5b014e6d44d8"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.4"
+    version: "3.1.0"
   geoclue:
     dependency: transitive
     description:
@@ -669,22 +661,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.5.12+2"
-  google_mlkit_commons:
-    dependency: transitive
-    description:
-      name: google_mlkit_commons
-      sha256: "8f40fbac10685cad4715d11e6a0d86837d9ad7168684dfcad29610282a88e67a"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.11.0"
-  google_mlkit_text_recognition:
-    dependency: "direct main"
-    description:
-      name: google_mlkit_text_recognition
-      sha256: "96173ad4dd7fd06c660e22ac3f9e9f1798a517fe7e48bee68eeec83853224224"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.15.0"
   googleapis_auth:
     dependency: "direct main"
     description:
@@ -841,26 +817,26 @@ packages:
     dependency: transitive
     description:
       name: leak_tracker
-      sha256: "8dcda04c3fc16c14f48a7bb586d4be1f0d1572731b6d81d51772ef47c02081e0"
+      sha256: "6bb818ecbdffe216e81182c2f0714a2e62b593f4a4f13098713ff1685dfb6ab0"
       url: "https://pub.dev"
     source: hosted
-    version: "11.0.1"
+    version: "10.0.9"
   leak_tracker_flutter_testing:
     dependency: transitive
     description:
       name: leak_tracker_flutter_testing
-      sha256: "1dbc140bb5a23c75ea9c4811222756104fbcd1a27173f0c34ca01e16bea473c1"
+      sha256: f8b613e7e6a13ec79cfdc0e97638fddb3ab848452eff057653abd3edba760573
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.10"
+    version: "3.0.9"
   leak_tracker_testing:
     dependency: transitive
     description:
       name: leak_tracker_testing
-      sha256: "8d5a2d49f4a66b49744b23b018848400d23e54caf9463f4eb20df3eb8acb2eb1"
+      sha256: "6ba465d5d76e67ddf503e1161d1f4a6bc42306f9d66ca1e8f079a47290fb06d3"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.2"
+    version: "3.0.1"
   lints:
     dependency: transitive
     description:
@@ -1278,26 +1254,26 @@ packages:
     dependency: transitive
     description:
       name: stripe_android
-      sha256: a666352e0c20753ecd8feebb5944882bf597167be4f020641266515a495bd55f
+      sha256: b331722c9b1af59706f3b1bacb78fbd2e3615874103f897a906422e600becfc2
       url: "https://pub.dev"
     source: hosted
-    version: "11.5.0"
+    version: "12.0.1"
   stripe_ios:
     dependency: transitive
     description:
       name: stripe_ios
-      sha256: "0f7afed3ac61e544e7525da9b692b23d93e762d56f6c9aa7f77fc6d9a686a65d"
+      sha256: "5b2d968515baf73073ec29d12b498620f186f375042ff7a74ccf215d2b4bf37d"
       url: "https://pub.dev"
     source: hosted
-    version: "11.5.0"
+    version: "12.0.1"
   stripe_platform_interface:
     dependency: transitive
     description:
       name: stripe_platform_interface
-      sha256: "23c10f3875da07f85a6196fcb676e64c767ad2d04ec73ba4e941ac797a4ee4d3"
+      sha256: b3536d9e52b419a6fcbe6d8b372dfdddd32631ac7f43a291829a1f201e42f142
       url: "https://pub.dev"
     source: hosted
-    version: "11.5.0"
+    version: "12.0.0"
   term_glyph:
     dependency: transitive
     description:
@@ -1310,10 +1286,10 @@ packages:
     dependency: transitive
     description:
       name: test_api
-      sha256: "522f00f556e73044315fa4585ec3270f1808a4b186c936e612cab0b565ff1e00"
+      sha256: fb31f383e2ee25fbbfe06b40fe21e1e458d14080e3c67e7ba0acfde4df4e0bbd
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.6"
+    version: "0.7.4"
   timezone:
     dependency: transitive
     description:
@@ -1446,10 +1422,10 @@ packages:
     dependency: transitive
     description:
       name: vector_math
-      sha256: d530bd74fea330e6e364cda7a85019c434070188383e1cd8d9777ee586914c5b
+      sha256: "80b3257d1492ce4d091729e3a67a60407d227c27241d6927be0130c98e741803"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.0"
+    version: "2.1.4"
   vm_service:
     dependency: transitive
     description:
@@ -1507,5 +1483,5 @@ packages:
     source: hosted
     version: "3.1.3"
 sdks:
-  dart: ">=3.8.0 <4.0.0"
+  dart: ">=3.8.1 <4.0.0"
   flutter: ">=3.29.0"

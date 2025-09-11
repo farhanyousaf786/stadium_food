@@ -97,8 +97,6 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
   XFile? _image;
   String imageUrl = '';
 
-
-
   // pick image from gallery
   Future<void> _pickImageFromGallery() async {
     _image = await ImagePicker().pickImage(
@@ -106,9 +104,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       imageQuality: 30,
     );
 
-    if (_image != null) {
-
-    }
+    if (_image != null) {}
 
     setState(() {});
   }
@@ -120,9 +116,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       imageQuality: 30,
     );
 
-    if (_image != null) {
-
-    }
+    if (_image != null) {}
 
     setState(() {});
   }
@@ -568,7 +562,9 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
 
               Container(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                margin: EdgeInsets.only(top: size.height * 0.5,),
+                margin: EdgeInsets.only(
+                  top: size.height * 0.5,
+                ),
                 child: Form(
                     key: _formKey,
                     child: Column(
@@ -577,7 +573,8 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                           children: [
                             const Expanded(child: Divider(thickness: 1)),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
                               child: Text(
                                 Translate.get('or'),
                                 style: CustomTextStyle.size14Weight600Text(
@@ -614,13 +611,15 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                   builder: (formState) {
                                     final gallery =
                                         Translate.get('standOptionGallery');
-                                    final main = Translate.get('standOptionMain');
+                                    final main =
+                                        Translate.get('standOptionMain');
                                     return DropdownButtonFormField<String>(
                                       value: _standController.text.isEmpty
                                           ? null
                                           : _standController.text,
                                       items: <String>[gallery, main]
-                                          .map((value) => DropdownMenuItem<String>(
+                                          .map((value) =>
+                                              DropdownMenuItem<String>(
                                                 value: value,
                                                 child: Text(value),
                                               ))
@@ -628,7 +627,8 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                       onChanged: (value) {
                                         setState(() {
                                           _standController.text = value ?? '';
-                                          formState.didChange(_standController.text);
+                                          formState
+                                              .didChange(_standController.text);
                                         });
                                       },
                                       decoration: InputDecoration(
@@ -639,11 +639,14 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                         labelStyle: const TextStyle(
                                           color: AppColors.primaryColor,
                                         ),
-                                        hintStyle: CustomTextStyle.size14Weight400Text(
+                                        hintStyle:
+                                            CustomTextStyle.size14Weight400Text(
                                           AppColors().secondaryTextColor,
                                         ),
-                                        enabledBorder: AppStyles().defaultEnabledBorder,
-                                        focusedBorder: AppStyles.defaultFocusedBorder(),
+                                        enabledBorder:
+                                            AppStyles().defaultEnabledBorder,
+                                        focusedBorder:
+                                            AppStyles.defaultFocusedBorder(),
                                         errorText: formState.errorText,
                                       ),
                                     );
@@ -724,9 +727,10 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
                                           SnackBar(
-                                            content:
-                                                Text(Translate.get('cartEmpty')),
-                                            backgroundColor: AppColors.errorColor,
+                                            content: Text(
+                                                Translate.get('cartEmpty')),
+                                            backgroundColor:
+                                                AppColors.errorColor,
                                           ),
                                         );
                                         return;
@@ -772,13 +776,8 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                               'seatDetails': '',
                                             };
 
-                                            //  makePayment(OrderRepository.total, seatInfo);
-                                            BlocProvider.of<OrderBloc>(context)
-                                                .add(
-                                              CreateOrder(
-                                                seatInfo: seatInfo,
-                                              ),
-                                            );
+                                            makePayment(OrderRepository.total,
+                                                seatInfo);
                                           } catch (e) {
                                             // Hide loading
                                             Navigator.of(context).pop();
@@ -802,24 +801,27 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                             'row': _rowController.text,
                                             'seatNo': _seatNoController.text,
                                             'area': _areaController.text,
-                                            'entrance': _entranceController.text,
+                                            'entrance':
+                                                _entranceController.text,
                                             'stand': _standController.text,
                                             'seatDetails':
                                                 _seatDetailsController.text,
                                           };
 
-                                          //   makePayment(OrderRepository.total, seatInfo);
-                                          BlocProvider.of<OrderBloc>(context).add(
-                                            CreateOrder(
-                                              seatInfo: seatInfo,
-                                            ),
-                                          );
+                                          makePayment(
+                                              OrderRepository.total, seatInfo);
+                                          // BlocProvider.of<OrderBloc>(context).add(
+                                          //   CreateOrder(
+                                          //     seatInfo: seatInfo,
+                                          //   ),
+                                          // );
                                         }
                                       }
                                     }),
                               ),
-
-                              SizedBox(height: 50,),
+                              SizedBox(
+                                height: 50,
+                              ),
                             ],
                           );
                         })
@@ -837,26 +839,27 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
 
   Future<void> makePayment(double total, Map<String, String> seatInfo) async {
     try {
-      // Convert total to USD if needed
-      final currentCurrency = CurrencyService.getCurrentCurrency();
-      double amountInUSD = total;
-      if (currentCurrency != 'USD') {
-        amountInUSD = CurrencyService.convertToUSD(total, currentCurrency);
-      }
-
       // STEP 1: Create Payment Intent
       paymentIntent = await createPaymentIntent(
-        amountInUSD.toString(),
-        'USD', // Always use USD for Stripe
+        total.toString(),
+        'ils',
       );
 
-      // STEP 2: Initialize Payment Sheet
+
       await Stripe.instance
           .initPaymentSheet(
             paymentSheetParameters: SetupPaymentSheetParameters(
-              paymentIntentClientSecret: paymentIntent!['client_secret'],
+              paymentIntentClientSecret: (paymentIntent?['clientSecret'] ?? paymentIntent?['client_secret']) as String,
               style: ThemeMode.dark,
               merchantDisplayName: 'Fan Munch',
+              // applePay: PaymentSheetApplePay(
+              //   merchantCountryCode: 'US',
+              // ),
+              googlePay: PaymentSheetGooglePay(
+                merchantCountryCode: 'US',
+                testEnv: true,
+                buttonType: PlatformButtonType.book,
+              ),
             ),
           )
           .then((value) {});
@@ -870,27 +873,27 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
 
   Future createPaymentIntent(String amount, String currency) async {
     try {
-      Map<String, dynamic> body = {
-        'amount': calculateAmount(amount),
-        'currency': 'USD', // Always use USD
-        'payment_method_types[]': 'card',
-        'description': 'Fan Munch Order',
-        'metadata': {
-          'original_currency': currency,
-          'original_amount': amount,
-        }
-      };
-
-      var response = await http.post(
-        Uri.parse('https://api.stripe.com/v1/payment_intents'),
-        headers: {
-          'Authorization':
-              'Bearer sk_test_51NlxmGFPMwBwVLKDNEYJxJJXZGOqnTvXQwwNhEWpRRlXZJLZKtQvKEfQQpJbhkVNVHzXzuEPXrTFHFZbYQOXJGQf00Vq7HB0Ys',
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: body,
+      // Call backend to create PaymentIntent (with Connect split on server)
+      final int amountMinor = int.parse(calculateAmount(amount));
+      final response = await http.post(
+        Uri.parse('https://fans-munch-app-2-22c94417114b.herokuapp.com/api/stripe/create-intent'),
+        headers: const {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'amount': amountMinor,
+          'currency': currency,
+          'connectedAccountId': 'acct_1S570jKWPD2pzAyo',
+          'applicationFee': 4,
+          'metadata': {
+            'original_currency': currency,
+            'original_amount': amount,
+          },
+        }),
       );
-      return json.decode(response.body);
+      final body = jsonDecode(response.body);
+      if (response.statusCode >= 400) {
+        throw Exception(body['error'] ?? 'Failed to create PaymentIntent');
+      }
+      return body; // { clientSecret, id, status }
     } catch (err) {
       throw Exception(err.toString());
     }
@@ -898,7 +901,6 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
 
   String calculateAmount(String amount) {
     final doubleAmount = double.parse(amount);
-    // Convert to smallest currency unit (cents for USD)
     final intAmount = (doubleAmount * 100).round();
     return intAmount.toString();
   }

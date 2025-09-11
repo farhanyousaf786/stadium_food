@@ -48,7 +48,8 @@ class FirestoreDatabase {
       ) async {
     final query = _firebaseFirestore
         .collection('menuItems')
-        .where('stadiumId', isEqualTo: stadiumId);
+        .where('stadiumId', isEqualTo: stadiumId)
+        .where('isAvailable', isEqualTo: true);
 
 
 

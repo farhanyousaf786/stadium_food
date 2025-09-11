@@ -889,7 +889,6 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                       ],
                     )),
               )
-
               // OR separator
             ],
           ),

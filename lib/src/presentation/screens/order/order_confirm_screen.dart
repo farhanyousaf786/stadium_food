@@ -943,6 +943,9 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
         OrderRepository.deliveryFee,
         OrderRepository.tip,
       );
+      // Print client-side split for debugging
+      // ignore: avoid_print
+      print('[PAYMENT] Client-side split: ' + jsonEncode(split));
 
       final response = await http.post(
         Uri.parse('https://fans-munch-app-2-22c94417114b.herokuapp.com/api/stripe/create-intent'),
@@ -974,6 +977,9 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
 
       final String text = response.body;
       final dynamic data = jsonDecode(text);
+      // Print raw server response for debugging
+      // ignore: avoid_print
+      print('[PAYMENT] Server create-intent response: ' + text);
       if (response.statusCode >= 400 || (data is Map && data['success'] == false)) {
         throw Exception((data is Map ? data['error'] : null) ?? 'Failed to create payment intent');
       }

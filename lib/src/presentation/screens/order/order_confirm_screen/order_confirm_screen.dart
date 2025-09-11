@@ -19,11 +19,13 @@ import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:hive/hive.dart';
 
-import '../../../data/repositories/order_repository.dart';
-import '../../../data/services/firebase_storage.dart';
-import '../../../data/services/currency_service.dart';
-import '../../utils/app_styles.dart';
-import '../../widgets/buttons/primary_button.dart';
+import '../../../../data/repositories/order_repository.dart';
+import '../../../../data/services/firebase_storage.dart';
+import '../../../../data/services/currency_service.dart';
+import '../../../utils/app_styles.dart';
+import '../../../widgets/buttons/primary_button.dart';
+import 'widgets/apple_pay_button.dart';
+import 'widgets/google_pay_button.dart';
 
 class OrderConfirmScreen extends StatefulWidget {
   const OrderConfirmScreen({super.key});
@@ -880,6 +882,177 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                       }
                                     }),
                               ),
+                              const SizedBox(height: 12),
+                              // Wallet pay buttons
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 30),
+                                child: Column(
+                                  children: [
+                                    ApplePayButton(
+                                      onPressed: () async {
+                                        // Mirror the same flow as Place Order button
+                                        if (OrderRepository.cart.isEmpty) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                  Translate.get('cartEmpty')),
+                                              backgroundColor:
+                                                  AppColors.errorColor,
+                                            ),
+                                          );
+                                          return;
+                                        }
+
+                                        final currentUser =
+                                            FirebaseAuth.instance.currentUser;
+                                        if (currentUser == null) {
+                                          _showAuthDialog(context);
+                                        } else {
+                                          if (_image != null) {
+                                            showDialog(
+                                              context: context,
+                                              barrierDismissible: false,
+                                              builder: (context) =>
+                                                  const LoadingIndicator(),
+                                            );
+                                            try {
+                                              final uploadedImageUrl =
+                                                  await _firebaseStorageService
+                                                      .uploadImage(
+                                                "tickets/${DateTime.now().millisecondsSinceEpoch}",
+                                                File(_image!.path),
+                                              );
+                                              Navigator.of(context).pop();
+                                              final seatInfo = {
+                                                'ticketImage': uploadedImageUrl,
+                                                'row': '',
+                                                'seatNo': '',
+                                                'stand': '',
+                                                'entrance': '',
+                                                'area': '',
+                                                'seatDetails': '',
+                                              };
+                                              await makePayment(
+                                                  OrderRepository.total,
+                                                  seatInfo);
+                                            } catch (_) {
+                                              Navigator.of(context).pop();
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(Translate.get(
+                                                      'imageUploadError')),
+                                                  backgroundColor:
+                                                      AppColors.errorColor,
+                                                ),
+                                              );
+                                            }
+                                          } else if (_formKey.currentState!
+                                              .validate()) {
+                                            final seatInfo = {
+                                              'ticketImage': '',
+                                              'row': _rowController.text,
+                                              'seatNo': _seatNoController.text,
+                                              'area': _areaController.text,
+                                              'entrance':
+                                                  _entranceController.text,
+                                              'stand': _standController.text,
+                                              'seatDetails':
+                                                  _seatDetailsController.text,
+                                            };
+                                            await makePayment(
+                                                OrderRepository.total,
+                                                seatInfo);
+                                          }
+                                        }
+                                      },
+                                    ),
+                                    const SizedBox(height: 8),
+                                    GooglePayButton(
+                                      onPressed: () async {
+                                        // Same flow as Apple Pay button
+                                        if (OrderRepository.cart.isEmpty) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                  Translate.get('cartEmpty')),
+                                              backgroundColor:
+                                                  AppColors.errorColor,
+                                            ),
+                                          );
+                                          return;
+                                        }
+
+                                        final currentUser =
+                                            FirebaseAuth.instance.currentUser;
+                                        if (currentUser == null) {
+                                          _showAuthDialog(context);
+                                        } else {
+                                          if (_image != null) {
+                                            showDialog(
+                                              context: context,
+                                              barrierDismissible: false,
+                                              builder: (context) =>
+                                                  const LoadingIndicator(),
+                                            );
+                                            try {
+                                              final uploadedImageUrl =
+                                                  await _firebaseStorageService
+                                                      .uploadImage(
+                                                "tickets/${DateTime.now().millisecondsSinceEpoch}",
+                                                File(_image!.path),
+                                              );
+                                              Navigator.of(context).pop();
+                                              final seatInfo = {
+                                                'ticketImage': uploadedImageUrl,
+                                                'row': '',
+                                                'seatNo': '',
+                                                'stand': '',
+                                                'entrance': '',
+                                                'area': '',
+                                                'seatDetails': '',
+                                              };
+                                              await makePayment(
+                                                  OrderRepository.total,
+                                                  seatInfo);
+                                            } catch (_) {
+                                              Navigator.of(context).pop();
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(Translate.get(
+                                                      'imageUploadError')),
+                                                  backgroundColor:
+                                                      AppColors.errorColor,
+                                                ),
+                                              );
+                                            }
+                                          } else if (_formKey.currentState!
+                                              .validate()) {
+                                            final seatInfo = {
+                                              'ticketImage': '',
+                                              'row': _rowController.text,
+                                              'seatNo': _seatNoController.text,
+                                              'area': _areaController.text,
+                                              'entrance':
+                                                  _entranceController.text,
+                                              'stand': _standController.text,
+                                              'seatDetails':
+                                                  _seatDetailsController.text,
+                                            };
+                                            await makePayment(
+                                                OrderRepository.total,
+                                                seatInfo);
+                                          }
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
                               SizedBox(
                                 height: 50,
                               ),
@@ -912,14 +1085,20 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
               paymentIntentClientSecret: (paymentIntent?['clientSecret'] ?? paymentIntent?['client_secret']) as String,
               style: ThemeMode.dark,
               merchantDisplayName: 'Fan Munch',
-              // applePay: PaymentSheetApplePay(
-              //   merchantCountryCode: 'US',
-              // ),
-              googlePay: PaymentSheetGooglePay(
-                merchantCountryCode: 'US',
-                testEnv: true,
-                buttonType: PlatformButtonType.book,
-              ),
+              // Only enable Apple Pay on iOS to avoid assertion when merchantIdentifier isn't configured
+              applePay: Platform.isIOS
+                  ? const PaymentSheetApplePay(
+                      merchantCountryCode: 'IL',
+                    )
+                  : null,
+              // Only enable Google Pay on Android
+              googlePay: Platform.isAndroid
+                  ? PaymentSheetGooglePay(
+                      merchantCountryCode: 'US',
+                      testEnv: true,
+                      buttonType: PlatformButtonType.book,
+                    )
+                  : null,
             ),
           )
           .then((value) {});

@@ -19,7 +19,7 @@ import 'package:stadium_food/src/presentation/screens/home/vouchers_screen.dart'
 import 'package:stadium_food/src/presentation/screens/onboarding/onboarding_first_screen.dart';
 import 'package:stadium_food/src/presentation/screens/onboarding/onboarding_second_screen.dart';
 import 'package:stadium_food/src/presentation/screens/order/cart_screen.dart';
-import 'package:stadium_food/src/presentation/screens/order/order_confirm_screen.dart';
+import 'package:stadium_food/src/presentation/screens/order/order_confirm_screen/order_confirm_screen.dart';
 import 'package:stadium_food/src/presentation/screens/order/order_details_screen.dart';
 import 'package:stadium_food/src/presentation/screens/order/order_list_screen.dart';
 import 'package:stadium_food/src/presentation/screens/splash_screen.dart';

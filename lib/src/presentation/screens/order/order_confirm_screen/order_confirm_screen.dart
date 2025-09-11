@@ -885,7 +885,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                     const EdgeInsets.symmetric(horizontal: 30),
                                 child: Column(
                                   children: [
-                                    ApplePayButton(
+                                    Platform.isIOS?     ApplePayButton(
                                       onPressed: () async {
                                         // Mirror the same flow as Place Order button
                                         if (OrderRepository.cart.isEmpty) {
@@ -930,7 +930,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                                 'area': '',
                                                 'seatDetails': '',
                                               };
-                                              await makePayment(
+                                              await makeApplePayment(
                                                   OrderRepository.total,
                                                   seatInfo);
                                             } catch (_) {
@@ -958,13 +958,13 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                               'seatDetails':
                                                   _seatDetailsController.text,
                                             };
-                                            await makePayment(
+                                            await makeApplePayment(
                                                 OrderRepository.total,
                                                 seatInfo);
                                           }
                                         }
                                       },
-                                    ),
+                                    ) :SizedBox(),
                                     const SizedBox(height: 8),
                                     Platform.isAndroid
                                         ? GooglePayButton(
@@ -1072,8 +1072,11 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                                 }
                                               } else {
                                                 if (context.mounted) {
-                                                  scaffoldMessenger.showSnackBar(
-                                                    SnackBar(content: Text('Google pay is not supported on this device')),
+                                                  scaffoldMessenger
+                                                      .showSnackBar(
+                                                    SnackBar(
+                                                        content: Text(
+                                                            'Google pay is not supported on this device')),
                                                   );
                                                 }
                                               }
@@ -1146,6 +1149,70 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
               currencyCode: 'ils',
             ),
           ));
+
+      BlocProvider.of<OrderBloc>(context).add(
+        CreateOrder(
+          seatInfo: seatInfo,
+        ),
+      );
+
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.check_circle,
+                color: Colors.green,
+                size: 100.0,
+              ),
+              const SizedBox(height: 10.0),
+              Text(
+                Translate.get('paymentSuccess'),
+                style: CustomTextStyle.size18Weight600Text(),
+              ),
+              const SizedBox(height: 10.0),
+              Text(
+                "Amount: ${CurrencyService.getCurrencySymbol(CurrencyService.getCurrentCurrency())}${OrderRepository.total.toStringAsFixed(2)}",
+                style: CustomTextStyle.size16Weight400Text(),
+              ),
+            ],
+          ),
+        ),
+      );
+    } catch (err) {
+      throw Exception(err);
+    }
+  }
+
+  Future<void> makeApplePayment(
+      double total, Map<String, String> seatInfo) async {
+    try {
+      // STEP 1: Create Payment Intent
+      paymentIntent = await createPaymentIntent(
+        total.toString(),
+        'ils',
+      );
+
+      await Stripe.instance.confirmPlatformPayPaymentIntent(
+          clientSecret: (paymentIntent?['clientSecret'] ??
+              paymentIntent?['client_secret']) as String,
+          confirmParams: PlatformPayConfirmParams.applePay(
+            applePay: ApplePayParams(
+              requiredShippingAddressFields: [
+                ApplePayContactFieldsType.name,
+                ApplePayContactFieldsType.postalAddress,
+                ApplePayContactFieldsType.emailAddress,
+                ApplePayContactFieldsType.phoneNumber,
+              ],
+              merchantCountryCode: 'US',
+              currencyCode: 'ils',
+              cartItems: [],
+            ),
+          ),
+
+      );
 
       BlocProvider.of<OrderBloc>(context).add(
         CreateOrder(

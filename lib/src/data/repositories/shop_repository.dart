@@ -10,6 +10,7 @@ class ShopRepository {
     final querySnapshot = await _firestore
         .collection('shops')
         .where('stadiumId', isEqualTo: stadiumId)
+        .where('shopAvailability',isEqualTo: true)
         .get();
     return querySnapshot.docs
         .map((doc) => Shop.fromMap(doc.id, doc.data()))

@@ -130,6 +130,67 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     }
   }
 
+  // Mirrors fee split math in server/controllers/stripeController.js
+  Map<String, dynamic> _computeStripeSplit(
+    double amountMajor,
+    double deliveryFeeMajor,
+    double tipAmountMajor,
+  ) {
+    // Convert to smallest currency unit (agorot/cents)
+    final int amountInCents = (amountMajor * 100).round();
+    final int deliveryFeeInCents = (deliveryFeeMajor * 100).round();
+    final int tipAmountInCents = (tipAmountMajor * 100).round();
+
+    final int basePlatformFees = deliveryFeeInCents + tipAmountInCents;
+
+    int vendorAmount = amountInCents - basePlatformFees;
+    if (vendorAmount < 0) vendorAmount = 0;
+
+    // Estimated Stripe fees (approximation like server: 2.9% + 30¢ converted to agorot)
+    final int stripePercentageFee = (amountInCents * 0.029).round();
+    final int stripeFixedFee = (30 * 3.7).round(); // ~30¢ to agorot (approx.)
+    final int totalStripeFees = stripePercentageFee + stripeFixedFee;
+
+    final double platformShare = amountInCents == 0 ? 0 : basePlatformFees / amountInCents;
+    final double vendorShare = amountInCents == 0 ? 0 : vendorAmount / amountInCents;
+
+    final int platformStripeFee = (totalStripeFees * platformShare).round();
+    final int vendorStripeFee = (totalStripeFees * vendorShare).round();
+
+    final int finalPlatformFee = basePlatformFees + vendorStripeFee;
+    final int finalVendorAmount = vendorAmount - vendorStripeFee;
+
+    // Return both cents and major values for convenience
+    double toMajor(int cents) => cents / 100.0;
+
+    return {
+      'amountInCents': amountInCents,
+      'deliveryFeeInCents': deliveryFeeInCents,
+      'tipAmountInCents': tipAmountInCents,
+      'basePlatformFeesInCents': basePlatformFees,
+      'vendorAmountInCents': vendorAmount,
+      'stripePercentageFeeInCents': stripePercentageFee,
+      'stripeFixedFeeInCents': stripeFixedFee,
+      'totalStripeFeesInCents': totalStripeFees,
+      'platformShare': platformShare,
+      'vendorShare': vendorShare,
+      'platformStripeFeeInCents': platformStripeFee,
+      'vendorStripeFeeInCents': vendorStripeFee,
+      'finalPlatformFeeInCents': finalPlatformFee,
+      'finalVendorAmountInCents': finalVendorAmount,
+
+      'amountMajor': amountMajor,
+      'deliveryFeeMajor': deliveryFeeMajor,
+      'tipAmountMajor': tipAmountMajor,
+      'basePlatformFeeMajor': toMajor(basePlatformFees),
+      'estimatedStripeFeesMajor': toMajor(totalStripeFees),
+      'platformStripeFeeMajor': toMajor(platformStripeFee),
+      'vendorStripeFeeMajor': toMajor(vendorStripeFee),
+      'finalPlatformFeeMajor': toMajor(finalPlatformFee),
+      'finalVendorReceivesMajor': toMajor(finalVendorAmount),
+    };
+  }
+
   // Show dialog to prompt user to login or register
   void _showAuthDialog(BuildContext context) {
     showDialog(
@@ -873,27 +934,51 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
 
   Future createPaymentIntent(String amount, String currency) async {
     try {
-      // Call backend to create PaymentIntent (with Connect split on server)
-      final int amountMinor = int.parse(calculateAmount(amount));
+      // Match web app's server contract: amount in major units + fee breakdown
+      final double amountMajor = double.tryParse(amount) ?? 0.0;
+
+      // Compute the same fee split locally (mirrors server/controllers/stripeController.js)
+      final split = _computeStripeSplit(
+        amountMajor,
+        OrderRepository.deliveryFee,
+        OrderRepository.tip,
+      );
+
       final response = await http.post(
         Uri.parse('https://fans-munch-app-2-22c94417114b.herokuapp.com/api/stripe/create-intent'),
         headers: const {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'amount': amountMinor,
-          'currency': currency,
-          'connectedAccountId': 'acct_1S570jKWPD2pzAyo',
-          'applicationFee': 4,
-          'metadata': {
-            'original_currency': currency,
-            'original_amount': amount,
-          },
+          'amount': amountMajor,
+          'currency': 'ils',
+          'vendorConnectedAccountId': 'acct_1S570jKWPD2pzAyo',
+          'deliveryFee': OrderRepository.deliveryFee,
+          'tipAmount': OrderRepository.tip,
+          // Client-side computed breakdown (server may ignore; useful for debugging/analytics)
+          'clientComputed': {
+            'amountMajor': amountMajor,
+            'deliveryFeeMajor': split['deliveryFeeMajor'],
+            'tipAmountMajor': split['tipAmountMajor'],
+            'basePlatformFeeMajor': split['basePlatformFeeMajor'],
+            'estimatedStripeFeesMajor': split['estimatedStripeFeesMajor'],
+            'platformStripeFeeMajor': split['platformStripeFeeMajor'],
+            'vendorStripeFeeMajor': split['vendorStripeFeeMajor'],
+            'finalPlatformFeeMajor': split['finalPlatformFeeMajor'],
+            'finalVendorReceivesMajor': split['finalVendorReceivesMajor'],
+            'shares': {
+              'platformShare': split['platformShare'],
+              'vendorShare': split['vendorShare'],
+            }
+          }
         }),
       );
-      final body = jsonDecode(response.body);
-      if (response.statusCode >= 400) {
-        throw Exception(body['error'] ?? 'Failed to create PaymentIntent');
+
+      final String text = response.body;
+      final dynamic data = jsonDecode(text);
+      if (response.statusCode >= 400 || (data is Map && data['success'] == false)) {
+        throw Exception((data is Map ? data['error'] : null) ?? 'Failed to create payment intent');
       }
-      return body; // { clientSecret, id, status }
+      // Server returns { success, intentId, clientSecret, mode }
+      return data;
     } catch (err) {
       throw Exception(err.toString());
     }

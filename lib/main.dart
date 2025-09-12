@@ -26,17 +26,23 @@ import 'package:stadium_food/src/data/repositories/offer_repository.dart';
 import 'package:stadium_food/src/data/repositories/order_repository.dart';
 import 'package:stadium_food/src/data/services/hive_adapters.dart';
 import 'package:stadium_food/src/services/notification_class.dart';
+import 'package:stadium_food/src/core/config/stripe_config.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Stripe.publishableKey = "pk_test_51RyfgTKj6LjssenC2Wy0Omeu3bQMa2hsc33riQoi43TU7AyIAQ08zELQWLOBvcRBgCyKMYIQ0rhOOsr0mTqanrse00W2xoKNg7";
-  Stripe.merchantIdentifier = 'merchant.com.fanmunch';
-  await Stripe.instance.applySettings();
-
+  
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  
+  // Initialize Stripe config with Firebase Remote Config
+  await StripeConfig.initialize();
+  
+  Stripe.publishableKey = StripeConfig.publishableKey;
+  Stripe.merchantIdentifier = 'merchant.com.fanmunch';
+  await Stripe.instance.applySettings();
+
   await Hive.initFlutter();
   Hive.registerAdapter(FirestoreDocumentReferenceAdapter());
 //  Hive.registerAdapter(RestaurantAdapter());

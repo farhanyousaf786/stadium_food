@@ -17,6 +17,7 @@ import 'package:stadium_food/src/presentation/widgets/price_info_widget.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
+import 'package:stadium_food/src/core/config/stripe_config.dart';
 import 'package:hive/hive.dart';
 
 import '../../../../data/repositories/order_repository.dart';
@@ -378,6 +379,22 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                               style: CustomTextStyle.size18Weight600Text(
                                 Colors.white,
                               ),
+                            ),
+                          ),
+                          // Stripe Mode Status Dot
+                          Container(
+                            width: 12,
+                            height: 12,
+                            decoration: BoxDecoration(
+                              color: StripeConfig.isLiveMode ? Colors.green : Colors.red,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: (StripeConfig.isLiveMode ? Colors.green : Colors.red).withOpacity(0.5),
+                                  blurRadius: 4,
+                                  spreadRadius: 1,
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -1329,7 +1346,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
           'amount': amountMajor,
           'currency': currency,
           'automaticPaymentMethods': true,
-          'vendorConnectedAccountId': 'acct_1S570jKWPD2pzAyo',
+          'vendorConnectedAccountId': StripeConfig.connectedAccountId,
           'deliveryFee': OrderRepository.deliveryFee,
           'tipAmount': OrderRepository.tip,
           // Client-side computed breakdown (server may ignore; useful for debugging/analytics)

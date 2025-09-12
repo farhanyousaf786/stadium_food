@@ -31,6 +31,9 @@ import 'firebase_options.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Stripe.publishableKey = "pk_test_51RyfgTKj6LjssenC2Wy0Omeu3bQMa2hsc33riQoi43TU7AyIAQ08zELQWLOBvcRBgCyKMYIQ0rhOOsr0mTqanrse00W2xoKNg7";
+  Stripe.merchantIdentifier = 'merchant.com.fanmunch';
+  await Stripe.instance.applySettings();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

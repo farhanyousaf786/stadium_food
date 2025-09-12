@@ -45,6 +45,12 @@
     <true/>
     <key>UIApplicationSupportsIndirectInputEvents</key>
     <true/>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+      <string>sms</string>
+      <string>tel</string>
+      <string>telprompt</string>
+    </array>
     <key>NSCameraUsageDescription</key>
     <string>Scan your card to add it automatically</string>
     <key>NSLocationWhenInUseUsageDescription</key>

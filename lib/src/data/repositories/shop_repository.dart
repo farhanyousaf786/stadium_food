@@ -34,6 +34,7 @@ class ShopRepository {
           .collection('shops')
           .where('stadiumId', isEqualTo: stadiumId)
           .where('shopAvailability', isEqualTo: true)
+          .where(FieldPath.documentId, whereIn: shopIds)
           .get();
 
       if (querySnapshot.docs.isEmpty) {

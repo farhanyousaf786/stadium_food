@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
@@ -25,6 +27,7 @@ import '../../../data/services/currency_service.dart';
 import '../../../services/location_service.dart';
 import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/delivery_distance_tracker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class OrderDetailsScreen extends StatefulWidget {
   final Order order;
@@ -107,38 +110,76 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                           order.status.index != 3
                               ? InkWell(
                             onTap: () async {
-                              final querySnapshot = await FirebaseFirestore
-                                  .instance
-                                  .collection('users')
-                                  .where('shopsId',
-                                  arrayContains: order.shopId)
-                                  .limit(1)
-                                  .get();
+                              final rawPhone = order.userInfo['userPhoneNo'];
+                              final String phone =
+                                  rawPhone is String ? rawPhone.trim() : '';
 
-                              if (querySnapshot.docs.isEmpty) {
+                              if (phone.isEmpty) {
                                 if (context.mounted) {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(
+                                  ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                        content: Text(Translate.get(
-                                            'shopOwnerNotFound'))),
+                                      content: Text(
+                                        Translate.get('phoneNotAvailable'),
+                                      ),
+                                    ),
                                   );
                                 }
                                 return;
                               }
 
-                              final shopUser = ShopUser.fromMap(
-                                  querySnapshot.docs.first.data());
-                              if (context.mounted) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        ChatDetailsScreen(
-                                          otherUser: shopUser,
+                              final uri = Uri(scheme: 'tel', path: phone);
+                              try {
+                                bool launched = false;
+
+                                // Try tel: first
+                                if (await canLaunchUrl(uri)) {
+                                  launched = await launchUrl(
+                                    uri,
+                                    mode: LaunchMode.externalApplication,
+                                  );
+                                }
+
+                                if (!launched && !kIsWeb) {
+                                  // Fallback attempt for iOS using telprompt
+                                  final telPrompt = Uri(scheme: 'telprompt', path: phone);
+                                  if (await canLaunchUrl(telPrompt)) {
+                                    launched = await launchUrl(
+                                      telPrompt,
+                                      mode: LaunchMode.externalApplication,
+                                    );
+                                  }
+                                }
+
+                                // On web, try opening the tel link directly
+                                if (!launched && kIsWeb) {
+                                  launched = await launchUrl(
+                                    uri,
+                                    webOnlyWindowName: '_self',
+                                  );
+                                }
+
+                                if (!launched) {
+                                  // As a final fallback, copy number to clipboard
+                                  await Clipboard.setData(ClipboardData(text: phone));
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Cannot open phone dialer on this device. Phone number copied to clipboard.',
                                         ),
-                                  ),
-                                );
+                                      ),
+                                    );
+                                  }
+                                }
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          'Failed to start call: ${e.toString()}'),
+                                    ),
+                                  );
+                                }
                               }
                             },
                             borderRadius: AppStyles.defaultBorderRadius,
@@ -154,7 +195,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                               ),
 
                               child: SvgPicture.asset(
-                                "assets/svg/chat.svg",
+                                "assets/svg/call.svg",
 
                               ),
                             ),

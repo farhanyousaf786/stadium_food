@@ -78,8 +78,6 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
         ),
         validator: (value) {
           if (value == null || value.isEmpty) {
-            if (controller == _seatDetailsController ||
-                controller == _areaController) return null; // Optional field
             return '${Translate.get('pleaseEnter')} ${label.toLowerCase()}';
           }
           return null;
@@ -92,9 +90,8 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
   final _rowController = TextEditingController();
   final _seatNoController = TextEditingController();
   final _standController = TextEditingController();
-  final _areaController = TextEditingController();
   final _entranceController = TextEditingController();
-  final _seatDetailsController = TextEditingController();
+
 
   Map<String, dynamic>? paymentIntent;
   XFile? _image;
@@ -738,29 +735,12 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                           ],
                         ),
                         const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _buildTextField(
-                                controller: _areaController,
-                                label:
-                                    '${Translate.get('areaLabel')} (${Translate.get('optional')})',
-                                hint:
-                                    '${Translate.get('areaHint')} (${Translate.get('optional')})',
-                                icon: Icons.category_outlined,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: _buildTextField(
+                   _buildTextField(
                                 controller: _rowController,
                                 label: Translate.get('rowLabel'),
                                 hint: Translate.get('rowHint'),
-                                icon: Icons.view_week_outlined,
-                              ),
-                            ),
-                          ],
-                        ),
+                                icon: Icons.view_week_outlined,),
+
                         const SizedBox(height: 16),
                         Row(
                           children: [
@@ -784,13 +764,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 16),
-                        _buildTextField(
-                          controller: _seatDetailsController,
-                          label: Translate.get('additionalDetailsLabel'),
-                          hint: Translate.get('additionalDetailsHint'),
-                          icon: Icons.info_outline,
-                        ),
+
                         const SizedBox(height: 20),
                         BlocBuilder<OrderBloc, OrderState>(
                             builder: (context, state) {
@@ -881,12 +855,9 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                             'ticketImage': '',
                                             'row': _rowController.text,
                                             'seatNo': _seatNoController.text,
-                                            'area': _areaController.text,
                                             'entrance':
                                                 _entranceController.text,
                                             'stand': _standController.text,
-                                            'seatDetails':
-                                                _seatDetailsController.text,
                                           };
 
                                           makePayment(
@@ -968,12 +939,10 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                               'ticketImage': '',
                                               'row': _rowController.text,
                                               'seatNo': _seatNoController.text,
-                                              'area': _areaController.text,
                                               'entrance':
                                                   _entranceController.text,
                                               'stand': _standController.text,
-                                              'seatDetails':
-                                                  _seatDetailsController.text,
+
                                             };
                                             await makeApplePayment(
                                                 OrderRepository.total,
@@ -1071,16 +1040,13 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                                       'seatNo':
                                                           _seatNoController
                                                               .text,
-                                                      'area':
-                                                          _areaController.text,
+
                                                       'entrance':
                                                           _entranceController
                                                               .text,
                                                       'stand':
                                                           _standController.text,
-                                                      'seatDetails':
-                                                          _seatDetailsController
-                                                              .text,
+
                                                     };
                                                     await makeGooglePayment(
                                                         OrderRepository.total,
@@ -1378,7 +1344,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
         throw Exception((data is Map ? data['error'] : null) ??
             'Failed to create payment intent');
       }
-      // Server returns { success, intentId, clientSecret, mode }
+
       return data;
     } catch (err) {
       throw Exception(err.toString());

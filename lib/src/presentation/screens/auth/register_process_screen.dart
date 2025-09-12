@@ -274,7 +274,9 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
                                   boxShadow: [AppStyles.boxShadow7],
                                 ),
                                 child: TextFormField(
+
                                   controller: _phoneController,
+                                  textInputAction: TextInputAction.done,
                                   validator: (value) {
                                     if (!validatePhoneNumber(value!)) {
                                       return Translate.get(
@@ -283,6 +285,7 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
                                     return null;
                                   },
                                   keyboardType: TextInputType.phone,
+
                                   decoration: InputDecoration(
                                     prefixIcon: const Icon(
                                       Icons.phone_rounded,

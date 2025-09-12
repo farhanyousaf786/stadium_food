@@ -91,11 +91,11 @@ class _CartScreenState extends State<CartScreen> {
     );
     await LocationService.checkLocationPermission();
     final position = await _locationService.getCurrentLocation();
-    final nearestDeliveryUserId = await _loadNearbyData();
+    // final nearestDeliveryUserId = await _loadNearbyData();
     final nearestShop = await ShopRepository().findNearestShop(
         OrderRepository.cart[0].stadiumId, OrderRepository.cart[0].shopIds);
 
-    OrderRepository.selectedDeliveryUerId = nearestDeliveryUserId;
+    OrderRepository.selectedDeliveryUerId = '';
     OrderRepository.selectedShopId = nearestShop.id;
     OrderRepository.customerLocation =
         GeoPoint(position.latitude, position.longitude);

@@ -1189,34 +1189,50 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
   Future<void> makeApplePayment(
       double total, Map<String, String> seatInfo) async {
     try {
+      // Check if Apple Pay is available first
+      final isApplePaySupported = await Stripe.instance.isPlatformPaySupported();
+      
+      // ignore: avoid_print
+      print('[APPLE PAY] Apple Pay supported: $isApplePaySupported');
+      
+      if (!isApplePaySupported) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Apple Pay is not available on this device. Please ensure Apple Pay is set up with payment cards.'),
+            backgroundColor: AppColors.errorColor,
+          ),
+        );
+        return;
+      }
+
       // STEP 1: Create Payment Intent
       paymentIntent = await createPaymentIntent(
         total.toString(),
         'ils',
       );
 
-      await Stripe.instance.confirmPlatformPayPaymentIntent(
+      // ignore: avoid_print
+      print('[APPLE PAY] About to confirm payment with client secret: ${(paymentIntent?['clientSecret'] ?? paymentIntent?['client_secret'])}');
+
+      final result = await Stripe.instance.confirmPlatformPayPaymentIntent(
           clientSecret: (paymentIntent?['clientSecret'] ??
               paymentIntent?['client_secret']) as String,
           confirmParams: PlatformPayConfirmParams.applePay(
             applePay: ApplePayParams(
-              requiredShippingAddressFields: [
-                ApplePayContactFieldsType.name,
-                ApplePayContactFieldsType.postalAddress,
-                ApplePayContactFieldsType.emailAddress,
-                ApplePayContactFieldsType.phoneNumber,
-              ],
-              merchantCountryCode: 'US',
-              currencyCode: 'ils',
+              merchantCountryCode: 'IL',
+              currencyCode: 'ILS',
               cartItems: [ ApplePayCartSummaryItem.immediate(
                 label: 'Fan Munch Order',
                 amount: total.toString(),
               )],
             ),
           ),
-
       );
 
+      // ignore: avoid_print
+      print('[APPLE PAY] Payment confirmation result: $result');
+
+      // Create order after successful payment
       BlocProvider.of<OrderBloc>(context).add(
         CreateOrder(
           seatInfo: seatInfo,
@@ -1248,8 +1264,45 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
           ),
         ),
       );
+
+      paymentIntent = null;
+      Future.delayed(const Duration(seconds: 2), () {
+        Navigator.of(context, rootNavigator: true).pop(); // Close dialog
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          "/home",
+          (route) => false,
+        );
+      });
     } catch (err) {
-      throw Exception(err);
+      // ignore: avoid_print
+      print('[APPLE PAY] Error: $err');
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.error_outline,
+                color: Colors.red,
+                size: 100.0,
+              ),
+              const SizedBox(height: 10.0),
+              Text(
+                Translate.get('paymentFailed'),
+                style: CustomTextStyle.size18Weight600Text(),
+              ),
+              const SizedBox(height: 10.0),
+              Text(
+                err.toString(),
+                style: CustomTextStyle.size14Weight400Text(),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      );
     }
   }
 

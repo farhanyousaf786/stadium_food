@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stadium_food/src/presentation/screens/onboarding/onboarding_screen.dart';
 import 'package:stadium_food/src/presentation/screens/server.dart';
+import 'package:stadium_food/src/services/onboarding_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/app_colors.dart';
 
@@ -23,33 +25,30 @@ class _SplashScreenState extends State<SplashScreen> {
         _visible = true;
       });
     });
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      // Always show the goal screen first
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const OnboardingScreen()),
-      );
-      
-      // The following code is now handled by the GoalScreen's button
-      // which navigates to the dashboard
-      /*
-      // Check if user has already selected a stadium
-      if (box.get('selectedStadium') != null) {
-        // If stadium is selected, go to home
-        Navigator.pushReplacementNamed(context, "/home");
-      } else {
-        // Check if user has seen onboarding
-        bool hasSeenOnboarding = box.get('hasSeenOnboarding', defaultValue: false);
-        
-        if (hasSeenOnboarding) {
-          // If user has seen onboarding, go to stadium selection
-          Navigator.pushReplacementNamed(context, "/select-stadium");
-        } else {
-          // If user hasn't seen onboarding, show onboarding screens first
-          Navigator.pushReplacementNamed(context, "/onboarding/first");
-        }
+    Future.delayed(const Duration(milliseconds: 1500), () async {
+      // Decide next screen based on onboarding completion and stadium selection
+      final hasSeenOnboarding = await OnboardingService.hasSeenOnboarding();
+      if (!mounted) return;
+
+      if (!hasSeenOnboarding) {
+        // Show onboarding screens first
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const OnboardingScreen()),
+        );
+        return;
       }
-      */
+
+      // Onboarding completed: check if a stadium is selected
+      final prefs = await SharedPreferences.getInstance();
+      final selectedStadiumId = prefs.getString('selected_stadium_id');
+      if (!mounted) return;
+
+      if (selectedStadiumId != null && selectedStadiumId.isNotEmpty) {
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        Navigator.pushReplacementNamed(context, '/select-stadium');
+      }
     });
   }
 

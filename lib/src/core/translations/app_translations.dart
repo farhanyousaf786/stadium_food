@@ -406,6 +406,7 @@ class AppTranslations {
       'openRestaurants': 'Open Restaurants',
 
       'noShopsAvailable': 'No shops available in this stadium',
+      'noShopAvailable': 'No shop available',
 
       'floor': 'Floor',
 
@@ -587,7 +588,7 @@ class AppTranslations {
       'termsAndConditions': 'Terms and Conditions',
 
       'feedback': 'Feedback',
-
+      'phoneNotAvailable': 'Delivery phone number is not available',
       'aboutApp': 'About app',
 
       'privacyPolicy': 'Privacy Policy',
@@ -999,6 +1000,7 @@ class AppTranslations {
       'cancelTip': 'ביטול',
 
       'invalidTipAmount': 'אנא הזן סכום טיפ תקין',
+      'noShopAvailable': 'אין חנות זמינה',
 
       // Order Confirm Screen (HE)
       'selectYourSeat': 'בחר את המושב שלך',

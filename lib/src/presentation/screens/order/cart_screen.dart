@@ -95,13 +95,22 @@ class _CartScreenState extends State<CartScreen> {
     final nearestShop = await ShopRepository().findNearestShop(
         OrderRepository.cart[0].stadiumId, OrderRepository.cart[0].shopIds);
 
+    // If no nearest shop found or the id is empty, show an error and do not navigate
+    if (nearestShop == null || (nearestShop.id).toString().isEmpty) {
+      if (context.mounted) {
+        Navigator.of(context).pop();
+        _showErrorSnackBar(context, 'noShopAvailable');
+      }
+      return;
+    }
+
     OrderRepository.selectedDeliveryUerId = '';
     OrderRepository.selectedShopId = nearestShop.id;
     OrderRepository.customerLocation =
         GeoPoint(position.latitude, position.longitude);
+
     if (context.mounted) {
-      Navigator.of(context)
-          .pop();
+      Navigator.of(context).pop();
       Navigator.pushNamed(context, "/tip");
     }
   }

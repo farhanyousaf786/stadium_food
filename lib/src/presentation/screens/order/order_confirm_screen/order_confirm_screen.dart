@@ -92,7 +92,6 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
   final _standController = TextEditingController();
   final _entranceController = TextEditingController();
 
-
   Map<String, dynamic>? paymentIntent;
   XFile? _image;
   String imageUrl = '';
@@ -383,11 +382,16 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                             width: 12,
                             height: 12,
                             decoration: BoxDecoration(
-                              color: StripeConfig.isLiveMode ? Colors.green : Colors.red,
+                              color: StripeConfig.isLiveMode
+                                  ? Colors.green
+                                  : Colors.red,
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                  color: (StripeConfig.isLiveMode ? Colors.green : Colors.red).withOpacity(0.5),
+                                  color: (StripeConfig.isLiveMode
+                                          ? Colors.green
+                                          : Colors.red)
+                                      .withOpacity(0.5),
                                   blurRadius: 4,
                                   spreadRadius: 1,
                                 ),
@@ -735,12 +739,12 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                           ],
                         ),
                         const SizedBox(height: 16),
-                   _buildTextField(
-                                controller: _rowController,
-                                label: Translate.get('rowLabel'),
-                                hint: Translate.get('rowHint'),
-                                icon: Icons.view_week_outlined,),
-
+                        _buildTextField(
+                          controller: _rowController,
+                          label: Translate.get('rowLabel'),
+                          hint: Translate.get('rowHint'),
+                          icon: Icons.view_week_outlined,
+                        ),
                         const SizedBox(height: 16),
                         Row(
                           children: [
@@ -764,7 +768,6 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 20),
                         BlocBuilder<OrderBloc, OrderState>(
                             builder: (context, state) {
@@ -823,12 +826,11 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                             // Create seat info with uploaded image URL
                                             final seatInfo = {
                                               'ticketImage': uploadedImageUrl,
-                                              'row': '',
-                                              'seatNo': '',
-                                              'stand': '',
-                                              'entrance': '',
-                                              'area': '',
-                                              'seatDetails': '',
+                                              'row': _rowController.text,
+                                              'seatNo': _seatNoController.text,
+                                              'entrance':
+                                                  _entranceController.text,
+                                              'stand': _standController.text,
                                             };
 
                                             makePayment(OrderRepository.total,
@@ -873,84 +875,97 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                     const EdgeInsets.symmetric(horizontal: 30),
                                 child: Column(
                                   children: [
-                                    Platform.isIOS?    ApplePayButton(
-                                      onPressed: () async {
-                                        // Mirror the same flow as Place Order button
-                                        if (OrderRepository.cart.isEmpty) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                  Translate.get('cartEmpty')),
-                                              backgroundColor:
-                                                  AppColors.errorColor,
-                                            ),
-                                          );
-                                          return;
-                                        }
+                                    Platform.isIOS
+                                        ? ApplePayButton(
+                                            onPressed: () async {
+                                              // Mirror the same flow as Place Order button
+                                              if (OrderRepository
+                                                  .cart.isEmpty) {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(Translate.get(
+                                                        'cartEmpty')),
+                                                    backgroundColor:
+                                                        AppColors.errorColor,
+                                                  ),
+                                                );
+                                                return;
+                                              }
 
-                                        final currentUser =
-                                            FirebaseAuth.instance.currentUser;
-                                        if (currentUser == null) {
-                                          _showAuthDialog(context);
-                                        } else {
-                                          if (_image != null) {
-                                            showDialog(
-                                              context: context,
-                                              barrierDismissible: false,
-                                              builder: (context) =>
-                                                  const LoadingIndicator(),
-                                            );
-                                            try {
-                                              final uploadedImageUrl =
-                                                  await _firebaseStorageService
-                                                      .uploadImage(
-                                                "tickets/${DateTime.now().millisecondsSinceEpoch}",
-                                                File(_image!.path),
-                                              );
-                                              Navigator.of(context).pop();
-                                              final seatInfo = {
-                                                'ticketImage': uploadedImageUrl,
-                                                'row': '',
-                                                'seatNo': '',
-                                                'stand': '',
-                                                'entrance': '',
-                                                'area': '',
-                                                'seatDetails': '',
-                                              };
-                                              await makeApplePayment(
-                                                  OrderRepository.total,
-                                                  seatInfo);
-                                            } catch (_) {
-                                              Navigator.of(context).pop();
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                SnackBar(
-                                                  content: Text(Translate.get(
-                                                      'imageUploadError')),
-                                                  backgroundColor:
-                                                      AppColors.errorColor,
-                                                ),
-                                              );
-                                            }
-                                          } else if (_formKey.currentState!
-                                              .validate()) {
-                                            final seatInfo = {
-                                              'ticketImage': '',
-                                              'row': _rowController.text,
-                                              'seatNo': _seatNoController.text,
-                                              'entrance':
-                                                  _entranceController.text,
-                                              'stand': _standController.text,
-
-                                            };
-                                            await makeApplePayment(
-                                                OrderRepository.total,
-                                                seatInfo);
-                                          }
-                                        }
-                                      },
-                                    ) :SizedBox(),
+                                              final currentUser = FirebaseAuth
+                                                  .instance.currentUser;
+                                              if (currentUser == null) {
+                                                _showAuthDialog(context);
+                                              } else {
+                                                if (_image != null) {
+                                                  showDialog(
+                                                    context: context,
+                                                    barrierDismissible: false,
+                                                    builder: (context) =>
+                                                        const LoadingIndicator(),
+                                                  );
+                                                  try {
+                                                    final uploadedImageUrl =
+                                                        await _firebaseStorageService
+                                                            .uploadImage(
+                                                      "tickets/${DateTime.now().millisecondsSinceEpoch}",
+                                                      File(_image!.path),
+                                                    );
+                                                    Navigator.of(context).pop();
+                                                    final seatInfo = {
+                                                      'ticketImage':
+                                                          uploadedImageUrl,
+                                                      'row':
+                                                          _rowController.text,
+                                                      'seatNo':
+                                                          _seatNoController
+                                                              .text,
+                                                      'entrance':
+                                                          _entranceController
+                                                              .text,
+                                                      'stand':
+                                                          _standController.text,
+                                                    };
+                                                    await makeApplePayment(
+                                                        OrderRepository.total,
+                                                        seatInfo);
+                                                  } catch (_) {
+                                                    Navigator.of(context).pop();
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                        content: Text(Translate.get(
+                                                            'imageUploadError')),
+                                                        backgroundColor:
+                                                            AppColors
+                                                                .errorColor,
+                                                      ),
+                                                    );
+                                                  }
+                                                } else if (_formKey
+                                                    .currentState!
+                                                    .validate()) {
+                                                  final seatInfo = {
+                                                    'ticketImage': '',
+                                                    'row': _rowController.text,
+                                                    'seatNo':
+                                                        _seatNoController.text,
+                                                    'entrance':
+                                                        _entranceController
+                                                            .text,
+                                                    'stand':
+                                                        _standController.text,
+                                                  };
+                                                  await makeApplePayment(
+                                                      OrderRepository.total,
+                                                      seatInfo);
+                                                }
+                                              }
+                                            },
+                                          )
+                                        : SizedBox(),
                                     const SizedBox(height: 8),
                                     Platform.isAndroid
                                         ? GooglePayButton(
@@ -959,9 +974,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                                   ScaffoldMessenger.of(context);
                                               final googlePaySupported =
                                                   await Stripe.instance
-                                                      .isPlatformPaySupported(
-                                                          googlePay:
-                                                              IsGooglePaySupportedParams());
+                                                      .isPlatformPaySupported(googlePay: IsGooglePaySupportedParams());
 
                                               if (googlePaySupported) {
                                                 // Same flow as Apple Pay button
@@ -1004,12 +1017,17 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                                       final seatInfo = {
                                                         'ticketImage':
                                                             uploadedImageUrl,
-                                                        'row': '',
-                                                        'seatNo': '',
-                                                        'stand': '',
-                                                        'entrance': '',
-                                                        'area': '',
-                                                        'seatDetails': '',
+                                                        'row':
+                                                            _rowController.text,
+                                                        'seatNo':
+                                                            _seatNoController
+                                                                .text,
+                                                        'entrance':
+                                                            _entranceController
+                                                                .text,
+                                                        'stand':
+                                                            _standController
+                                                                .text,
                                                       };
                                                       await makeGooglePayment(
                                                           OrderRepository.total,
@@ -1040,13 +1058,11 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                                       'seatNo':
                                                           _seatNoController
                                                               .text,
-
                                                       'entrance':
                                                           _entranceController
                                                               .text,
                                                       'stand':
                                                           _standController.text,
-
                                                     };
                                                     await makeGooglePayment(
                                                         OrderRepository.total,
@@ -1173,15 +1189,17 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       double total, Map<String, String> seatInfo) async {
     try {
       // Check if Apple Pay is available first
-      final isApplePaySupported = await Stripe.instance.isPlatformPaySupported();
-      
+      final isApplePaySupported =
+          await Stripe.instance.isPlatformPaySupported();
+
       // ignore: avoid_print
       print('[APPLE PAY] Apple Pay supported: $isApplePaySupported');
-      
+
       if (!isApplePaySupported) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Apple Pay is not available on this device. Please ensure Apple Pay is set up with payment cards.'),
+            content: Text(
+                'Apple Pay is not available on this device. Please ensure Apple Pay is set up with payment cards.'),
             backgroundColor: AppColors.errorColor,
           ),
         );
@@ -1195,21 +1213,24 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       );
 
       // ignore: avoid_print
-      print('[APPLE PAY] About to confirm payment with client secret: ${(paymentIntent?['clientSecret'] ?? paymentIntent?['client_secret'])}');
+      print(
+          '[APPLE PAY] About to confirm payment with client secret: ${(paymentIntent?['clientSecret'] ?? paymentIntent?['client_secret'])}');
 
       final result = await Stripe.instance.confirmPlatformPayPaymentIntent(
-          clientSecret: (paymentIntent?['clientSecret'] ??
-              paymentIntent?['client_secret']) as String,
-          confirmParams: PlatformPayConfirmParams.applePay(
-            applePay: ApplePayParams(
-              merchantCountryCode: 'IL',
-              currencyCode: 'ILS',
-              cartItems: [ ApplePayCartSummaryItem.immediate(
+        clientSecret: (paymentIntent?['clientSecret'] ??
+            paymentIntent?['client_secret']) as String,
+        confirmParams: PlatformPayConfirmParams.applePay(
+          applePay: ApplePayParams(
+            merchantCountryCode: 'IL',
+            currencyCode: 'ILS',
+            cartItems: [
+              ApplePayCartSummaryItem.immediate(
                 label: 'Fan Munch Order',
                 amount: total.toString(),
-              )],
-            ),
+              )
+            ],
           ),
+        ),
       );
 
       // ignore: avoid_print

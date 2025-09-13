@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stadium_food/src/bloc/language/language_bloc.dart';
 import '../../../services/onboarding_service.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -173,8 +174,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     onPressed: () async {
                       if (_currentPage == _contents.length - 1) {
                         await OnboardingService.markOnboardingComplete();
+                        // Determine next screen based on stadium selection
+                        final prefs = await SharedPreferences.getInstance();
+                        final selectedStadiumId = prefs.getString('selected_stadium_id');
                         if (context.mounted) {
-                          Navigator.of(context).pushReplacementNamed('/home');
+                          if (selectedStadiumId == null ||
+                              selectedStadiumId.isEmpty) {Navigator.of(context)
+                                .pushReplacementNamed('/select-stadium');
+                          } else {
+                            Navigator.of(context).pushReplacementNamed('/home');
+                          }
                         }
                       } else {
                         _pageController.nextPage(

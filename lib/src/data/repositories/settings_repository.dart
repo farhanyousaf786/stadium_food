@@ -19,7 +19,7 @@ class SettingsRepository {
     await _auth.signOut();
    // FirebaseAuthService(_auth).signOut();
    // bool isDarkMode = await Hive.box('myBox').get('isDarkMode');
-   String lang= Hive.box('myBox').get('language', defaultValue: 'en');
+   String lang= Hive.box('myBox').get('language', defaultValue: 'he');
     await Hive.box('myBox').clear();
     await Hive.box('myBox').put('language', lang);
 

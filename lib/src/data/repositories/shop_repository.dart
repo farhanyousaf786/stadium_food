@@ -25,7 +25,7 @@ class ShopRepository {
     );
   }
 
-  Future<Shop> findNearestShop(String stadiumId, List<String> shopIds) async {
+  Future<Shop?> findNearestShop(String stadiumId, List<String> shopIds) async {
     try {
       final userLocation = await _locationService.getCurrentLocation();
       
@@ -38,7 +38,7 @@ class ShopRepository {
           .get();
 
       if (querySnapshot.docs.isEmpty) {
-        throw Exception('No shops found');
+        return null;
       }
 
       // Convert to Shop objects and find nearest
@@ -60,10 +60,10 @@ class ShopRepository {
         }
       }
 
-      return nearestShop!;
+      return nearestShop;
     } catch (e) {
-      // Fallback to first shop if location fails
-      return fetchShop(stadiumId, shopIds.first);
+
+      return null;
     }
   }
 }

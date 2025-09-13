@@ -110,9 +110,23 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                           order.status.index != 3
                               ? InkWell(
                             onTap: () async {
-                              final rawPhone = order.userInfo['userPhoneNo'];
-                              final String phone =
-                                  rawPhone is String ? rawPhone.trim() : '';
+                              // Prefer delivery user's phone if available
+                              String phone = '';
+                              try {
+                                final deliveryUserId = order.deliveryUserId;
+                                if (deliveryUserId != null && deliveryUserId.isNotEmpty) {
+                                  final deliveryDoc = await FirebaseFirestore.instance
+                                      .collection('deliveryUsers')
+                                      .doc(deliveryUserId)
+                                      .get();
+                                  final data = deliveryDoc.data();
+                                  if (data != null) {
+                                    // Try common phone field keys
+                                    final candidate = (data['phone'] ?? '').toString();
+                                    phone = candidate.trim();
+                                  }
+                                }
+                              } catch (_) {}
 
                               if (phone.isEmpty) {
                                 if (context.mounted) {

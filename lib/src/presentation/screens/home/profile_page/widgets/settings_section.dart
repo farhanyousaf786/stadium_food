@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -14,21 +16,19 @@ class SettingsSection extends StatefulWidget {
   final VoidCallback onDeleteAccount;
 
   const SettingsSection({
-    Key? key,
+    super.key,
     required this.user,
     required this.settingsBloc,
     required this.isDarkMode,
     required this.onLogout,
     required this.onDeleteAccount,
-  }) : super(key: key);
+  });
 
   @override
   State<SettingsSection> createState() => _SettingsSectionState();
 }
 
 class _SettingsSectionState extends State<SettingsSection> {
-
-
   Widget _tile({
     required String iconPath,
     required String title,
@@ -51,7 +51,6 @@ class _SettingsSectionState extends State<SettingsSection> {
               "assets/svg/$iconPath",
               height: 28,
               width: 28,
-
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -98,7 +97,8 @@ class _SettingsSectionState extends State<SettingsSection> {
               ),
               Text(
                 Translate.get('language'),
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                style: theme.textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 12),
               RadioListTile<String>(
@@ -218,6 +218,37 @@ class _SettingsSectionState extends State<SettingsSection> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(Translate.get('comingSoon'))),
               );
+            },
+          ),
+          const SizedBox(height: 12),
+          _tile(
+            iconPath: 'delete.svg',
+            title: Translate.get('deleteAccount'),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title:  Text(Translate.get('deleteAccount')),
+                  content:  Text(Translate.get('confirmDelete')),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child:  Text(Translate.get('cancel')),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                           widget.onDeleteAccount.call();
+                      },
+                      child:  Text(
+                        Translate.get('delete'),
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+
             },
           ),
         ],

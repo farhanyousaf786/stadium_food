@@ -152,7 +152,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           listenWhen: (previous, current) => current is LanguageChanged,
           listener: (context, state) {
             if (state is LanguageChanged) {
-              setState(() {}); // Rebuild screen to update translations
+              setState(() {});
             }
           },
         ),
@@ -226,7 +226,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 if (_user != null)
                                   ElevatedButton.icon(
                                     onPressed: () {
-                                      BlocProvider.of<SettingsBloc>(context).add(Logout());
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          title:  Text(Translate.get('logout')),
+                                          content:  Text(Translate.get('confirmLogout')),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () => Navigator.pop(context),
+                                              child:  Text(Translate.get('cancel')),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                                BlocProvider.of<SettingsBloc>(context).add(Logout());
+                                              },
+                                              child:  Text(
+                                                Translate.get('logout'),
+                                                style: TextStyle(color: Colors.red),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.red,

@@ -6,19 +6,27 @@ class PrimaryButton extends StatelessWidget {
   final String text;
   final IconData? iconData;
   final VoidCallback onTap;
+  final double? horizontalPadding;
+  final double? verticalPadding;
+  final Color? bgColor;
+  final Color? textColor;
 
   const PrimaryButton({
     super.key,
     required this.text,
     required this.onTap,
     this.iconData,
+    this.bgColor,
+    this.textColor,
+    this.horizontalPadding,
+    this.verticalPadding,
   });
 
   @override
   Widget build(BuildContext context) {
     return Ink(
-      decoration: const BoxDecoration(
-        color: AppColors.primaryDarkColor,
+      decoration:  BoxDecoration(
+        color: bgColor?? AppColors.primaryDarkColor,
         borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
       child: InkWell(
@@ -29,16 +37,16 @@ class PrimaryButton extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(10))
           ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 60,
-            vertical: 20,
+          padding:  EdgeInsets.symmetric(
+            horizontal: horizontalPadding ?? 60,
+            vertical: verticalPadding ?? 20,
           ),
           child: iconData == null
               ? Text(
                   text,
                   textAlign: TextAlign.center,
                   style: CustomTextStyle.size16Weight600Text(
-                    Colors.white,
+                    textColor??  Colors.white,
                   ),
                 )
               : Row(
@@ -55,7 +63,7 @@ class PrimaryButton extends StatelessWidget {
                       text,
                       textAlign: TextAlign.center,
                       style: CustomTextStyle.size16Weight600Text(
-                        Colors.white,
+                        textColor??   Colors.white,
                       ),
                     ),
                   ],

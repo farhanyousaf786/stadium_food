@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
@@ -160,6 +161,7 @@ class OrderRepository {
       orderId: DateTime.now().millisecondsSinceEpoch.toString(),
       orderCode: getRandomSixDigitNumber().toString(),
       location: null,
+      platform: Platform.isAndroid ? "Android" : Platform.isIOS ? "iOS" : "Web",
       customerLocation: customerLocation,
       deliveryUserId: selectedDeliveryUerId,
       userInfo: {
@@ -175,31 +177,31 @@ class OrderRepository {
     // Save order to Firestore using the pre-generated ID
     await _db.addUserDocument('orders', generatedId, order.toMap());
 
-    // Send notification to delivery user
-    try {
-      if (selectedDeliveryUerId != null) {
-        final deliveryUserDoc = await _firestore
-            .collection('deliveryUsers')
-            .doc(selectedDeliveryUerId)
-            .get();
-
-        if (deliveryUserDoc.exists) {
-          final fcmToken = deliveryUserDoc.data()?['fcmToken'];
-          if (fcmToken != null) {
-            final userName = box.get('firstName') ?? 'Customer';
-            await NotificationServiceClass().sendNotification(
-              fcmToken,
-              'New Order Received',
-              'You have a new order from $userName at ${order.seatInfo['stand']} ${order.seatInfo['area']}',
-            );
-          }
-        }
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print("Error sending notification: $e");
-      }
-    }
+    // // Send notification to delivery user
+    // try {
+    //   if (selectedDeliveryUerId != null) {
+    //     final deliveryUserDoc = await _firestore
+    //         .collection('deliveryUsers')
+    //         .doc(selectedDeliveryUerId)
+    //         .get();
+    //
+    //     if (deliveryUserDoc.exists) {
+    //       final fcmToken = deliveryUserDoc.data()?['fcmToken'];
+    //       if (fcmToken != null) {
+    //         final userName = box.get('firstName') ?? 'Customer';
+    //         await NotificationServiceClass().sendNotification(
+    //           fcmToken,
+    //           'New Order Received',
+    //           'You have a new order from $userName at Seat ${order.seatInfo['seatNo']}',
+    //         );
+    //       }
+    //     }
+    //   }
+    // } catch (e) {
+    //   if (kDebugMode) {
+    //     print("Error sending notification: $e");
+    //   }
+    // }
 
     try {
       if (selectedShopId != null) {

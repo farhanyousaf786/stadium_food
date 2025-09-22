@@ -11,6 +11,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:stadium_food/src/data/repositories/profile_repository.dart';
+import 'package:stadium_food/src/presentation/screens/order/order_details_screen.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/back_button.dart';
 import 'package:stadium_food/src/presentation/widgets/loading_indicator.dart';
 import 'package:stadium_food/src/presentation/widgets/price_info_widget.dart';
@@ -88,6 +90,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
 
   final _formKey = GlobalKey<FormState>();
   final _rowController = TextEditingController();
+
   final _seatNoController = TextEditingController();
   final _standController = TextEditingController();
   final _entranceController = TextEditingController();
@@ -127,6 +130,112 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     if (_standController.text.isEmpty) {
       _standController.text = Translate.get('standOptionGallery');
     }
+  }
+
+  void _showPhoneNumberBottomSheet(BuildContext context) {
+    final phoneController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 24,
+            right: 24,
+            top: 24,
+            bottom:
+                MediaQuery.of(context).viewInsets.bottom + 24, // for keyboard
+          ),
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.phone_iphone,
+                  size: 50,
+                  color: AppColors.primaryColor,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Phone Number Required',
+                  style: CustomTextStyle.size18Weight600Text(),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Please add your phone number to continue with your order',
+                  textAlign: TextAlign.center,
+                  style: CustomTextStyle.size14Weight400Text(Colors.grey),
+                ),
+                const SizedBox(height: 24),
+                _buildTextField(
+                  controller: phoneController,
+                  label: 'Phone Number',
+                  hint: 'Phone Number',
+                  icon: Icons.view_week_outlined,
+                  keyboardType: TextInputType.phone,
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: PrimaryButton(
+                          verticalPadding: 16,
+                          text: 'Save',
+                          onTap: () async {
+                            if (formKey.currentState!.validate()) {
+                              try {
+                                await ProfileRepository().updateUserPhone(
+                                    phoneController.text.trim());
+                                if (context.mounted) {
+                                  Navigator.pop(context);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                          'Phone number saved successfully'),
+                                      backgroundColor: Colors.green,
+                                    ),
+                                  );
+                                }
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          'Failed to save phone number: ${e.toString()}'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
+                              }
+                            }
+                          }),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: PrimaryButton(
+                          verticalPadding: 16,
+                          bgColor: Colors.red,
+                          text: Translate.get('cancel'),
+                          onTap: () {
+                            Navigator.pop(context);
+                          }),
+                    ),
+
+
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   // Mirrors fee split math in server/controllers/stripeController.js
@@ -282,7 +391,6 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context); // Close dialog
-                    Navigator.pop(context); // Go back to cart
                   },
                   child: Text(
                     Translate.get('cancel'),
@@ -302,27 +410,56 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return BlocListener<OrderBloc, OrderState>(
       listener: (context, state) {
         if (state is OrderCreated) {
           // remove loading
           Navigator.of(context).pop();
           // show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(Translate.get('orderSuccess')),
-              backgroundColor: AppColors.primaryColor,
+          showDialog(
+            context: context,
+            builder: (_) => AlertDialog(
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.check_circle,
+                    color: Colors.green,
+                    size: 100.0,
+                  ),
+                  const SizedBox(height: 10.0),
+                  Text(
+                    Translate.get('paymentSuccess'),
+                    style: CustomTextStyle.size18Weight600Text(),
+                  ),
+                  const SizedBox(height: 10.0),
+                  Text(
+                    "Amount: ₪${state.order.total.toStringAsFixed(2)}",
+                    style: CustomTextStyle.size16Weight400Text(),
+                  ),
+                ],
+              ),
             ),
           );
           // Navigate to order list screen
           Future.delayed(const Duration(seconds: 1), () {
-            Navigator.of(context, rootNavigator: true).pop(); // Close dialog
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              "/home",
-              (route) => false,
-            );
+            if (context.mounted) {
+              Navigator.of(context, rootNavigator: true).pop(); // Close dialog
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                "/home",
+                (route) => false,
+              );
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => OrderDetailsScreen(
+                    order: state.order,
+                  ),
+                ),
+              );
+            }
           });
         } else if (state is OrderCreatingError) {
           // remove loading
@@ -348,305 +485,310 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       child: Scaffold(
         backgroundColor: AppColors.bgColor,
         body: SingleChildScrollView(
-          child: Stack(
+          child: Column(
             children: [
-              Image.asset(
-                'assets/png/order_confirm_bg.png',
+              Container(
                 width: double.infinity,
-                height: size.height * 0.5,
-                fit: BoxFit.fill,
-              ),
-
-              SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          const CustomBackButton(
-                            color: Colors.white,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/png/order_confirm_bg.png'),
+                    fit: BoxFit.fill,
+                  ),
+                ),
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const CustomBackButton(
+                              color: Colors.white,
+                            ),
+                            Expanded(
+                              child: Text(
+                                Translate.get('selectYourSeat'),
+                                textAlign: TextAlign.center,
+                                style: CustomTextStyle.size18Weight600Text(
+                                  Colors.white,
+                                ),
+                              ),
+                            ),
+                            // Stripe Mode Status Dot
+                            Container(
+                              width: 12,
+                              height: 12,
+                              decoration: BoxDecoration(
+                                color: StripeConfig.isLiveMode
+                                    ? Colors.green
+                                    : Colors.red,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: (StripeConfig.isLiveMode
+                                            ? Colors.green
+                                            : Colors.red)
+                                        .withOpacity(0.5),
+                                    blurRadius: 4,
+                                    spreadRadius: 1,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          textAlign: TextAlign.center,
+                          Translate.get('provideSeatInfo'),
+                          style: CustomTextStyle.size16Weight400Text(
+                            Colors.white,
                           ),
-                          Expanded(
-                            child: Text(
-                              Translate.get('selectYourSeat'),
-                              textAlign: TextAlign.center,
-                              style: CustomTextStyle.size18Weight600Text(
+                        ),
+                        const SizedBox(height: 24),
+                        Column(
+                          children: [
+                            Text(
+                              Translate.get('uploadTicketTitle'),
+                              style: CustomTextStyle.size16Weight600Text(
                                 Colors.white,
                               ),
                             ),
-                          ),
-                          // Stripe Mode Status Dot
-                          Container(
-                            width: 12,
-                            height: 12,
-                            decoration: BoxDecoration(
-                              color: StripeConfig.isLiveMode
-                                  ? Colors.green
-                                  : Colors.red,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: (StripeConfig.isLiveMode
-                                          ? Colors.green
-                                          : Colors.red)
-                                      .withOpacity(0.5),
-                                  blurRadius: 4,
-                                  spreadRadius: 1,
-                                ),
-                              ],
+                            const SizedBox(height: 16),
+                            Text(
+                              Translate.get('uploadTicketDesc'),
+                              textAlign: TextAlign.center,
+                              style: CustomTextStyle.size14Weight400Text(
+                                Colors.white,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        textAlign: TextAlign.center,
-                        Translate.get('provideSeatInfo'),
-                        style: CustomTextStyle.size16Weight400Text(
-                          Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Column(
-                        children: [
-                          Text(
-                            Translate.get('uploadTicketTitle'),
-                            style: CustomTextStyle.size16Weight600Text(
-                              Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            Translate.get('uploadTicketDesc'),
-                            textAlign: TextAlign.center,
-                            style: CustomTextStyle.size14Weight400Text(
-                              Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          _image != null
-                              ? Center(
-                                  child: Container(
-                                    width: 250,
-                                    height: 250,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.5),
-                                      shape: BoxShape.rectangle,
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(10)),
-                                      border: Border.all(
-                                          color: Colors.white.withOpacity(0.6)),
-                                      boxShadow: [AppStyles.boxShadow7],
+                            const SizedBox(height: 16),
+                            _image != null
+                                ? Center(
+                                    child: Container(
+                                      width: 250,
+                                      height: 250,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.5),
+                                        shape: BoxShape.rectangle,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10)),
+                                        border: Border.all(
+                                            color:
+                                                Colors.white.withOpacity(0.6)),
+                                        boxShadow: [AppStyles.boxShadow7],
+                                      ),
+                                      child: Stack(
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius:
+                                                AppStyles.largeBorderRadius,
+                                            child: Image.file(
+                                              File(_image!.path),
+                                              width: 250,
+                                              height: 250,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                          Positioned(
+                                            top: 10,
+                                            right: 10,
+                                            child: InkWell(
+                                              onTap: () {
+                                                setState(() {
+                                                  _image = null;
+                                                });
+                                              },
+                                              child: Container(
+                                                width: 30,
+                                                height: 30,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white
+                                                      .withOpacity(0.5),
+                                                  borderRadius: AppStyles
+                                                      .largeBorderRadius,
+                                                ),
+                                                child: const Icon(
+                                                  Icons.close,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                    child: Stack(
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius:
-                                              AppStyles.largeBorderRadius,
-                                          child: Image.file(
-                                            File(_image!.path),
-                                            width: 250,
-                                            height: 250,
-                                            fit: BoxFit.cover,
+                                  )
+                                : imageUrl != ""
+                                    ? Center(
+                                        child: Container(
+                                          width: 250,
+                                          height: 250,
+                                          decoration: BoxDecoration(
+                                            color:
+                                                Colors.white.withOpacity(0.5),
+                                            shape: BoxShape.rectangle,
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(10)),
+                                            border: Border.all(
+                                                color: Colors.white
+                                                    .withOpacity(0.6)),
+                                            boxShadow: [AppStyles.boxShadow7],
+                                          ),
+                                          child: Stack(
+                                            children: [
+                                              ClipRRect(
+                                                borderRadius:
+                                                    AppStyles.largeBorderRadius,
+                                                child: Image.network(
+                                                  imageUrl,
+                                                  width: 250,
+                                                  height: 250,
+                                                  fit: BoxFit.cover,
+                                                  errorBuilder: (context, error,
+                                                          stackTrace) =>
+                                                      const Center(
+                                                    child: Icon(
+                                                      Icons.error,
+                                                      color: Colors.red,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Positioned(
+                                                top: 10,
+                                                right: 10,
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      imageUrl = "";
+                                                    });
+                                                  },
+                                                  child: Container(
+                                                    width: 30,
+                                                    height: 30,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white
+                                                          .withOpacity(0.5),
+                                                      borderRadius: AppStyles
+                                                          .largeBorderRadius,
+                                                    ),
+                                                    child: const Icon(
+                                                      Icons.close,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                        Positioned(
-                                          top: 10,
-                                          right: 10,
-                                          child: InkWell(
-                                            onTap: () {
-                                              setState(() {
-                                                _image = null;
-                                              });
-                                            },
+                                      )
+                                    : Row(
+                                        children: [
+                                          Expanded(
                                             child: Container(
-                                              width: 30,
-                                              height: 30,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 20),
                                               decoration: BoxDecoration(
                                                 color: Colors.white
                                                     .withOpacity(0.5),
-                                                borderRadius:
-                                                    AppStyles.largeBorderRadius,
+                                                shape: BoxShape.rectangle,
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(10)),
+                                                border: Border.all(
+                                                    color: Colors.white
+                                                        .withOpacity(0.6)),
+                                                boxShadow: [
+                                                  AppStyles.boxShadow7
+                                                ],
                                               ),
-                                              child: const Icon(
-                                                Icons.close,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              : imageUrl != ""
-                                  ? Center(
-                                      child: Container(
-                                        width: 250,
-                                        height: 250,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white.withOpacity(0.5),
-                                          shape: BoxShape.rectangle,
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(10)),
-                                          border: Border.all(
-                                              color: Colors.white
-                                                  .withOpacity(0.6)),
-                                          boxShadow: [AppStyles.boxShadow7],
-                                        ),
-                                        child: Stack(
-                                          children: [
-                                            ClipRRect(
-                                              borderRadius:
-                                                  AppStyles.largeBorderRadius,
-                                              child: Image.network(
-                                                imageUrl,
-                                                width: 250,
-                                                height: 250,
-                                                fit: BoxFit.cover,
-                                                errorBuilder: (context, error,
-                                                        stackTrace) =>
-                                                    const Center(
-                                                  child: Icon(
-                                                    Icons.error,
-                                                    color: Colors.red,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            Positioned(
-                                              top: 10,
-                                              right: 10,
                                               child: InkWell(
                                                 onTap: () {
-                                                  setState(() {
-                                                    imageUrl = "";
-                                                  });
+                                                  _pickImageFromGallery();
                                                 },
-                                                child: Container(
-                                                  width: 30,
-                                                  height: 30,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white
-                                                        .withOpacity(0.5),
-                                                    borderRadius: AppStyles
-                                                        .largeBorderRadius,
-                                                  ),
-                                                  child: const Icon(
-                                                    Icons.close,
-                                                    color: Colors.white,
-                                                  ),
+                                                borderRadius:
+                                                    AppStyles.largeBorderRadius,
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    SvgPicture.asset(
+                                                      "assets/svg/gallery.svg",
+                                                    ),
+                                                    const SizedBox(height: 10),
+                                                    Text(
+                                                      Translate.get(
+                                                          'uploadFromGallery'),
+                                                      style: CustomTextStyle
+                                                          .size14Weight400Text(
+                                                              Colors.white),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                          const SizedBox(width: 20),
+                                          // from camera
+                                          Expanded(
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 20),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white
+                                                    .withOpacity(0.5),
+                                                shape: BoxShape.rectangle,
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(10)),
+                                                border: Border.all(
+                                                    color: Colors.white
+                                                        .withOpacity(0.6)),
+                                                boxShadow: [
+                                                  AppStyles.boxShadow7
+                                                ],
+                                              ),
+                                              child: InkWell(
+                                                onTap: () {
+                                                  _pickImageFromCamera();
+                                                },
+                                                borderRadius:
+                                                    AppStyles.largeBorderRadius,
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    SvgPicture.asset(
+                                                      "assets/svg/camera.svg",
+                                                    ),
+                                                    const SizedBox(height: 10),
+                                                    Text(
+                                                      Translate.get(
+                                                          'uploadFromCamera'),
+                                                      style: CustomTextStyle
+                                                          .size14Weight400Text(
+                                                              Colors.white),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    )
-                                  : Row(
-                                      children: [
-                                        Expanded(
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 20),
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  Colors.white.withOpacity(0.5),
-                                              shape: BoxShape.rectangle,
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(10)),
-                                              border: Border.all(
-                                                  color: Colors.white
-                                                      .withOpacity(0.6)),
-                                              boxShadow: [AppStyles.boxShadow7],
-                                            ),
-                                            child: InkWell(
-                                              onTap: () {
-                                                _pickImageFromGallery();
-                                              },
-                                              borderRadius:
-                                                  AppStyles.largeBorderRadius,
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  SvgPicture.asset(
-                                                    "assets/svg/gallery.svg",
-                                                  ),
-                                                  const SizedBox(height: 10),
-                                                  Text(
-                                                    Translate.get(
-                                                        'uploadFromGallery'),
-                                                    style: CustomTextStyle
-                                                        .size14Weight400Text(
-                                                            Colors.white),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 20),
-                                        // from camera
-                                        Expanded(
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 20),
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  Colors.white.withOpacity(0.5),
-                                              shape: BoxShape.rectangle,
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(10)),
-                                              border: Border.all(
-                                                  color: Colors.white
-                                                      .withOpacity(0.6)),
-                                              boxShadow: [AppStyles.boxShadow7],
-                                            ),
-                                            child: InkWell(
-                                              onTap: () {
-                                                _pickImageFromCamera();
-                                              },
-                                              borderRadius:
-                                                  AppStyles.largeBorderRadius,
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  SvgPicture.asset(
-                                                    "assets/svg/camera.svg",
-                                                  ),
-                                                  const SizedBox(height: 10),
-                                                  Text(
-                                                    Translate.get(
-                                                        'uploadFromCamera'),
-                                                    style: CustomTextStyle
-                                                        .size14Weight400Text(
-                                                            Colors.white),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                          const SizedBox(height: 50),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
 
               Container(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                margin: EdgeInsets.only(
-                  top: size.height * 0.5,
-                ),
                 child: Form(
                     key: _formKey,
                     child: Column(
@@ -802,6 +944,13 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                         _showAuthDialog(context);
                                       } else {
                                         // Check if image is selected
+
+                                        var phone =
+                                            ProfileRepository().getUserPhone();
+                                        if (phone.isNotEmpty) {
+                                          _showPhoneNumberBottomSheet(context);
+                                          return;
+                                        }
                                         if (_image != null) {
                                           // Show loading
                                           showDialog(
@@ -898,6 +1047,13 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                               if (currentUser == null) {
                                                 _showAuthDialog(context);
                                               } else {
+                                                var phone = ProfileRepository()
+                                                    .getUserPhone();
+                                                if (phone.isEmpty) {
+                                                  _showPhoneNumberBottomSheet(
+                                                      context);
+                                                  return;
+                                                }
                                                 if (_image != null) {
                                                   showDialog(
                                                     context: context,
@@ -974,7 +1130,9 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                                   ScaffoldMessenger.of(context);
                                               final googlePaySupported =
                                                   await Stripe.instance
-                                                      .isPlatformPaySupported(googlePay: IsGooglePaySupportedParams());
+                                                      .isPlatformPaySupported(
+                                                          googlePay:
+                                                              IsGooglePaySupportedParams());
 
                                               if (googlePaySupported) {
                                                 // Same flow as Apple Pay button
@@ -998,6 +1156,15 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                                 if (currentUser == null) {
                                                   _showAuthDialog(context);
                                                 } else {
+                                                  var phone =
+                                                      ProfileRepository()
+                                                          .getUserPhone();
+                                                  if (phone.isEmpty) {
+                                                    _showPhoneNumberBottomSheet(
+                                                        context);
+                                                    return;
+                                                  }
+
                                                   if (_image != null) {
                                                     showDialog(
                                                       context: context,
@@ -1154,32 +1321,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
           seatInfo: seatInfo,
         ),
       );
-
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.check_circle,
-                color: Colors.green,
-                size: 100.0,
-              ),
-              const SizedBox(height: 10.0),
-              Text(
-                Translate.get('paymentSuccess'),
-                style: CustomTextStyle.size18Weight600Text(),
-              ),
-              const SizedBox(height: 10.0),
-              Text(
-                "Amount: ${CurrencyService.getCurrencySymbol(CurrencyService.getCurrentCurrency())}${OrderRepository.total.toStringAsFixed(2)}",
-                style: CustomTextStyle.size16Weight400Text(),
-              ),
-            ],
-          ),
-        ),
-      );
+      paymentIntent = null;
     } catch (err) {
       throw Exception(err);
     }
@@ -1242,42 +1384,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
           seatInfo: seatInfo,
         ),
       );
-
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.check_circle,
-                color: Colors.green,
-                size: 100.0,
-              ),
-              const SizedBox(height: 10.0),
-              Text(
-                Translate.get('paymentSuccess'),
-                style: CustomTextStyle.size18Weight600Text(),
-              ),
-              const SizedBox(height: 10.0),
-              Text(
-                "Amount: ${CurrencyService.getCurrencySymbol(CurrencyService.getCurrentCurrency())}${OrderRepository.total.toStringAsFixed(2)}",
-                style: CustomTextStyle.size16Weight400Text(),
-              ),
-            ],
-          ),
-        ),
-      );
-
       paymentIntent = null;
-      Future.delayed(const Duration(seconds: 2), () {
-        Navigator.of(context, rootNavigator: true).pop(); // Close dialog
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          "/home",
-          (route) => false,
-        );
-      });
     } catch (err) {
       // ignore: avoid_print
       print('[APPLE PAY] Error: $err');
@@ -1388,41 +1495,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
           ),
         );
 
-        showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(
-                  Icons.check_circle,
-                  color: Colors.green,
-                  size: 100.0,
-                ),
-                const SizedBox(height: 10.0),
-                Text(
-                  Translate.get('paymentSuccess'),
-                  style: CustomTextStyle.size18Weight600Text(),
-                ),
-                const SizedBox(height: 10.0),
-                Text(
-                  "Amount: ${CurrencyService.getCurrencySymbol(CurrencyService.getCurrentCurrency())}${OrderRepository.total.toStringAsFixed(2)}",
-                  style: CustomTextStyle.size16Weight400Text(),
-                ),
-              ],
-            ),
-          ),
-        );
-
         paymentIntent = null;
-        Future.delayed(const Duration(seconds: 2), () {
-          Navigator.of(context, rootNavigator: true).pop(); // Close dialog
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            "/home",
-            (route) => false,
-          );
-        });
       });
     } catch (e) {
       print('Error in payment: $e');

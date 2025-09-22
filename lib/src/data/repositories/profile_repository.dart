@@ -38,6 +38,15 @@ class ProfileRepository {
     return favoriteFoods;
   }
 
+ String getUserPhone()  {
+    var box = Hive.box('myBox');
+    var userPhone=box.get('phone');
+    if (userPhone == null) {
+      return '';
+    }
+    return userPhone ;
+  }
+
   // fetch favorite restaurants
   // Future<List<Restaurant>> fetchFavoriteRestaurants() async {
   //   List<DocumentReference> favoriteRestaurantsReferences =
@@ -80,6 +89,18 @@ class ProfileRepository {
 
     // update hive
     box.put('favoriteFoods', favoriteFoods);
+  }
+
+  Future<void> updateUserPhone(String phone) async {
+    await _db.updateDocument(
+      'customers',
+      box.get("id"),
+      {
+        'phone': phone,
+      },
+    );
+
+    box.put('phone', phone);
   }
 
   // add/remove favorite restaurant

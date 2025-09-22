@@ -17,7 +17,7 @@ class GooglePayButton extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!Platform.isAndroid) return const SizedBox.shrink();
     return SizedBox(
-      height: 48,
+      height: 60,
       width: double.infinity,
       child: ElevatedButton(
         onPressed: enabled ? onPressed : null,

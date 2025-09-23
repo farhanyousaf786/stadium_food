@@ -17,6 +17,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       try {
         FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
+
+        
         // sign in with email and password
         await FirebaseAuthService(firebaseAuth).signInWithEmailAndPassword(
           email: event.email,

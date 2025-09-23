@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'dart:ui';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -12,7 +11,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
 import 'package:stadium_food/src/data/models/push_notification_model.dart';
-
 import '../presentation/screens/server.dart';
 
 
@@ -20,9 +18,6 @@ import '../presentation/screens/server.dart';
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   log('_firebaseMessagingBackgroundHandler');
-
-
-
 
 }
 
@@ -45,6 +40,30 @@ class NotificationServiceClass {
       StreamController<String?>.broadcast();
   static final FirebaseMessaging _firebaseMessaging =
       FirebaseMessaging.instance;
+Future<void> initFCM() async {
+  log('initFCM');
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+
+  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+    String? apnsToken = await messaging.getAPNSToken();
+    debugPrint("APNS Token: $apnsToken");
+
+    if (apnsToken != null) {
+      String? fcmToken = await messaging.getToken();
+      debugPrint("FCM Token: $fcmToken");
+    } else {
+      debugPrint("⚠️ APNS token is still null. Check iOS setup.");
+    }
+  } else {
+    debugPrint("🚫 Notifications not authorized by user.");
+  }
+}
 
   Future<void> initMessaging() async {
     var androidInit =
@@ -119,6 +138,8 @@ class NotificationServiceClass {
     //****************************************************************//
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     _configureSelectNotificationSubject();
+
+    // initFCM();
   }
 
   //****************************************************************//

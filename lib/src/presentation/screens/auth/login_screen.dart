@@ -49,28 +49,23 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-        
                   Image.asset(
                     'assets/png/login_img.png',
                     fit: BoxFit.fill,
                   ),
-        
                   Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
                           Translate.get('login_title'),
-                          style: CustomTextStyle
-                              .size20Weight600Text()
-                              .copyWith(
+                          style: CustomTextStyle.size20Weight600Text().copyWith(
                             color: Colors.white,
                             fontSize: 24,
                           ),
                         ),
                         const SizedBox(height: 12),
                         Container(
-        
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.5),
                             shape: BoxShape.circle,
@@ -79,13 +74,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: Colors.white.withOpacity(0.6)),
                             boxShadow: [AppStyles.boxShadow7],
                           ),
-                          child:  Image.asset(
+                          child: Image.asset(
                             'assets/png/logo.png',
                             width: 120,
                             height: 120,
                           ),
                         ),
-        
                       ],
                     ),
                   ),
@@ -109,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     });
                   }
                 }
-        
+
                 if (state is LoginError) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -119,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   );
                 }
-        
+
                 if (state is LoginLoading) {
                   showDialog(
                     context: context,
@@ -135,8 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // Header image with overlay, title and logo
-        
-        
+
                     Padding(
                       padding: const EdgeInsets.all(25.0),
                       child: Column(
@@ -149,8 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   alignment: Alignment.centerLeft,
                                   child: Text(
                                     Translate.get('email'),
-                                    style: CustomTextStyle
-                                        .size14Weight400Text()
+                                    style: CustomTextStyle.size14Weight400Text()
                                         .copyWith(color: Colors.black87),
                                   ),
                                 ),
@@ -168,10 +160,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                           color: AppColors.primaryDarkColor),
                                       fillColor: AppColors().cardColor,
                                       filled: true,
-                                      hintText: Translate.get('login_email_hint'),
-                                      hintStyle: CustomTextStyle
-                                          .size14Weight400Text()
-                                          .copyWith(color: Colors.grey),
+                                      hintText:
+                                          Translate.get('login_email_hint'),
+                                      hintStyle:
+                                          CustomTextStyle.size14Weight400Text()
+                                              .copyWith(color: Colors.grey),
                                       border: OutlineInputBorder(
                                         borderSide: BorderSide.none,
                                         borderRadius: BorderRadius.circular(12),
@@ -194,8 +187,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   alignment: Alignment.centerLeft,
                                   child: Text(
                                     Translate.get('password'),
-                                    style: CustomTextStyle
-                                        .size14Weight400Text()
+                                    style: CustomTextStyle.size14Weight400Text()
                                         .copyWith(color: Colors.black87),
                                   ),
                                 ),
@@ -214,10 +206,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                       fillColor: AppColors().cardColor,
                                       filled: true,
                                       hintText:
-                                      Translate.get('login_password_hint'),
-                                      hintStyle: CustomTextStyle
-                                          .size14Weight400Text()
-                                          .copyWith(color: Colors.grey),
+                                          Translate.get('login_password_hint'),
+                                      hintStyle:
+                                          CustomTextStyle.size14Weight400Text()
+                                              .copyWith(color: Colors.grey),
                                       border: OutlineInputBorder(
                                         borderSide: BorderSide.none,
                                         borderRadius: BorderRadius.circular(12),
@@ -257,8 +249,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 value: _privacyPolicyAccepted,
                                 activeColor: AppColors.primaryColor,
                                 checkColor: Colors.white,
-                                shape: const CircleBorder(),         // 🔑 This makes it circular
-                                side: BorderSide(                    // Border when not selected
+                                shape:
+                                    const CircleBorder(), // 🔑 This makes it circular
+                                side: BorderSide(
+                                  // Border when not selected
                                   color: AppColors.primaryColor,
                                   width: 2,
                                 ),
@@ -275,13 +269,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                        const PrivacyPolicyScreen(),
+                                            const PrivacyPolicyScreen(),
                                       ),
                                     );
                                   },
                                   child: Text(
                                     Translate.get('login_privacy_policy'),
-                                    style: CustomTextStyle.size14Weight400Text(),
+                                    style:
+                                        CustomTextStyle.size14Weight400Text(),
                                   ),
                                 ),
                               ),
@@ -294,20 +289,29 @@ class _LoginScreenState extends State<LoginScreen> {
                                 },
                                 child: Text(
                                   Translate.get('login_forgot_password'),
-                                  style: CustomTextStyle
-                                      .size14Weight400Text()
+                                  style: CustomTextStyle.size14Weight400Text()
                                       .copyWith(color: Colors.grey[700]),
                                 ),
                               ),
                             ],
                           ),
-        
                           const SizedBox(height: 30),
                           Padding(
                             padding: const EdgeInsets.only(bottom: 20),
                             child: PrimaryButton(
                               text: Translate.get('login_button'),
-                              onTap: () {
+                              onTap: () async {
+                                String? apnsToken = await FirebaseMessaging
+                                    .instance
+                                    .getAPNSToken();
+                                print("APNS Token: $apnsToken");
+
+                                print("FCM Token>>>>>>>>");
+                                await Future.delayed(Duration(seconds: 1));
+                                String? token =
+                                    await FirebaseMessaging.instance.getToken();
+                                print("FCM Token: $token");
+
                                 if (_emailController.text.trim().isEmpty) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
@@ -351,8 +355,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           const SizedBox(height: 50),
-        
-        
                           Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -360,7 +362,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Translate.get('login_no_account'),
                                 style: CustomTextStyle.size16Weight400Text(),
                               ),
-        
                               GestureDetector(
                                 onTap: () {
                                   Navigator.pushNamed(context, '/register');
@@ -376,18 +377,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                     Translate.get('login_register_now'),
                                     style: CustomTextStyle.size16Weight400Text()
                                         .copyWith(
-                                       decoration: TextDecoration.underline,
+                                      decoration: TextDecoration.underline,
                                     ),
                                   ),
                                 ),
                               ),
                             ],
                           ),
-        
                         ],
                       ),
                     )
-        
                   ],
                 ),
               ),

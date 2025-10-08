@@ -394,72 +394,55 @@ class _NewCartScreenState extends State<NewCartScreen> {
                           //   height: 20,
                           // ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 30),
-                            child: Ink(
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.all(Radius.circular(10)),
-                              ),
-                              child: InkWell(
-                                borderRadius: const BorderRadius.all(Radius.circular(10)),
-                                onTap: () {
-                                  Navigator.pushNamedAndRemoveUntil(
-                                    context,
-                                    "/home",
-                                        (route) => false,
-                                  );
-                                },
-                                child: Container(
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.all(Radius.circular(10))),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 60,
-                                    vertical: 20,
-                                  ),
-                                  child: Text(
-                                    Translate.get('continueShopping'),
-                                    textAlign: TextAlign.center,
-                                    style: CustomTextStyle.size16Weight600Text(
-                                      AppColors().textColor,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
+                              padding: const EdgeInsets.symmetric(horizontal: 30),
+                              child:  PrimaryButton(
+
+                                  text: Translate.get('continueShopping'),
+                                  onTap: ()  {
+                                    Navigator.pushNamedAndRemoveUntil(
+                                      context,
+                                      "/home",
+                                          (route) => false,
+                                    );
+                                  })
+
                           ),
                           SizedBox(height: 20,),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 30),
                             child: OrderRepository.cart.isNotEmpty
                                 ? PrimaryButton(
-                                    text: Translate.get('goToCheckout'),
-                                    onTap: () async {
-                                      if (OrderRepository.cart.isEmpty) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                                Translate.get('cartEmpty')),
-                                            backgroundColor:
-                                                AppColors.errorColor,
-                                          ),
-                                        );
-                                        return;
-                                      }
-
-                                      // Find nearest shop before proceeding
-                                      try {
-                                        await _findNearestShopAndNavigate(
-                                            context);
-                                      } catch (e) {
-                                        Navigator.of(context)
-                                            .pop();
-                                        await _handleLocationError(context, e);
-                                      }
-                                    })
+                                bgColor: Colors.white,
+                                textColor: AppColors().textColor,
+                                text: Translate.get('goToCheckout'),
+                                onTap: () async {
+                                  if (OrderRepository.cart.isEmpty) {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            Translate.get('cartEmpty')),
+                                        backgroundColor:
+                                        AppColors.errorColor,
+                                      ),
+                                    );
+                                    return;
+                                  }
+                                  Navigator.pushNamed(context, "/tip");
+                                  // Find nearest shop before proceeding
+                                  // try {
+                                  //   await _findNearestShopAndNavigate(
+                                  //       context);
+                                  // } catch (e) {
+                                  //   Navigator.of(context)
+                                  //       .pop();
+                                  //   await _handleLocationError(context, e);
+                                  //
+                                  // }
+                                })
                                 : SizedBox(),
-                          )
+                          ),
+                          const SizedBox(height: 40),
                         ],
                       ),
                     ),

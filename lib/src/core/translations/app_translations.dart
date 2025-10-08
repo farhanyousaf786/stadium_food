@@ -352,6 +352,19 @@ class AppTranslations {
       'pleaseEnter': 'Please enter',
       'amount': 'Amount',
       'optional': 'optional',
+      // Phone number bottom sheet & misc
+      'phoneNumberRequired': 'Phone Number Required',
+      'phoneNumberPrompt': 'Please add your phone number to continue with your order',
+      'phoneNumber': 'Phone Number',
+      'save': 'Save',
+      'phoneNumberSaved': 'Phone number saved successfully',
+      'phoneNumberSaveFailed': 'Failed to save phone number',
+      // Dropdown hints
+      'selectStand': 'Select Stand',
+      'selectSection': 'Select Section',
+      // Platform pay availability
+      'googlePayNotSupported': 'Google pay is not supported on this device',
+      'applePayNotAvailable': 'Apple Pay is not available on this device. Please ensure Apple Pay is set up with payment cards.',
       // Location errors
       'locationServiceDisabled': 'Location services are disabled. Please enable them and try again.',
       'locationError': 'Unable to get your location. Please try again.',

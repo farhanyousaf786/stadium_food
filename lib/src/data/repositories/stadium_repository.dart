@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:translator/translator.dart';
 import '../models/stadium.dart';
+import '../models/section.dart';
 
 class StadiumRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -20,6 +21,17 @@ class StadiumRepository {
         .where((stadium) =>
             stadium.name.toLowerCase().contains(query) ||
             stadium.location.toLowerCase().contains(query))
+        .toList();
+  }
+
+  Future<List<Section>> fetchSections(String stadiumId) async {
+    final querySnapshot = await _firestore
+        .collection('stadiums')
+        .doc(stadiumId)
+        .collection('sections')
+        .get();
+    return querySnapshot.docs
+        .map((doc) => Section.fromMap(doc.id, doc.data()))
         .toList();
   }
 }

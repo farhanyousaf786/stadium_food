@@ -24,3 +24,17 @@ class StadiumError extends StadiumState {
 
   StadiumError(this.message);
 }
+
+class SectionsLoading extends StadiumState {}
+
+class SectionsLoaded extends StadiumState {
+  final List<Section> sections;
+
+  SectionsLoaded(this.sections);
+}
+
+class SectionsError extends StadiumState {
+  final String message;
+
+  SectionsError(this.message);
+}

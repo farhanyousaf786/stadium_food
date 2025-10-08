@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/models/stadium.dart';
+import '../../data/models/section.dart';
 import '../../data/repositories/stadium_repository.dart';
 
 part 'stadium_event.dart';
@@ -54,6 +55,16 @@ class StadiumBloc extends Bloc<StadiumEvent, StadiumState> {
         emit(StadiumSelected(event.stadium));
       } catch (e) {
         emit(StadiumError(e.toString()));
+      }
+    });
+
+    on<FetchSections>((event, emit) async {
+      emit(SectionsLoading());
+      try {
+        final sections = await _repository.fetchSections(event.stadiumId);
+        emit(SectionsLoaded(sections));
+      } catch (e) {
+        emit(SectionsError(e.toString()));
       }
     });
   }

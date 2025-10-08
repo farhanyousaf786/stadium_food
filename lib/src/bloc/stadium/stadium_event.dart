@@ -16,3 +16,9 @@ class SelectStadium extends StadiumEvent {
 
   SelectStadium(this.stadium);
 }
+
+class FetchSections extends StadiumEvent {
+  final String stadiumId;
+
+  FetchSections(this.stadiumId);
+}

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:stadium_food/src/data/repositories/profile_repository.dart';
+import 'package:stadium_food/src/presentation/screens/order/order_confirm_screen/qr_scan_screen.dart';
 import 'package:stadium_food/src/presentation/screens/order/order_details_screen.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/back_button.dart';
 import 'package:stadium_food/src/presentation/widgets/loading_indicator.dart';
@@ -21,6 +23,8 @@ import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/core/config/stripe_config.dart';
 import 'package:hive/hive.dart';
+import 'package:stadium_food/src/bloc/stadium/stadium_bloc.dart';
+import 'package:stadium_food/src/data/models/section.dart';
 
 import '../../../../data/repositories/order_repository.dart';
 import '../../../../data/services/firebase_storage.dart';
@@ -130,6 +134,118 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     if (_standController.text.isEmpty) {
       _standController.text = Translate.get('standOptionGallery');
     }
+
+    // Fetch sections for currently selected stadium
+    try {
+      final box = Hive.box('myBox');
+      final sel = box.get('selectedStadium');
+      final String? stadiumId = sel != null ? sel['id'] as String? : null;
+      if (stadiumId != null && context.mounted) {
+        context.read<StadiumBloc>().add(FetchSections(stadiumId));
+      }
+    } catch (_) {
+      // silently ignore if box not available; user might not have selected a stadium yet
+    }
+  }
+
+  // Parse QR scan result URL and populate fields: row, seat, section/sectionId
+  void _handleQrScanResult(String result) {
+    Uri? uri;
+    try {
+      uri = Uri.tryParse(result);
+    } catch (_) {
+      uri = null;
+    }
+
+    if (uri == null) {
+      // Not a valid URI; try to parse as query only (fallback)
+      try {
+        uri = Uri.parse('$result');
+      } catch (_) {
+
+      }
+    }
+
+    if (uri == null) return;
+
+    final qp = uri.queryParameters;
+    final row = qp['row'] ?? qp['Row'] ?? qp['r'];
+    final seat = qp['seat'] ?? qp['Seat'] ?? qp['s'];
+    final sectionNameParam = qp['section'] ?? qp['Section'];
+    final sectionIdParam = qp['sectionId'] ?? qp['SectionId'] ?? qp['sid'];
+
+    setState(() {
+      if (row != null && row.toString().isNotEmpty) {
+        _rowController.text = row.trim();
+      }
+      if (seat != null && seat.toString().isNotEmpty) {
+        _seatNoController.text = seat.trim();
+      }
+    });
+
+    // Try to select the section from StadiumBloc state
+    final stadiumState = context.read<StadiumBloc>().state;
+    if (stadiumState is SectionsLoaded) {
+      final List<Section> sections = stadiumState.sections;
+
+      Section? matched;
+      if (sectionIdParam != null && sectionIdParam.isNotEmpty) {
+        matched = sections.firstWhere(
+          (s) => s.sectionId == sectionIdParam,
+          orElse: () => Section(
+            id: '',
+            sectionId: '',
+            sectionName: '',
+            sectionNo: 0,
+            rows: 0,
+            column: 0,
+            isActive: true,
+            shops: const [],
+            createdAt: DateTime.fromMillisecondsSinceEpoch(0),
+            updatedAt: DateTime.fromMillisecondsSinceEpoch(0),
+          ),
+        );
+        if (matched.sectionId.isEmpty) matched = null;
+      }
+
+      // Fallback to match by name (case-insensitive)
+      matched ??= (sectionNameParam == null
+          ? null
+          : sections.firstWhere(
+              (s) => s.sectionName.toLowerCase() == sectionNameParam.toLowerCase(),
+              orElse: () => Section(
+                id: '',
+                sectionId: '',
+                sectionName: '',
+                sectionNo: 0,
+                rows: 0,
+                column: 0,
+                isActive: true,
+                shops: const [],
+                createdAt: DateTime.fromMillisecondsSinceEpoch(0),
+                updatedAt: DateTime.fromMillisecondsSinceEpoch(0),
+              ),
+            ));
+      if (matched != null && matched.sectionName.isNotEmpty) {
+        setState(() {
+          _entranceController.text = matched!.sectionName;
+          // Mirror dropdown onChanged side effects
+          OrderRepository.selectedDeliveryUerId = '';
+          if (matched!.shops.isNotEmpty) {
+            OrderRepository.selectedShopId = matched!.shops.first;
+          }
+          OrderRepository.customerLocation = const GeoPoint(0, 0);
+        });
+        return;
+      }
+    }
+
+    // If we did not find a matching Section in state but a name was provided, still set the text
+    if (sectionNameParam != null && sectionNameParam.isNotEmpty) {
+      setState(() {
+        _entranceController.text = sectionNameParam;
+      });
+    }
   }
 
   void _showPhoneNumberBottomSheet(BuildContext context) {
@@ -163,20 +279,20 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Phone Number Required',
+                  Translate.get('phoneNumberRequired'),
                   style: CustomTextStyle.size18Weight600Text(),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Please add your phone number to continue with your order',
+                  Translate.get('phoneNumberPrompt'),
                   textAlign: TextAlign.center,
                   style: CustomTextStyle.size14Weight400Text(Colors.grey),
                 ),
                 const SizedBox(height: 24),
                 _buildTextField(
                   controller: phoneController,
-                  label: 'Phone Number',
-                  hint: 'Phone Number',
+                  label: Translate.get('phoneNumber'),
+                  hint: Translate.get('phoneNumber'),
                   icon: Icons.view_week_outlined,
                   keyboardType: TextInputType.phone,
                 ),
@@ -186,7 +302,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                     Expanded(
                       child: PrimaryButton(
                           verticalPadding: 16,
-                          text: 'Save',
+                          text: Translate.get('save'),
                           onTap: () async {
                             if (formKey.currentState!.validate()) {
                               try {
@@ -195,9 +311,9 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                 if (context.mounted) {
                                   Navigator.pop(context);
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
+                                    SnackBar(
                                       content: Text(
-                                          'Phone number saved successfully'),
+                                          Translate.get('phoneNumberSaved')),
                                       backgroundColor: Colors.green,
                                     ),
                                   );
@@ -207,7 +323,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(
-                                          'Failed to save phone number: ${e.toString()}'),
+                                          '${Translate.get('phoneNumberSaveFailed')}: ${e.toString()}'),
                                       backgroundColor: Colors.red,
                                     ),
                                   );
@@ -226,8 +342,6 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                             Navigator.pop(context);
                           }),
                     ),
-
-
                   ],
                 ),
               ],
@@ -434,7 +548,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                   ),
                   const SizedBox(height: 10.0),
                   Text(
-                    "Amount: ₪${state.order.total.toStringAsFixed(2)}",
+                    "${Translate.get('amount')}: ₪${state.order.total.toStringAsFixed(2)}",
                     style: CustomTextStyle.size16Weight400Text(),
                   ),
                 ],
@@ -809,6 +923,39 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                             const Expanded(child: Divider(thickness: 1)),
                           ],
                         ),
+                        // const SizedBox(height: 20),
+                        //
+                        // ElevatedButton.icon(
+                        //   onPressed: () async {
+                        //
+                        //
+                        //     final result = await Navigator.push(
+                        //       context,
+                        //       MaterialPageRoute(builder: (_) => const QRScanScreen()),
+                        //     );
+                        //
+                        //     if (result != null && context.mounted) {
+                        //       if (result is String) {
+                        //         _handleQrScanResult(result);
+                        //       }
+                        //     }
+                        //     //  _showCompleteOrderBottomSheet(context);
+                        //   },
+                        //   style: ElevatedButton.styleFrom(
+                        //     backgroundColor: AppColors.primaryColor,
+                        //     padding: const EdgeInsets.symmetric(vertical: 15,horizontal: 10),
+                        //     shape: RoundedRectangleBorder(
+                        //       borderRadius: BorderRadius.circular(12),
+                        //     ),
+                        //   ),
+                        //   icon: const Icon(Icons.qr_code_scanner, color: Colors.white),
+                        //   label: Text(
+                        //     Translate.get('Scan Seat Qr'),
+                        //     style: CustomTextStyle.size16Weight600Text().copyWith(
+                        //       color: Colors.white,
+                        //     ),
+                        //   ),
+                        // ),
                         const SizedBox(height: 20),
                         Row(
                           children: [
@@ -828,7 +975,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                 child: FormField<String>(
                                   validator: (_) {
                                     if (_standController.text.isEmpty) {
-                                      return '${Translate.get('pleaseEnter')} ${Translate.get('standLabel').toLowerCase()}';
+                                      return '${Translate.get('standLabel').toLowerCase()}';
                                     }
                                     return null;
                                   },
@@ -859,7 +1006,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                         fillColor: AppColors().cardColor,
                                         filled: true,
                                         labelText: Translate.get('standLabel'),
-                                        hintText: Translate.get('standHint'),
+                                        hintText: Translate.get('selectStand'),
                                         labelStyle: const TextStyle(
                                           color: AppColors.primaryColor,
                                         ),
@@ -873,6 +1020,111 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                             AppStyles.defaultFocusedBorder(),
                                         errorText: formState.errorText,
                                       ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 5),
+                                    ),
+                                  ],
+                                ),
+                                child: FormField<String>(
+                                  validator: (_) {
+                                    if (_entranceController.text.isEmpty) {
+                                      return '${Translate.get('entranceLabel').toLowerCase()}';
+                                    }
+                                    return null;
+                                  },
+                                  builder: (formState) {
+                                    return BlocBuilder<StadiumBloc,
+                                        StadiumState>(
+                                      builder: (context, state) {
+                                        if (state is SectionsLoading) {
+                                          return SizedBox();
+                                        }
+
+                                        List<Section> sections = [];
+                                        if (state is SectionsLoaded) {
+                                          sections = state.sections;
+                                        }
+
+                                        return DropdownButtonFormField<String>(
+                                          value:
+                                              _entranceController.text.isEmpty
+                                                  ? null
+                                                  : _entranceController.text,
+                                          items: sections
+                                              .map(
+                                                (s) => DropdownMenuItem<String>(
+                                                  value: s.sectionName,
+                                                  child: Text(s.sectionName),
+                                                ),
+                                              )
+                                              .toList(),
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _entranceController.text =
+                                                  value ?? '';
+                                              formState.didChange(
+                                                  _entranceController.text);
+
+
+
+                                              final sel = sections.firstWhere(
+                                                    (s) => s.sectionName == value,
+                                                orElse: () => Section(
+                                                  id: '',
+                                                  sectionId: '',
+                                                  sectionName: '',
+                                                  sectionNo: 0,
+                                                  rows: 0,
+                                                  column: 0,
+                                                  isActive: true,
+                                                  shops: const [],
+                                                  createdAt: DateTime.fromMillisecondsSinceEpoch(0),
+                                                  updatedAt: DateTime.fromMillisecondsSinceEpoch(0),
+                                                ),
+                                              );
+
+                                              OrderRepository.selectedDeliveryUerId = '';
+                                              OrderRepository.selectedShopId = sel.shops.first;
+                                              OrderRepository.customerLocation =
+                                                  GeoPoint(0, 0);
+                                              print('shopsIds.........: ${sel.shops}');
+
+                                            });
+                                          },
+                                          decoration: InputDecoration(
+                                            fillColor: AppColors().cardColor,
+                                            filled: true,
+                                            labelText: Translate.get('sectionLabel'),
+                                            hintText: Translate.get('selectSection'),
+                                            labelStyle: const TextStyle(
+                                              color: AppColors.primaryColor,
+                                            ),
+                                            hintStyle: CustomTextStyle
+                                                .size14Weight400Text(
+                                              AppColors().secondaryTextColor,
+                                            ),
+                                            enabledBorder: AppStyles()
+                                                .defaultEnabledBorder,
+                                            focusedBorder: AppStyles
+                                                .defaultFocusedBorder(),
+                                            errorText: formState.errorText,
+                                          ),
+                                        );
+                                      },
                                     );
                                   },
                                 ),
@@ -897,15 +1149,6 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                 hint: Translate.get('seatHint'),
                                 icon: Icons.chair_outlined,
                                 keyboardType: TextInputType.number,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: _buildTextField(
-                                controller: _entranceController,
-                                label: Translate.get('entranceLabel'),
-                                hint: Translate.get('entranceHint'),
-                                icon: Icons.info_outline,
                               ),
                             ),
                           ],
@@ -947,7 +1190,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
 
                                         var phone =
                                             ProfileRepository().getUserPhone();
-                                        if (phone.isNotEmpty) {
+                                        if (phone.isEmpty) {
                                           _showPhoneNumberBottomSheet(context);
                                           return;
                                         }
@@ -1242,7 +1485,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                                       .showSnackBar(
                                                     SnackBar(
                                                         content: Text(
-                                                            'Google pay is not supported on this device')),
+                                                            Translate.get('googlePayNotSupported'))),
                                                   );
                                                 }
                                               }
@@ -1341,7 +1584,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-                'Apple Pay is not available on this device. Please ensure Apple Pay is set up with payment cards.'),
+                Translate.get('applePayNotAvailable')),
             backgroundColor: AppColors.errorColor,
           ),
         );

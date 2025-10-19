@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:stadium_food/src/core/translations/translate.dart';
 
 
 
@@ -17,10 +18,10 @@ class _QRScanScreenState extends State<QRScanScreen> {
 
   Widget _barcodePreview(Barcode? value) {
     if (value == null) {
-      return const Text(
-        'Scan something!',
+      return Text(
+        Translate.get('qrScanPrompt'),
         overflow: TextOverflow.fade,
-        style: TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.white),
       );
     }
     
@@ -32,7 +33,7 @@ class _QRScanScreenState extends State<QRScanScreen> {
     });
     
     return Text(
-      value.displayValue ?? 'No display value.',
+      value.displayValue ?? Translate.get('qrNoDisplayValue'),
       overflow: TextOverflow.fade,
       style: const TextStyle(color: Colors.white),
     );
@@ -49,7 +50,7 @@ class _QRScanScreenState extends State<QRScanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Simple Mobile Scanner')),
+      appBar: AppBar(title: Text(Translate.get('qrScanTitle'))),
       backgroundColor: Colors.black,
       body: Stack(
         children: [

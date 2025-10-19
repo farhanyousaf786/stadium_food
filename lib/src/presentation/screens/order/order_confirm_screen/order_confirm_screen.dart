@@ -102,6 +102,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
   Map<String, dynamic>? paymentIntent;
   XFile? _image;
   String imageUrl = '';
+  String sectionId = '';
 
   // pick image from gallery
   Future<void> _pickImageFromGallery() async {
@@ -229,10 +230,11 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       if (matched != null && matched.sectionName.isNotEmpty) {
         setState(() {
           _entranceController.text = matched!.sectionName;
+          sectionId = matched.sectionId;
           // Mirror dropdown onChanged side effects
           OrderRepository.selectedDeliveryUerId = '';
-          if (matched!.shops.isNotEmpty) {
-            OrderRepository.selectedShopId = matched!.shops.first;
+          if (matched.shops.isNotEmpty) {
+            OrderRepository.selectedShopId = matched.shops.first;
           }
           OrderRepository.customerLocation = const GeoPoint(0, 0);
         });
@@ -1074,10 +1076,9 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                               .toList(),
                                           onChanged: (value) {
                                             setState(() {
-                                              _entranceController.text =
-                                                  value ?? '';
-                                              formState.didChange(
-                                                  _entranceController.text);
+                                              _entranceController.text = value ?? '';
+
+                                              formState.didChange(_entranceController.text);
 
 
 
@@ -1099,6 +1100,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
 
                                               OrderRepository.selectedDeliveryUerId = '';
                                               OrderRepository.selectedShopId = sel.shops.first;
+                                              sectionId = sel.sectionId;
                                               OrderRepository.customerLocation =
                                                   GeoPoint(0, 0);
                                               print('shopsIds.........: ${sel.shops}');
@@ -1220,9 +1222,10 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                               'ticketImage': uploadedImageUrl,
                                               'row': _rowController.text,
                                               'seatNo': _seatNoController.text,
-                                              'entrance':
+                                              'section':
                                                   _entranceController.text,
                                               'stand': _standController.text,
+                                              'sectionId': sectionId,
                                             };
 
                                             makePayment(OrderRepository.total,
@@ -1249,9 +1252,10 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                             'ticketImage': '',
                                             'row': _rowController.text,
                                             'seatNo': _seatNoController.text,
-                                            'entrance':
+                                            'section':
                                                 _entranceController.text,
                                             'stand': _standController.text,
+                                            'sectionId': sectionId,
                                           };
 
                                           makePayment(
@@ -1320,11 +1324,12 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                                       'seatNo':
                                                           _seatNoController
                                                               .text,
-                                                      'entrance':
+                                                      'section':
                                                           _entranceController
                                                               .text,
                                                       'stand':
                                                           _standController.text,
+                                                      'sectionId': sectionId,
                                                     };
                                                     await makeApplePayment(
                                                         OrderRepository.total,
@@ -1351,11 +1356,12 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                                     'row': _rowController.text,
                                                     'seatNo':
                                                         _seatNoController.text,
-                                                    'entrance':
+                                                    'section':
                                                         _entranceController
                                                             .text,
                                                     'stand':
                                                         _standController.text,
+                                                    'sectionId': sectionId,
                                                   };
                                                   await makeApplePayment(
                                                       OrderRepository.total,
@@ -1432,12 +1438,14 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                                         'seatNo':
                                                             _seatNoController
                                                                 .text,
-                                                        'entrance':
+                                                        'section':
                                                             _entranceController
                                                                 .text,
                                                         'stand':
                                                             _standController
                                                                 .text,
+
+                                                        'sectionId': sectionId,
                                                       };
                                                       await makeGooglePayment(
                                                           OrderRepository.total,
@@ -1468,11 +1476,13 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                                       'seatNo':
                                                           _seatNoController
                                                               .text,
-                                                      'entrance':
+                                                      'section':
                                                           _entranceController
                                                               .text,
                                                       'stand':
                                                           _standController.text,
+
+                                                      'sectionId': sectionId,
                                                     };
                                                     await makeGooglePayment(
                                                         OrderRepository.total,

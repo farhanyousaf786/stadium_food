@@ -365,6 +365,10 @@ class AppTranslations {
       // Platform pay availability
       'googlePayNotSupported': 'Google pay is not supported on this device',
       'applePayNotAvailable': 'Apple Pay is not available on this device. Please ensure Apple Pay is set up with payment cards.',
+      // QR Scanner
+      'qrScanTitle': 'Scan QR Code',
+      'qrScanPrompt': 'Scan something!',
+      'qrNoDisplayValue': 'No display value.',
       // Location errors
       'locationServiceDisabled': 'Location services are disabled. Please enable them and try again.',
       'locationError': 'Unable to get your location. Please try again.',
@@ -1014,6 +1018,10 @@ class AppTranslations {
 
       'invalidTipAmount': 'אנא הזן סכום טיפ תקין',
       'noShopAvailable': 'אין חנות זמינה',
+      // QR Scanner (HE)
+      'qrScanTitle': 'סרוק קוד QR',
+      'qrScanPrompt': 'סרוק משהו!',
+      'qrNoDisplayValue': 'אין ערך להצגה.',
 
       // Order Confirm Screen (HE)
       'selectYourSeat': 'בחר את המושב שלך',

@@ -16,6 +16,7 @@ class Food extends Equatable {
   final List<Map<String, dynamic>> extras;
   final List<String> images;
   final bool isAvailable;
+  final bool isCombo;
   final String name;
   final Map<String, String> nameMap;
   final Map<String, dynamic> nutritionalInfo;
@@ -43,6 +44,7 @@ class Food extends Equatable {
     required this.extras,
     required this.images,
     required this.isAvailable,
+     this.isCombo=false,
     required this.name,
     this.nameMap = const {},
     required this.nutritionalInfo,
@@ -84,6 +86,7 @@ class Food extends Equatable {
               .toList() ??
           [],
       isAvailable: map['isAvailable'] ?? true,
+      isCombo: map['isCombo'] ?? false,
       name: map['name'] ?? '',
       nameMap: (map['nameMap'] as Map<String, dynamic>?)
               ?.map((key, value) => MapEntry(key, value?.toString() ?? '')) ??
@@ -130,6 +133,7 @@ class Food extends Equatable {
       'extras': extras,
       'images': images,
       'isAvailable': isAvailable,
+      'isCombo': isCombo,
       'name': name,
       'nameMap': nameMap,
       'nutritionalInfo': nutritionalInfo,

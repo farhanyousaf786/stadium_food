@@ -135,15 +135,69 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                           ? Container(
                               color: AppColors.bgColor,
                               padding: const EdgeInsets.symmetric(vertical: 10),
-                              child: Image.network(
+                              child:
+                              (widget.food.isCombo &&
+                                  widget. food.images.length >= 2)
+                                  ? Row(
+                                children: [
+                                  Expanded(
+                                    child: Image.network(
+                                      widget.food.images[0],
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error,
+                                          stackTrace) =>
+                                          ImagePlaceholder(
+                                            iconData: Icons.fastfood,
+                                            iconSize: 100,
+                                          ),
+                                    ),
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: 5),
+                                    height: double.infinity,
+                                    width: 3,
+                                    color: AppColors.primaryColor,
+                                  ),
+                                  Expanded(
+                                    child: Image.network(
+                                      widget.food.images[1],
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error,
+                                          stackTrace) =>
+                                          ImagePlaceholder(
+                                            iconData: Icons.fastfood,
+                                            iconSize: 100,
+                                          ),
+                                    ),
+                                  ),
+                                ],
+                              )
+                                  :Image.network(
                                 widget.food.images.first,
+                                width: double.infinity,
                                 fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) =>
+                                errorBuilder: (context, error,
+                                    stackTrace) =>
                                     ImagePlaceholder(
-                                  iconData: Icons.fastfood,
-                                  iconSize: 100,
-                                ),
-                              ),
+                                      iconData: Icons.fastfood,
+                                      iconSize: 100,
+                                    ),
+                              )
+
+                              // Image.network(
+                              //   widget.food.images.first,
+                              //   fit: BoxFit.cover,
+                              //   errorBuilder: (context, error, stackTrace) =>
+                              //       ImagePlaceholder(
+                              //     iconData: Icons.fastfood,
+                              //     iconSize: 100,
+                              //   ),
+                              // ),
                             )
                           : ImagePlaceholder(
                               iconData: Icons.fastfood,

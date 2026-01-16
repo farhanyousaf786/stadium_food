@@ -25,6 +25,7 @@ import 'package:stadium_food/src/presentation/screens/order/order_list_screen.da
 import 'package:stadium_food/src/presentation/screens/splash_screen.dart';
 import 'package:stadium_food/src/presentation/screens/stadium/stadium_screen.dart';
 import 'package:stadium_food/src/presentation/screens/tip/tip_screen.dart';
+import 'package:stadium_food/src/presentation/screens/web_view/web_view_screen.dart';
 
 import '../screens/chat/chat_list_screen.dart';
 import '../screens/stadium/select_stadium_screen.dart';
@@ -165,6 +166,12 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => ChatDetailsScreen(
             otherUser: settings.arguments as ShopUser,
+          ),
+        );
+
+      case '/webview':
+        return MaterialPageRoute(
+          builder: (_) => WebViewScreen(
           ),
         );
 

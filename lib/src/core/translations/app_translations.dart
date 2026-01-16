@@ -672,6 +672,8 @@ class AppTranslations {
 
       'customerRetentionRate': 'Customer Retention Rate',
       'feedbackUs': 'Feedback',
+      'loginAsGuest': 'Login as Guest',
+      'guestLoginSuccess': 'Logged in as guest',
     },
 
     'he': {
@@ -1284,7 +1286,9 @@ class AppTranslations {
       'logoutConfirm': 'האם אתה בטוח שאתה רוצה להתנתק?',
 
       'metersAway': 'מטרים משם',
+      'loginAsGuest': 'התחבר כאורח',
 
+      'guestLoginSuccess': 'התחברת כאורח',
     },
   };
 

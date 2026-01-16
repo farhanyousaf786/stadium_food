@@ -5,6 +5,8 @@ import 'package:stadium_food/src/presentation/screens/server.dart';
 import 'package:stadium_food/src/services/onboarding_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../utils/app_colors.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -27,6 +29,22 @@ class _SplashScreenState extends State<SplashScreen> {
     });
     Future.delayed(const Duration(milliseconds: 1500), () async {
       // Decide next screen based on onboarding completion and stadium selection
+      
+      try {
+        final doc = await FirebaseFirestore.instance.collection('app').doc('0').get();
+        final isAppWeb = doc.data()?['isAppWeb'] as bool? ?? false;
+
+        if (!mounted) return;
+
+        if (isAppWeb) {
+          Navigator.pushReplacementNamed(context, '/webview');
+          return;
+        }
+      } catch (e) {
+        debugPrint('Error checking app config: $e');
+        // Fallback to normal flow if error
+      }
+      
       final hasSeenOnboarding = await OnboardingService.hasSeenOnboarding();
       if (!mounted) return;
 

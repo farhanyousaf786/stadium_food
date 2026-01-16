@@ -25,6 +25,8 @@ import 'package:stadium_food/src/core/config/stripe_config.dart';
 import 'package:hive/hive.dart';
 import 'package:stadium_food/src/bloc/stadium/stadium_bloc.dart';
 import 'package:stadium_food/src/data/models/section.dart';
+import 'package:stadium_food/src/data/services/firestore_db.dart';
+import 'dart:math';
 
 import '../../../../data/repositories/order_repository.dart';
 import '../../../../data/services/firebase_storage.dart';
@@ -479,6 +481,78 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                     ),
                     child: Text(
                       Translate.get('login'),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      Navigator.pop(context); // Close auth dialog
+                      
+
+
+                      try {
+                        final userCredential = await FirebaseAuth.instance.signInAnonymously();
+                        final uid = userCredential.user!.uid;
+
+                        // Create anonymous user data
+                        final randomNum = Random().nextInt(100);
+                        final userData = {
+                          'id': uid,
+                          'firstName': 'FanMunch',
+                          'lastName': 'User $randomNum',
+                          'displayName': 'FanMunch User $randomNum',
+                          'email': null,
+                          'phone': null,
+                          'avatar': null,
+                          'isAnonymous': true,
+                          'createdAt': DateTime.now(),
+                        };
+
+                        // Save to Firestore
+                        await FirestoreDatabase().addUserDocument('anonymous_users', uid, userData);
+
+                        // Save ID to Hive
+                        var box = Hive.box('myBox');
+                        box.put('id', uid);
+
+                        if (context.mounted) {
+                          Navigator.pop(context); // Close loading
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(Translate.get('guestLoginSuccess') ?? 'Logged in as guest'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          Navigator.pop(context); // Close loading
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Guest login failed: $e'),
+                              backgroundColor: AppColors.errorColor,
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text(
+                      Translate.get('loginAsGuest'),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -1182,8 +1256,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                       }
 
                                       // Check if user is logged in
-                                      final currentUser =
-                                          FirebaseAuth.instance.currentUser;
+                                      final currentUser = FirebaseAuth.instance.currentUser;
                                       if (currentUser == null) {
                                         // Show login/signup dialog
                                         _showAuthDialog(context);

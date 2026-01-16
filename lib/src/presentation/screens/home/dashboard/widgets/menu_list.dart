@@ -10,6 +10,8 @@ import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/widgets/shimmer_widgets.dart';
 import 'package:stadium_food/src/presentation/widgets/formatted_price_text.dart';
 
+import '../../../../widgets/image_placeholder.dart';
+
 class MenuList extends StatefulWidget {
   const MenuList({super.key});
 
@@ -38,7 +40,6 @@ class _MenuListState extends State<MenuList> {
     if (stadiumId != null && mounted) {
       context.read<MenuBloc>().add(LoadStadiumMenu(
             stadiumId: stadiumId,
-
           ));
     }
   }
@@ -61,127 +62,181 @@ class _MenuListState extends State<MenuList> {
         ),
         const SizedBox(height: 16),
         BlocBuilder<MenuBloc, MenuState>(
-            builder: (context, state) {
-              if (state is MenuLoading) {
-                return const MenuShimmer();
-              }
+          builder: (context, state) {
+            if (state is MenuLoading) {
+              return const MenuShimmer();
+            }
 
-              if (state is MenuLoaded) {
-                _menuItems = state.foods;
+            if (state is MenuLoaded) {
+              _menuItems = state.foods;
 
-                if (_menuItems.isEmpty) {
-                  return Center(
-                    child: Text(Translate.get('noMenuItems')),
-                  );
-                }
-
-                return LayoutBuilder(
-                  builder: (context, constraints) {
-                    final double width = constraints.maxWidth;
-                    final int crossAxisCount = width >= 1000
-                        ? 4
-                        : width >= 700
-                            ? 3
-                            : 2;
-
-                    return GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: crossAxisCount,
-                        mainAxisSpacing: 12,
-                        crossAxisSpacing: 12,
-                        childAspectRatio: 0.9,
-                      ),
-                      itemCount: _menuItems.length,
-                      itemBuilder: (context, index) {
-                        final food = _menuItems[index];
-                        final lang = LanguageService.getCurrentLanguage();
-                        final localizedName = food.nameFor(lang);
-
-                        return Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 5),
-                                ),
-                              ],
-                            ),
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  '/foods/detail',
-                                  arguments: food,
-                                );
-                              },
-                              borderRadius: BorderRadius.circular(8),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  // Food Image
-                                  Expanded(
-                                    child: ClipRRect(
-                                      borderRadius: const BorderRadius.vertical(
-                                        top: Radius.circular(8),
-                                      ),
-                                      child: Image.network(
-                                        food.images.first,
-                                        width: double.infinity,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(height: 10,),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        localizedName,
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-
-                                      const SizedBox(height: 4),
-                                      FormattedPriceText(
-                                        amount: food.price,
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: AppColors.primaryColor,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 10,),
-                                ],
-                              ),
-                            ));
-                      },
-                    );
-                  },
+              if (_menuItems.isEmpty) {
+                return Center(
+                  child: Text(Translate.get('noMenuItems')),
                 );
               }
 
-              if (state is MenuError) {
-                return Center(child: Text(state.message));
-              }
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  final double width = constraints.maxWidth;
+                  final int crossAxisCount = width >= 1000
+                      ? 4
+                      : width >= 700
+                          ? 3
+                          : 2;
 
-              return const SizedBox();
-            },
-          ),
-        
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 0.9,
+                    ),
+                    itemCount: _menuItems.length,
+                    itemBuilder: (context, index) {
+                      final food = _menuItems[index];
+                      final lang = LanguageService.getCurrentLanguage();
+                      final localizedName = food.nameFor(lang);
+
+                      return Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                '/foods/detail',
+                                arguments: food,
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(8),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                // Food Image
+                                Expanded(
+                                  child: ClipRRect(
+                                    borderRadius: const BorderRadius.vertical(
+                                      top: Radius.circular(8),
+                                    ),
+                                    child: (food.isCombo &&
+                                            food.images.length >= 2)
+                                        ? Row(
+                                            children: [
+                                              Expanded(
+                                                child: Image.network(
+                                                  food.images[0],
+                                                  width: double.infinity,
+                                                  height: double.infinity,
+                                                  fit: BoxFit.cover,
+                                                  errorBuilder: (context, error,
+                                                          stackTrace) =>
+                                                      ImagePlaceholder(
+                                                    iconData: Icons.fastfood,
+                                                    iconSize: 100,
+                                                  ),
+                                                ),
+                                              ),
+                                              Container(
+                                                margin: EdgeInsets.symmetric(
+                                                    horizontal: 5),
+                                                height: double.infinity,
+                                                width: 3,
+                                                color: AppColors.primaryColor,
+                                              ),
+                                              Expanded(
+                                                child: Image.network(
+                                                  food.images[1],
+                                                  width: double.infinity,
+                                                  height: double.infinity,
+                                                  fit: BoxFit.cover,
+                                                  errorBuilder: (context, error,
+                                                          stackTrace) =>
+                                                      ImagePlaceholder(
+                                                    iconData: Icons.fastfood,
+                                                    iconSize: 100,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        : food.images.isNotEmpty
+                                            ? Image.network(
+                                                food.images.first,
+                                                width: double.infinity,
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (context, error,
+                                                        stackTrace) =>
+                                                    ImagePlaceholder(
+                                                  iconData: Icons.fastfood,
+                                                  iconSize: 100,
+                                                ),
+                                              )
+                                            : ImagePlaceholder(
+                                                iconData: Icons.fastfood,
+                                                iconSize: 100,
+                                              ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      localizedName,
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    FormattedPriceText(
+                                      amount: food.price,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.primaryColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                              ],
+                            ),
+                          ));
+                    },
+                  );
+                },
+              );
+            }
+
+            if (state is MenuError) {
+              return Center(child: Text(state.message));
+            }
+
+            return const SizedBox();
+          },
+        ),
       ],
     );
   }

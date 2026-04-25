@@ -61,8 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               child: NavigationBar(
                 backgroundColor: Colors.transparent,
-                labelBehavior:
-                NavigationDestinationLabelBehavior.alwaysShow,
+                labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
                 onDestinationSelected: (int index) {
                   setState(() {
                     _selectedIndex = index;
@@ -80,111 +79,111 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     label: Translate.get('home'),
                   ),
-                  NavigationDestination(
-                    icon: BlocBuilder<OrderBloc, OrderState>(
-                      builder: (context, state) {
-                        int activeOrderCount = 0;
-                        if (state is OrdersFetched) {
-                          activeOrderCount = state.orders.where((o) =>
-                          o.status == OrderStatus.pending ||
-                              o.status == OrderStatus.preparing ||
-                              o.status == OrderStatus.delivering).length;
-                        }
-                        return Badge(
-                          backgroundColor: AppColors.errorColor,
-                          isLabelVisible: activeOrderCount > 0,
-                          label: Text(
-                            activeOrderCount.toString(),
-                            style: CustomTextStyle.size14Weight400Text(
-                              Colors.white,
+                    NavigationDestination(
+                      icon: BlocBuilder<OrderBloc, OrderState>(
+                        builder: (context, state) {
+                          int activeOrderCount = 0;
+                          if (state is OrdersFetched) {
+                            activeOrderCount = state.orders.where((o) =>
+                            o.status == OrderStatus.pending ||
+                                o.status == OrderStatus.preparing ||
+                                o.status == OrderStatus.delivering).length;
+                          }
+                          return Badge(
+                            backgroundColor: AppColors.errorColor,
+                            isLabelVisible: activeOrderCount > 0,
+                            label: Text(
+                              activeOrderCount.toString(),
+                              style: CustomTextStyle.size14Weight400Text(
+                                Colors.white,
+                              ),
                             ),
-                          ),
-                          offset: const Offset(10, -10),
-                          child: SvgPicture.asset(
+                            offset: const Offset(10, -10),
+                            child: SvgPicture.asset(
 
-                            "assets/svg/order_f.svg",
-                          ),
-                        );
-                      },
-                    ),
-                    selectedIcon: BlocBuilder<OrderBloc, OrderState>(
-                      builder: (context, state) {
-                        int activeOrderCount = 0;
-                        if (state is OrdersFetched) {
-                          activeOrderCount = state.orders.where((o) =>
-                          o.status == OrderStatus.pending ||
-                              o.status == OrderStatus.preparing ||
-                              o.status == OrderStatus.delivering).length;
-                        }
-                        return Badge(
-                          backgroundColor: AppColors.errorColor,
-                          isLabelVisible: activeOrderCount > 0,
-                          label: Text(
-                            activeOrderCount.toString(),
-                            style: CustomTextStyle.size14Weight400Text(
-                              Colors.white,
+                              "assets/svg/order_f.svg",
                             ),
-                          ),
-                          offset: const Offset(10, -10),
-                          child: SvgPicture.asset(
-                            "assets/svg/order.svg",
-                          ),
-                        );
-                      },
-                    ),
-                    label: Translate.get('orders'),
-                  ),
-                  NavigationDestination(
-                    icon: BlocBuilder<OrderBloc, OrderState>(
-                      builder: (context, state) {
-                        return Badge(
-                          backgroundColor: AppColors.errorColor,
-                          isLabelVisible: OrderRepository.cart.isNotEmpty,
-                          label: Text(
-                            OrderRepository.cart.length.toString(),
-                            style: CustomTextStyle.size14Weight400Text(
-                              Colors.white,
+                          );
+                        },
+                      ),
+                      selectedIcon: BlocBuilder<OrderBloc, OrderState>(
+                        builder: (context, state) {
+                          int activeOrderCount = 0;
+                          if (state is OrdersFetched) {
+                            activeOrderCount = state.orders.where((o) =>
+                            o.status == OrderStatus.pending ||
+                                o.status == OrderStatus.preparing ||
+                                o.status == OrderStatus.delivering).length;
+                          }
+                          return Badge(
+                            backgroundColor: AppColors.errorColor,
+                            isLabelVisible: activeOrderCount > 0,
+                            label: Text(
+                              activeOrderCount.toString(),
+                              style: CustomTextStyle.size14Weight400Text(
+                                Colors.white,
+                              ),
                             ),
-                          ),
-                          offset: const Offset(10, -10),
-                          child: SvgPicture.asset(
+                            offset: const Offset(10, -10),
+                            child: SvgPicture.asset(
+                              "assets/svg/order.svg",
+                            ),
+                          );
+                        },
+                      ),
+                      label: Translate.get('orders'),
+                    ),
+                    NavigationDestination(
+                      icon: BlocBuilder<OrderBloc, OrderState>(
+                        builder: (context, state) {
+                          return Badge(
+                            backgroundColor: AppColors.errorColor,
+                            isLabelVisible: OrderRepository.cart.isNotEmpty,
+                            label: Text(
+                              OrderRepository.cart.length.toString(),
+                              style: CustomTextStyle.size14Weight400Text(
+                                Colors.white,
+                              ),
+                            ),
+                            offset: const Offset(10, -10),
+                            child: SvgPicture.asset(
 
-                            "assets/svg/cart_f.svg",
-                          ),
-                        );
-                      },
-                    ),
-                    selectedIcon: BlocBuilder<OrderBloc, OrderState>(
-                      builder: (context, state) {
-                        return Badge(
-                          backgroundColor: AppColors.errorColor,
-                          isLabelVisible: OrderRepository.cart.isNotEmpty,
-                          label: Text(
-                            OrderRepository.cart.length.toString(),
-                            style: CustomTextStyle.size14Weight400Text(
-                              Colors.white,
+                              "assets/svg/cart_f.svg",
                             ),
-                          ),
-                          offset: const Offset(10, -10),
-                          child: SvgPicture.asset(
-                            "assets/svg/cart.svg",
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
+                      selectedIcon: BlocBuilder<OrderBloc, OrderState>(
+                        builder: (context, state) {
+                          return Badge(
+                            backgroundColor: AppColors.errorColor,
+                            isLabelVisible: OrderRepository.cart.isNotEmpty,
+                            label: Text(
+                              OrderRepository.cart.length.toString(),
+                              style: CustomTextStyle.size14Weight400Text(
+                                Colors.white,
+                              ),
+                            ),
+                            offset: const Offset(10, -10),
+                            child: SvgPicture.asset(
+                              "assets/svg/cart.svg",
+                            ),
+                          );
+                        },
+                      ),
+                      label: Translate.get('cart'),
                     ),
-                    label: Translate.get('cart'),
-                  ),
-                  NavigationDestination(
-                    icon: SvgPicture.asset(
+                    NavigationDestination(
+                      icon: SvgPicture.asset(
 
-                      "assets/svg/prfile_f.svg",
+                        "assets/svg/prfile_f.svg",
+                      ),
+                      selectedIcon: SvgPicture.asset(
+                        "assets/svg/profile.svg",
+                      ),
+                      label: Translate.get('profile'),
                     ),
-                    selectedIcon: SvgPicture.asset(
-                      "assets/svg/profile.svg",
-                    ),
-                    label: Translate.get('profile'),
-                  ),
-                ],
+                  ],
               ),
             );
           },

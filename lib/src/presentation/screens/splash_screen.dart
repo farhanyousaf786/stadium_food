@@ -32,12 +32,18 @@ class _SplashScreenState extends State<SplashScreen> {
       
       try {
         final doc = await FirebaseFirestore.instance.collection('app').doc('0').get();
-        final isAppWeb = doc.data()?['isAppWeb'] as bool? ?? false;
+        final data = doc.data();
+        final isAppWeb = (data?['isAppWeb'] as bool?) ?? (data?['isWebActive'] as bool?) ?? false;
+        final webUrl = data?['webUrl'] as String?;
 
         if (!mounted) return;
 
-        if (isAppWeb) {
-          Navigator.pushReplacementNamed(context, '/webview');
+        if (isAppWeb && webUrl != null && webUrl.trim().isNotEmpty) {
+          Navigator.pushReplacementNamed(
+            context,
+            '/webview',
+            arguments: webUrl,
+          );
           return;
         }
       } catch (e) {

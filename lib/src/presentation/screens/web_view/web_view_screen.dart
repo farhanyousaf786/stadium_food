@@ -1,73 +1,104 @@
-
 import 'package:flutter/material.dart';
-import 'package:stadium_food/src/core/constants/colors.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewScreen extends StatefulWidget {
-  const WebViewScreen({super.key});
+  final String url;
+
+  const WebViewScreen({
+    super.key,
+    required this.url,
+  });
 
   @override
   State<WebViewScreen> createState() => _WebViewScreenState();
 }
 
 class _WebViewScreenState extends State<WebViewScreen> {
-  late final WebViewController _controller;
+  late WebViewController _webViewController;
   bool _isLoading = true;
+
+  Future<void> _applyViewportAndSafeAreaFixes() async {
+    try {
+      await _webViewController.runJavaScript('''
+        (function () {
+          var viewport = document.querySelector('meta[name="viewport"]');
+          if (!viewport) {
+            viewport = document.createElement('meta');
+            viewport.name = 'viewport';
+            document.head.appendChild(viewport);
+          }
+          if (viewport && (!viewport.content || viewport.content.indexOf('viewport-fit=cover') === -1)) {
+            var content = viewport.content || 'width=device-width, initial-scale=1.0';
+            if (content.trim().length > 0 && content.trim().slice(-1) !== ',') {
+              content = content + ',';
+            }
+            viewport.content = content + ' viewport-fit=cover';
+          }
+
+          var style = document.getElementById('flutter-webview-safearea-fix');
+          if (!style) {
+            style = document.createElement('style');
+            style.id = 'flutter-webview-safearea-fix';
+            style.innerHTML = `
+              html, body { height: 100% !important; padding: 0 !important; margin: 0 !important; overflow-x: hidden !important; }
+              body { padding-bottom: 0 !important; margin-bottom: 0 !important; }
+              * { box-sizing: border-box; }
+              footer, nav, [id*="bottom" i], [class*="bottom" i] { padding-bottom: 0 !important; margin-bottom: 0 !important; }
+              [style*="safe-area-inset-bottom" i] { padding-bottom: 0 !important; margin-bottom: 0 !important; }
+            `;
+            document.head.appendChild(style);
+          }
+        })();
+      ''');
+    } catch (_) {
+      // Ignore JS injection errors (some pages restrict modifications)
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    _controller = WebViewController()
+    _webViewController = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0x00000000))
       ..setNavigationDelegate(
         NavigationDelegate(
-          onProgress: (int progress) {
-            // Update loading bar.
-          },
           onPageStarted: (String url) {
-            if (mounted) {
-              setState(() {
-                _isLoading = true;
-              });
-            }
+            setState(() {
+              _isLoading = true;
+            });
           },
           onPageFinished: (String url) {
-            if (mounted) {
-              setState(() {
-                _isLoading = false;
-              });
-            }
+            setState(() {
+              _isLoading = false;
+            });
+            _applyViewportAndSafeAreaFixes();
           },
-          onWebResourceError: (WebResourceError error) {},
-          onNavigationRequest: (NavigationRequest request) {
-            if (request.url.startsWith('https://www.youtube.com/')) {
-              return NavigationDecision.prevent;
-            }
-            return NavigationDecision.navigate;
+          onWebResourceError: (WebResourceError error) {
+            debugPrint('WebView error: ${error.description}');
           },
         ),
       )
-      ..loadRequest(Uri.parse('https://www.fanmunch.com/'));
+      ..loadRequest(Uri.parse(widget.url));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    
-      body: SafeArea(
-        child: Stack(
-          children: [
-            WebViewWidget(controller: _controller),
-            if (_isLoading)
-              const Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.primaryColor,
-
-                ),
-              ),
-          ],
-        ),
+      body: Stack(
+        children: [
+          MediaQuery.removePadding(
+            context: context,
+            removeBottom: true,
+            child: SafeArea(
+              bottom: false,
+              child: WebViewWidget(controller: _webViewController),
+            ),
+          ),
+          if (_isLoading)
+            const Center(
+              child: CircularProgressIndicator(),
+            ),
+        ],
       ),
     );
   }

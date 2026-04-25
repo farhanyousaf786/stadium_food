@@ -170,8 +170,19 @@ class AppRouter {
         );
 
       case '/webview':
+        final url = (settings.arguments as String?);
+        if (url == null || url.trim().isEmpty) {
+          return MaterialPageRoute(
+            builder: (_) => const Scaffold(
+              body: Center(
+                child: Text('Web URL not provided'),
+              ),
+            ),
+          );
+        }
         return MaterialPageRoute(
           builder: (_) => WebViewScreen(
+            url: url,
           ),
         );
 

@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:stadium_food/src/app.dart';
@@ -16,7 +16,6 @@ import 'package:stadium_food/src/bloc/order_detail/order_detail_bloc.dart';
 import 'package:stadium_food/src/bloc/profile/profile_bloc.dart';
 import 'package:stadium_food/src/bloc/register/register_bloc.dart';
 import 'package:stadium_food/src/bloc/language/language_bloc.dart';
-
 import 'package:stadium_food/src/bloc/settings/settings_bloc.dart';
 import 'package:stadium_food/src/bloc/testimonial/testimonial_bloc.dart';
 import 'package:stadium_food/src/bloc/theme/theme_bloc.dart';
@@ -27,6 +26,7 @@ import 'package:stadium_food/src/data/repositories/order_repository.dart';
 import 'package:stadium_food/src/data/services/hive_adapters.dart';
 import 'package:stadium_food/src/services/notification_class.dart';
 import 'package:stadium_food/src/core/config/stripe_config.dart';
+import 'package:stadium_food/src/data/services/currency_service.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -36,9 +36,9 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   
-  // Initialize Stripe config with Firebase Remote Config
-  await StripeConfig.initialize();
-  
+  // Load environment variables from .env
+  await dotenv.load(fileName: '.env');
+
   Stripe.publishableKey = StripeConfig.publishableKey;
   Stripe.merchantIdentifier = 'merchant.com.fanmunch';
   await Stripe.instance.applySettings();
@@ -48,6 +48,9 @@ Future<void> main() async {
 //  Hive.registerAdapter(RestaurantAdapter());
   Hive.registerAdapter(FoodAdapter());
   await Hive.openBox('myBox');
+
+  // Initialize currency exchange rates (12h cache)
+  await CurrencyService.initializeRates();
 
   OrderRepository.loadCart();
   NotificationServiceClass().initMessaging();

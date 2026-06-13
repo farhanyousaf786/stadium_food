@@ -45,7 +45,14 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
       try {
         Order order = await orderRepository.createOrder(
-          event.seatInfo,
+          seatInfo: event.seatInfo,
+          deliveryMethod: event.deliveryMethod,
+          pickupPointId: event.pickupPointId,
+          deliveryType: event.deliveryType,
+          deliveryLocation: event.deliveryLocation,
+          deliveryNotes: event.deliveryNotes,
+          insideDelivery: event.insideDelivery,
+          outsideDelivery: event.outsideDelivery,
         );
         emit(OrderCreated(order));
       } catch (e, s) {

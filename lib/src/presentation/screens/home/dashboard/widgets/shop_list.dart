@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stadium_food/src/bloc/shop/shop_bloc.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/models/shop.dart';
 import 'package:stadium_food/src/data/models/stadium.dart';
 import 'package:stadium_food/src/presentation/screens/explore/food_list_screen.dart';
-import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/widgets/shimmer_widgets.dart';
 
 class ShopList extends StatefulWidget {
@@ -45,28 +43,18 @@ class _ShopListState extends State<ShopList> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                Translate.get('openRestaurants'),
+                Translate.get('shops'),
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              // TextButton(
-              //   onPressed: () {},
-              //   child: Text(
-              //     Translate.get('viewAll'),
-              //     style: const TextStyle(
-              //       color: AppColors.primaryColor,
-              //       fontWeight: FontWeight.w600,
-              //     ),
-              //   ),
-              // )
             ],
           ),
         ),
         const SizedBox(height: 12),
         SizedBox(
-          height: 360,
+          height: 120,
           child: BlocBuilder<ShopBloc, ShopState>(
             builder: (context, state) {
               if (state is ShopsLoading) {
@@ -77,8 +65,30 @@ class _ShopListState extends State<ShopList> {
                 _shops = state.shops;
 
                 if (_shops.isEmpty) {
-                  return Center(
-                    child: Text(Translate.get('noShopsAvailable')),
+                  return Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.grey.shade200),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.storefront_outlined, size: 48, color: Colors.grey.shade400),
+                        const SizedBox(height: 12),
+                        Text(
+                          Translate.get('noShopsAvailable'),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade600,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   );
                 }
 
@@ -86,13 +96,15 @@ class _ShopListState extends State<ShopList> {
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   itemCount: _shops.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 12),
+                  separatorBuilder: (_, __) => const SizedBox(width: 10),
                   itemBuilder: (context, index) {
                     final shop = _shops[index];
-                    final cardWidth = MediaQuery.of(context).size.width - 48; // full-bleed card look
+                    final cardWidth = (MediaQuery.of(context).size.width - 56) / 2.2;
                     return SizedBox(
                       width: cardWidth,
-                      child: _ShopCard(shop: shop),
+                      child: _ShopCard(
+                        shop: shop,
+                      ),
                     );
                   },
                 );
@@ -112,7 +124,9 @@ class _ShopListState extends State<ShopList> {
 }
 
 class _ShopCard extends StatelessWidget {
-  const _ShopCard({required this.shop});
+  const _ShopCard({
+    required this.shop,
+  });
 
   final Shop shop;
 
@@ -148,12 +162,30 @@ class _ShopCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onTap: () => _openShop(context),
+      borderRadius: BorderRadius.circular(12),
+      onTap: () {
+        if (!shop.shopAvailability) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Closed'),
+              content: const Text('This shop is currently closed.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+          return;
+        }
+        _openShop(context);
+      },
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.06),
@@ -165,66 +197,59 @@ class _ShopCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
               child: Image.asset(
                 'assets/png/shop_img.png',
-                height: 180,
+                height: 60,
                 width: double.infinity,
                 fit: BoxFit.cover,
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(6),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    shop.name,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  _DescriptionWithSeeMore(text: shop.description),
-                  const SizedBox(height: 10),
-                  _InfoRow(
-                    icon: 'ic_loc',
-
-                    text: shop.location,
-                  ),
-                  const SizedBox(height: 6),
                   Row(
                     children: [
                       Expanded(
-                        child: _InfoRow(
-                          icon: 'ic_stadium',
-
-                          text: shop.stadiumName,
+                        child: Text(
+                          shop.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
-
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: _InfoRow(
-                          icon: 'ic_floor',
-
-                          text: '${Translate.get('floor')} ${shop.floor}',
+                      if (!shop.shopAvailability)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFF0F0),
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(color: const Color(0xFFE8B6B6)),
+                          ),
+                          child: Text(
+                            Translate.get('closed'),
+                            style: const TextStyle(
+                              color: Color(0xFFD98A8A),
+                              fontSize: 8,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                         ),
-                      ),
                     ],
                   ),
-                  const SizedBox(height: 6),
-                  _InfoRow(
-                    icon: 'ic_stadium',
-
-                    text: '${Translate.get('gate')} ${shop.gate}',
+                  const SizedBox(height: 5),
+                  Text(
+                    shop.description.isNotEmpty ? shop.description : shop.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 9, color: Colors.grey.shade500),
                   ),
-
-
-
                 ],
               ),
             )
@@ -235,58 +260,3 @@ class _ShopCard extends StatelessWidget {
   }
 }
 
-class _InfoRow extends StatelessWidget {
-  const _InfoRow({required this.icon,  required this.text});
-
-  final String icon;
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        SvgPicture.asset(
-          "assets/svg/$icon.svg",
-
-        ),
-
-        const SizedBox(width: 6),
-        Expanded(
-          child: Text(
-            text,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey.shade700,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _DescriptionWithSeeMore extends StatelessWidget {
-  const _DescriptionWithSeeMore({required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final style = TextStyle(fontSize: 13, color: Colors.grey.shade700);
-    final span = TextSpan(text: text, style: style);
-    return RichText(
-      text: TextSpan(
-        children: [
-          span,
-
-        ],
-      ),
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
-    );
-  }
-}

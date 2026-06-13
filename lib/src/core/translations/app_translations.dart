@@ -20,7 +20,7 @@ class AppTranslations {
       'additionalDetailsLabel': 'Additional Details',
       'additionalDetailsHint': 'Any additional information about your seat',
 
-      'areaLabel': 'Area',
+      'areaLabel': 'Area/Seat/Room',
       'areaHint': 'Enter area name/number',
       'standLabel': 'Stand',
       'standHint': 'Enter stand name/number',

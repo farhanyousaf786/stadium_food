@@ -19,12 +19,9 @@ class FormattedPriceText extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SettingsBloc, SettingsState>(
       builder: (context, state) {
-        final code = currencyCode ?? CurrencyService.getCurrentCurrency();
-        final convertedAmount = CurrencyService.convertFromNIS(amount, code);
-        final symbol = CurrencyService.getCurrencySymbol(code);
-
+        final formatted = CurrencyService.formatPrice(amount, firebaseCurrency: currencyCode ?? 'ILS');
         return Text(
-          '$symbol${convertedAmount.toStringAsFixed(2)}',
+          formatted,
           style: style,
         );
       },

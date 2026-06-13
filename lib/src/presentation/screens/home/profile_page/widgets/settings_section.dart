@@ -6,22 +6,23 @@ import 'package:flutter_svg/svg.dart';
 import 'package:stadium_food/src/bloc/language/language_bloc.dart';
 import 'package:stadium_food/src/bloc/settings/settings_bloc.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
+import 'package:stadium_food/src/data/services/currency_service.dart';
 import '../../../../../data/models/user.dart';
 
 class SettingsSection extends StatefulWidget {
-  final User user;
+  final User? user;
   final SettingsBloc settingsBloc;
   final bool isDarkMode;
-  final VoidCallback onLogout;
-  final VoidCallback onDeleteAccount;
+  final VoidCallback? onLogout;
+  final VoidCallback? onDeleteAccount;
 
   const SettingsSection({
     super.key,
-    required this.user,
+    this.user,
     required this.settingsBloc,
     required this.isDarkMode,
-    required this.onLogout,
-    required this.onDeleteAccount,
+    this.onLogout,
+    this.onDeleteAccount,
   });
 
   @override
@@ -131,6 +132,86 @@ class _SettingsSectionState extends State<SettingsSection> {
     );
   }
 
+  void _showCurrencyPicker() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        final theme = Theme.of(context);
+        final currentCurrency = CurrencyService.getCurrentCurrency();
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 6, bottom: 12),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Text(
+                Translate.get('currency'),
+                style: theme.textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.5,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: CurrencyService.availableCurrencies.length,
+                  itemBuilder: (context, index) {
+                    final currency = CurrencyService.availableCurrencies[index];
+                    return RadioListTile<String>(
+                      value: currency.code,
+                      groupValue: currentCurrency,
+                      title: Row(
+                        children: [
+                          Text(
+                            currency.symbol,
+                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(currency.code, style: const TextStyle(fontWeight: FontWeight.w500)),
+                                Text(currency.name, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      onChanged: (val) {
+                        if (val != null) {
+                          CurrencyService.setCurrency(val);
+                          setState(() {});
+                        }
+                        Navigator.pop(context);
+                      },
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -159,6 +240,12 @@ class _SettingsSectionState extends State<SettingsSection> {
             iconPath: 'ic_lang.svg',
             title: Translate.get('language'),
             onTap: _showLanguagePicker,
+          ),
+          const SizedBox(height: 12),
+          _tile(
+            iconPath: 'ic_currency.svg',
+            title: Translate.get('currency'),
+            onTap: _showCurrencyPicker,
           ),
           const SizedBox(height: 12),
           _tile(
@@ -220,37 +307,38 @@ class _SettingsSectionState extends State<SettingsSection> {
               );
             },
           ),
-          const SizedBox(height: 12),
-          _tile(
-            iconPath: 'delete.svg',
-            title: Translate.get('deleteAccount'),
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title:  Text(Translate.get('deleteAccount')),
-                  content:  Text(Translate.get('confirmDelete')),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child:  Text(Translate.get('cancel')),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                           widget.onDeleteAccount.call();
-                      },
-                      child:  Text(
-                        Translate.get('delete'),
-                        style: TextStyle(color: Colors.red),
+          if (widget.user != null)
+            const SizedBox(height: 12),
+          if (widget.user != null)
+            _tile(
+              iconPath: 'delete.svg',
+              title: Translate.get('deleteAccount'),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title:  Text(Translate.get('deleteAccount')),
+                    content:  Text(Translate.get('confirmDelete')),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child:  Text(Translate.get('cancel')),
                       ),
-                    ),
-                  ],
-                ),
-              );
-
-            },
-          ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          widget.onDeleteAccount?.call();
+                        },
+                        child:  Text(
+                          Translate.get('delete'),
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
         ],
       ),
     );

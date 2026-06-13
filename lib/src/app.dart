@@ -41,6 +41,13 @@ class MyApp extends StatelessWidget {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
+        builder: (context, child) {
+          final isHebrew = languageState.locale.languageCode.toLowerCase() == 'he';
+          return Directionality(
+            textDirection: isHebrew ? TextDirection.rtl : TextDirection.ltr,
+            child: child ?? const SizedBox.shrink(),
+          );
+        },
 
 
         // localizationsDelegates: [

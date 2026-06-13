@@ -27,6 +27,12 @@ class Order extends Equatable {
 
   final String id;
   final String platform;
+  final String deliveryMethod;
+  final String? pickupPointId;
+  final String deliveryType;
+  final Map<String, dynamic>? insideDelivery;
+  final Map<String, dynamic>? outsideDelivery;
+  final double tipPercentage;
 
   Order({
     required this.cart,
@@ -50,6 +56,12 @@ class Order extends Equatable {
     this.customerLocation,
     required this.id,
     required this.platform,
+    this.deliveryMethod = 'delivery',
+    this.pickupPointId,
+    this.deliveryType = '',
+    this.insideDelivery,
+    this.outsideDelivery,
+    this.tipPercentage = 0,
   });
 
   factory Order.fromMap(String id, Map<String, dynamic> map) {
@@ -80,6 +92,12 @@ class Order extends Equatable {
       location: map['location'] as GeoPoint?,
       customerLocation: map['customerLocation'] as GeoPoint?,
       id: id,
+      deliveryMethod: map['deliveryMethod'] ?? 'delivery',
+      pickupPointId: map['pickupPointId'],
+      deliveryType: map['deliveryType'] ?? '',
+      insideDelivery: map['insideDelivery'] as Map<String, dynamic>?,
+      outsideDelivery: map['outsideDelivery'] as Map<String, dynamic>?,
+      tipPercentage: (map['tipPercentage'] ?? 0).toDouble(),
     );
   }
 
@@ -111,6 +129,12 @@ class Order extends Equatable {
       'orderCode': orderCode,
       'location': location,
       'customerLocation': customerLocation,
+      'deliveryMethod': deliveryMethod,
+      'pickupPointId': pickupPointId,
+      'deliveryType': deliveryType,
+      'insideDelivery': insideDelivery,
+      'outsideDelivery': outsideDelivery,
+      'tipPercentage': tipPercentage,
     };
   }
 

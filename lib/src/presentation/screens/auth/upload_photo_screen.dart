@@ -177,7 +177,7 @@ class _UploadPhotoScreenState extends State<UploadPhotoScreen> {
                             ),
                           ),
                         )
-                      : imageUrl != ""
+                      : imageUrl != null && imageUrl!.isNotEmpty
                           ? Center(
                               child: Container(
                                 width: 250,

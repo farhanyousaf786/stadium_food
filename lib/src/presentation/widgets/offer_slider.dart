@@ -5,6 +5,7 @@ import '../../bloc/offer/offer_bloc.dart';
 import '../../bloc/offer/offer_state.dart';
 import '../../core/constants/colors.dart';
 import '../../data/models/food.dart';
+import '../../data/services/currency_service.dart';
 import '../screens/explore/food_details_screen.dart';
 
 class OfferSlider extends StatelessWidget {
@@ -156,7 +157,7 @@ class OfferSlider extends StatelessWidget {
                                           borderRadius: BorderRadius.circular(4),
                                         ),
                                         child: Text(
-                                          '\$${(offer.price * (1 - offer.discountPercentage / 100)).toStringAsFixed(2)}',
+                                          CurrencyService.formatPrice(offer.price * (1 - offer.discountPercentage / 100)),
                                           style: const TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold,
@@ -174,7 +175,7 @@ class OfferSlider extends StatelessWidget {
                                           borderRadius: BorderRadius.circular(4),
                                         ),
                                         child: Text(
-                                          '\$${offer.price.toStringAsFixed(2)}',
+                                          CurrencyService.formatPrice(offer.price),
                                           style: const TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold,
@@ -195,7 +196,7 @@ class OfferSlider extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                     child: Text(
-                                      '\$${offer.price.toStringAsFixed(2)}',
+                                      CurrencyService.formatPrice(offer.price),
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,

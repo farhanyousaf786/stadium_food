@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/data/repositories/order_repository.dart';
-import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
-import 'package:stadium_food/src/presentation/widgets/buttons/secondary_button.dart';
 import 'package:stadium_food/src/presentation/widgets/formatted_price_text.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_styles.dart';
@@ -100,79 +97,21 @@ class PriceInfoWidget extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 10),
-              Divider(
-                color: AppColors().secondaryTextColor, // line color
-                thickness: 1, // line thickness
-                // empty space after line
-              ),
+              const Divider(thickness: 1),
               const SizedBox(height: 10),
-              Text(
-                Translate.get('total'),
-                style: CustomTextStyle.size22Weight600Text(
-                  AppColors().secondaryTextColor,
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Total in all three currencies
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding:
-                              EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            boxShadow: [AppStyles().largeBoxShadow],
-                            color: AppColors.primaryColor,
-                          ),
-                          child: FormattedPriceText(
-                            amount: OrderRepository.total,
-                            currencyCode: 'USD',
-                            style: CustomTextStyle.size16Weight600Text(
-                                Colors.white),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Container(
-                          padding:
-                          EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            boxShadow: [AppStyles().largeBoxShadow],
-                            color: AppColors.primaryColor,
-                          ),
-                          child: FormattedPriceText(
-                            amount: OrderRepository.total,
-                            currencyCode: 'NIS',
-                            style: CustomTextStyle.size16Weight600Text(
-                                Colors.white),
-                          ),
-                        ),
-
-                        const SizedBox(height: 4),
-                        Container(
-                          padding:
-                          EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            boxShadow: [AppStyles().largeBoxShadow],
-                            color: AppColors.primaryColor,
-                          ),
-                          child: FormattedPriceText(
-                            amount: OrderRepository.total,
-                            currencyCode: 'EUR',
-                            style: CustomTextStyle.size16Weight600Text(
-                                Colors.white),
-                          ),
-                        ),
-
-                      ],
+                  Text(
+                    Translate.get('total'),
+                    style: CustomTextStyle.size18Weight600Text(
+                      AppColors().textColor,
+                    ),
+                  ),
+                  FormattedPriceText(
+                    amount: OrderRepository.total,
+                    style: CustomTextStyle.size18Weight600Text(
+                      AppColors.primaryColor,
                     ),
                   ),
                 ],

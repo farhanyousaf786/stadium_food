@@ -180,8 +180,8 @@ class _TopBarState extends State<TopBar> {
 
           // Greeting
           Text(
-            _user != null
-                ? '$_greeting, ${_user!.firstName}!'
+            (_user != null && _user!.id.isNotEmpty)
+                ? '$_greeting, ${_user!.firstName.isNotEmpty ? _user!.firstName : Translate.get('user')}!'
                 : '$_greeting, ${Translate.get('guest')}!',
             style: const TextStyle(
               fontSize: 24,

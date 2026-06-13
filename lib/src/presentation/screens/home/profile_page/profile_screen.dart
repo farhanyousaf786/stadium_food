@@ -33,10 +33,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       _user = User.fromHive();
       // Only fetch user-specific data if user is logged in
-      if (_user != null) {
+      if (_isLoggedIn) {
         BlocProvider.of<OrderBloc>(context).add(FetchOrders());
         bloc.add(FetchFavorites());
-        // bloc.add(FetchOrderStats());
       }
     } catch (e) {
       print('User data not available: $e');
@@ -44,71 +43,89 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Widget _buildSettingsSection(BuildContext context) {
-    // If user is not logged in, show login button instead of settings
-    if (_user == null) {
-      return Container(
-        width: double.maxFinite,
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: Theme.of(context).primaryColor.withOpacity(0.1),
-            width: 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(context).shadowColor.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Text(
-              Translate.get('guestUser'),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/login');
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
-                foregroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
-              ),
-              child: Text(Translate.get('login')),
-            ),
-            const SizedBox(height: 8),
-            TextButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/register');
-              },
-              child: Text(Translate.get('register')),
-            ),
-          ],
-        ),
-      );
-    }
+  bool get _isLoggedIn => _user != null && _user!.id.isNotEmpty;
 
-    // Regular settings section for logged in users
-    return SettingsSection(
-      user: _user!,
-      settingsBloc: BlocProvider.of<SettingsBloc>(context),
-      isDarkMode: Theme.of(context).brightness == Brightness.dark,
-      onLogout: () {
-        BlocProvider.of<SettingsBloc>(context).add(Logout());
-      },
-      onDeleteAccount: () {
-        BlocProvider.of<SettingsBloc>(context).add(DeleteAccount());
-      },
+  Widget _buildSettingsSection(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // If guest, show login/register card first
+        if (!_isLoggedIn)
+          Container(
+            width: double.maxFinite,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Theme.of(context).primaryColor.withOpacity(0.1),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Theme.of(context).shadowColor.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                Text(
+                  Translate.get('guestUser'),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/login');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    ),
+                    child: Text(Translate.get('login')),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/register');
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Theme.of(context).primaryColor,
+                      side: BorderSide(color: Theme.of(context).primaryColor),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    ),
+                    child: Text(Translate.get('register')),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        if (!_isLoggedIn) const SizedBox(height: 16),
+        // Settings section for ALL users (guests get settings minus delete account)
+        SettingsSection(
+          user: _isLoggedIn ? _user : null,
+          settingsBloc: BlocProvider.of<SettingsBloc>(context),
+          isDarkMode: Theme.of(context).brightness == Brightness.dark,
+          onLogout: _isLoggedIn ? () {
+            BlocProvider.of<SettingsBloc>(context).add(Logout());
+          } : null,
+          onDeleteAccount: _isLoggedIn ? () {
+            BlocProvider.of<SettingsBloc>(context).add(DeleteAccount());
+          } : null,
+        ),
+      ],
     );
   }
 
@@ -203,7 +220,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        _user != null
+                                        _isLoggedIn
                                             ? _user!.fullName
                                             : Translate.get('guestUser'),
                                         style: CustomTextStyle.size18Weight600Text(
@@ -212,7 +229,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        _user != null
+                                        _isLoggedIn
                                             ? _user!.email
                                             : Translate.get('signInPrompt'),
                                         style: CustomTextStyle.size14Weight400Text(
@@ -223,7 +240,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                                 const SizedBox(width: 12),
-                                if (_user != null)
+                                if (_isLoggedIn)
                                   ElevatedButton.icon(
                                     onPressed: () {
                                       showDialog(
@@ -267,82 +284,84 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                             const SizedBox(height: 16),
 
-                            // Stats
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.06),
-                                    blurRadius: 12,
-                                    offset: const Offset(0, 6),
+                            // Stats - only show for logged in users
+                            if (_isLoggedIn)
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.06),
+                                      blurRadius: 12,
+                                      offset: const Offset(0, 6),
+                                    ),
+                                  ],
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  child: BlocBuilder<OrderBloc, OrderState>(
+                                    builder: (context, stateOrder) {
+                                      String active = '...';
+                                      String completed = '...';
+                                      if (stateOrder is OrdersFetched) {
+                                        active = filterOrders(stateOrder.orders, 'activeOrders');
+                                        completed = filterOrders(stateOrder.orders, 'completedOrders');
+                                      }
+                                      return Row(
+                                        children: [
+                                          Expanded(
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  active.padLeft(2, '0'),
+                                                  style: CustomTextStyle.size27Weight600Text(
+                                                    Colors.black87,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  Translate.get('activeOrders'),
+                                                  style: CustomTextStyle.size16Weight400Text(
+                                                    Colors.blueGrey,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Container(
+                                            width: 1,
+                                            height: 36,
+                                            color: Colors.grey.shade300,
+                                          ),
+                                          Expanded(
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  completed.padLeft(2, '0'),
+                                                  style: CustomTextStyle.size27Weight600Text(
+                                                    Colors.green,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  Translate.get('completedOrders'),
+                                                  style: CustomTextStyle.size16Weight400Text(
+                                                    Colors.blueGrey,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   ),
-                                ],
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 16),
-                                child: BlocBuilder<OrderBloc, OrderState>(
-                                  builder: (context, stateOrder) {
-                                    String active = '...';
-                                    String completed = '...';
-                                    if (stateOrder is OrdersFetched) {
-                                      active = filterOrders(stateOrder.orders, 'activeOrders');
-                                      completed = filterOrders(stateOrder.orders, 'completedOrders');
-                                    }
-                                    return Row(
-                                      children: [
-                                        Expanded(
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                active.padLeft(2, '0'),
-                                                style: CustomTextStyle.size27Weight600Text(
-                                                  Colors.black87,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 4),
-                                              Text(
-                                                Translate.get('activeOrders'),
-                                                style: CustomTextStyle.size16Weight400Text(
-                                                  Colors.blueGrey,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Container(
-                                          width: 1,
-                                          height: 36,
-                                          color: Colors.grey.shade300,
-                                        ),
-                                        Expanded(
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                completed.padLeft(2, '0'),
-                                                style: CustomTextStyle.size27Weight600Text(
-                                                  Colors.green,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 4),
-                                              Text(
-                                                Translate.get('completedOrders'),
-                                                style: CustomTextStyle.size16Weight400Text(
-                                                  Colors.blueGrey,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  },
                                 ),
                               ),
-                            ),
+                            if (_isLoggedIn) const SizedBox(height: 24),
 
                             const SizedBox(height: 24),
 

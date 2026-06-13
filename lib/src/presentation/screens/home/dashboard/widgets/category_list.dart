@@ -47,7 +47,7 @@ class _CategoryListState extends State<CategoryList> {
         ),
         const SizedBox(height: 16),
         SizedBox(
-          height: 56,
+          height: 44,
           child: BlocBuilder<CategoryBloc, CategoryState>(
             builder: (context, state) {
               if (state is CategoryLoading || state is CategoryInitial) {
@@ -80,11 +80,11 @@ class _CategoryListState extends State<CategoryList> {
                     final item = display[index];
                     final isSelected = index == _selectedIndex;
                     return Container(
-                      margin: const EdgeInsets.only(right: 12, bottom: 4),
+                      margin: const EdgeInsets.only(right: 10, bottom: 2),
                       child: Material(
                         color: isSelected ? AppColors.primaryColor : Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                        elevation: 2,
+                        borderRadius: BorderRadius.circular(12),
+                        elevation: 1,
                         child: InkWell(
                           onTap: () {
                             if (_selectedIndex != index) {
@@ -94,20 +94,20 @@ class _CategoryListState extends State<CategoryList> {
                               _filterByCategory(item.filterValue);
                             }
                           },
-                          borderRadius: BorderRadius.circular(15),
+                          borderRadius: BorderRadius.circular(12),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
                             child: Row(
                               children: [
                                 Text(
                                   item.icon,
-                                  style: const TextStyle(fontSize: 20),
+                                  style: const TextStyle(fontSize: 16),
                                 ),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: 6),
                                 Text(
                                   item.label,
                                   style: TextStyle(
-                                    fontSize: 15,
+                                    fontSize: 13,
                                     fontWeight: FontWeight.w500,
                                     color: isSelected ? Colors.white : Colors.black87,
                                   ),

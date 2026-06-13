@@ -17,11 +17,15 @@ class Food extends Equatable {
   final List<String> images;
   final bool isAvailable;
   final bool isCombo;
+  final List<String> comboItemIds;
   final String name;
   final Map<String, String> nameMap;
   final Map<String, dynamic> nutritionalInfo;
   final int preparationTime;
   final double price;
+  final double costOfGoods;
+  final bool hasCOG;
+  final String currency;
   final List<Map<String, dynamic>> sauces;
   final List<String> shopIds;
   final String stadiumId;
@@ -45,11 +49,15 @@ class Food extends Equatable {
     required this.images,
     required this.isAvailable,
      this.isCombo=false,
+    this.comboItemIds = const [],
     required this.name,
     this.nameMap = const {},
     required this.nutritionalInfo,
     required this.preparationTime,
     required this.price,
+    this.costOfGoods = 0,
+    this.hasCOG = false,
+    this.currency = 'ILS',
     required this.sauces,
     required this.shopIds,
     required this.stadiumId,
@@ -87,6 +95,10 @@ class Food extends Equatable {
           [],
       isAvailable: map['isAvailable'] ?? true,
       isCombo: map['isCombo'] ?? false,
+      comboItemIds: (map['comboItemIds'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
       name: map['name'] ?? '',
       nameMap: (map['nameMap'] as Map<String, dynamic>?)
               ?.map((key, value) => MapEntry(key, value?.toString() ?? '')) ??
@@ -94,11 +106,18 @@ class Food extends Equatable {
       nutritionalInfo: (map['nutritionalInfo'] as Map<String, dynamic>?) ?? {},
       preparationTime: map['preparationTime'] ?? 15,
       price: (map['price'] ?? 0).toDouble(),
+      costOfGoods: (map['costOfGoods'] ?? 0).toDouble(),
+      hasCOG: map['hasCOG'] ?? false,
+      currency: map['currency'] ?? 'ILS',
       sauces: (map['sauces'] as List<dynamic>?)
               ?.map((x) => Map<String, dynamic>.from(x))
               .toList() ??
           [],
-      shopIds: List<String>.from(map['shopIds'] ?? []),
+      shopIds: map['shopIds'] != null
+          ? List<String>.from(map['shopIds'])
+          : (map['shopId'] != null && map['shopId'].toString().isNotEmpty
+              ? [map['shopId'].toString()]
+              : []),
       stadiumId: map['stadiumId'] ?? '',
       sizes: (map['sizes'] as List<dynamic>?)
               ?.map((x) => Map<String, dynamic>.from(x))
@@ -139,6 +158,9 @@ class Food extends Equatable {
       'nutritionalInfo': nutritionalInfo,
       'preparationTime': preparationTime,
       'price': price,
+      'costOfGoods': costOfGoods,
+      'hasCOG': hasCOG,
+      'currency': currency,
       'sauces': sauces,
       'shopIds': shopIds,
       'stadiumId': stadiumId,

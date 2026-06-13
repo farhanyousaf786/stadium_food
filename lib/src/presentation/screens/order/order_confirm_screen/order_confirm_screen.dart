@@ -11,9 +11,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:http/http.dart' as http;
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:stadium_food/src/data/repositories/profile_repository.dart';
-import 'package:stadium_food/src/presentation/screens/order/order_confirm_screen/qr_scan_screen.dart';
 import 'package:stadium_food/src/presentation/screens/order/order_details_screen.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/back_button.dart';
 import 'package:stadium_food/src/presentation/widgets/loading_indicator.dart';
@@ -25,12 +22,9 @@ import 'package:stadium_food/src/core/config/stripe_config.dart';
 import 'package:hive/hive.dart';
 import 'package:stadium_food/src/bloc/stadium/stadium_bloc.dart';
 import 'package:stadium_food/src/data/models/section.dart';
-import 'package:stadium_food/src/data/services/firestore_db.dart';
-import 'dart:math';
 
 import '../../../../data/repositories/order_repository.dart';
 import '../../../../data/services/firebase_storage.dart';
-import '../../../../data/services/currency_service.dart';
 import '../../../utils/app_styles.dart';
 import '../../../widgets/buttons/primary_button.dart';
 import 'widgets/apple_pay_button.dart';
@@ -96,15 +90,38 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
 
   final _formKey = GlobalKey<FormState>();
   final _rowController = TextEditingController();
-
   final _seatNoController = TextEditingController();
   final _standController = TextEditingController();
   final _entranceController = TextEditingController();
+  final _floorController = TextEditingController();
+  final _roomController = TextEditingController();
+  final _areaController = TextEditingController();
+  final _phoneController = TextEditingController();
 
   Map<String, dynamic>? paymentIntent;
   XFile? _image;
   String imageUrl = '';
   String sectionId = '';
+
+  // Delivery mode & type (matches web)
+  String _deliveryMode = 'delivery'; // 'delivery' or 'pickup'
+  String? _deliveryType; // null, 'inside', 'outside'
+  final _deliveryNotesController = TextEditingController();
+  String _deliveryLocation = '';
+  String _selectedPickupPoint = '';
+  List<Map<String, dynamic>> _pickupPoints = [];
+  Map<String, dynamic>? _shopData;
+  String? _vendorAccountId;
+
+  // Stadium config flags
+  bool _showTicketUpload = true;
+  bool _showDeliveryToggle = false;
+  bool _showSeats = true;
+  bool _showSections = true;
+  bool _showFloors = false;
+  bool _showRooms = false;
+  bool _showStands = true;
+  int _floorsCount = 0;
 
   // pick image from gallery
   Future<void> _pickImageFromGallery() async {
@@ -138,6 +155,10 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       _standController.text = Translate.get('standOptionGallery');
     }
 
+    _loadStadiumConfig();
+    _fetchShopData();
+    _fetchPickupPoints();
+
     // Fetch sections for currently selected stadium
     try {
       final box = Hive.box('myBox');
@@ -146,9 +167,89 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       if (stadiumId != null && context.mounted) {
         context.read<StadiumBloc>().add(FetchSections(stadiumId));
       }
-    } catch (_) {
-      // silently ignore if box not available; user might not have selected a stadium yet
+    } catch (_) {}
+
+    // Initialize default delivery fee
+    OrderRepository.calculateDefaultDeliveryFee();
+
+    // Pre-fill phone from Firestore customers collection (matches web)
+    _fetchCustomerPhone();
+  }
+
+  Future<void> _loadStadiumConfig() async {
+    try {
+      final box = Hive.box('myBox');
+      final sel = box.get('selectedStadium') as Map<dynamic, dynamic>?;
+      if (sel == null) return;
+      setState(() {
+        _showTicketUpload = sel['availableTickets'] == true;
+        _showDeliveryToggle = sel['availablePickupPoints'] == true;
+        _showSeats = sel['availableSeats'] == true;
+        _showSections = sel['availableSections'] != false;
+        _showFloors = sel['availableFloors'] == true;
+        _showRooms = sel['availableRooms'] == true;
+        _showStands = sel['availableStands'] == true;
+        _floorsCount = (sel['floors'] as num?)?.toInt() ?? 0;
+      });
+    } catch (_) {}
+  }
+
+  Future<void> _fetchShopData() async {
+    if (OrderRepository.cart.isEmpty) return;
+    try {
+      final firstItem = OrderRepository.cart[0];
+      final shopId = firstItem.shopIds.isNotEmpty ? firstItem.shopIds.first : '';
+      if (shopId.isEmpty) return;
+      final doc = await FirebaseFirestore.instance.collection('shops').doc(shopId).get();
+      if (doc.exists) {
+        final data = doc.data() as Map<String, dynamic>;
+        setState(() {
+          _shopData = data;
+          _vendorAccountId = data['stripeConnectedAccountId'] as String?;
+        });
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _fetchPickupPoints() async {
+    try {
+      final box = Hive.box('myBox');
+      final sel = box.get('selectedStadium') as Map<dynamic, dynamic>?;
+      final stadiumId = sel?['id'] as String?;
+      if (stadiumId == null) return;
+      final snapshot = await FirebaseFirestore.instance
+          .collection('stadiums')
+          .doc(stadiumId)
+          .collection('pickUpPoints')
+          .get();
+      setState(() {
+        _pickupPoints = snapshot.docs.map((d) => {
+          'id': d.id,
+          ...d.data(),
+        }).toList();
+      });
+    } catch (_) {}
+  }
+
+  void _updateDeliveryFee() {
+    if (_deliveryMode == 'pickup') {
+      OrderRepository.deliveryFee = 0;
+      return;
     }
+    if (_shopData == null) return;
+    final int itemQuantity = OrderRepository.cart.fold(0, (sum, f) => sum + f.quantity);
+    double fee = 0;
+    if (_deliveryType == 'inside') {
+      final baseFee = (_shopData!['insideDelivery']?['fee'] as num?)?.toDouble() ?? 0;
+      fee = baseFee * itemQuantity;
+    } else if (_deliveryType == 'outside') {
+      fee = (_shopData!['outsideDelivery']?['fee'] as num?)?.toDouble() ?? 0;
+    } else {
+      final baseFee = (_shopData!['deliveryFee'] as num?)?.toDouble() ?? 0;
+      fee = baseFee * itemQuantity;
+    }
+    OrderRepository.deliveryFee = fee;
+    setState(() {});
   }
 
   // Parse QR scan result URL and populate fields: row, seat, section/sectionId
@@ -252,107 +353,350 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     }
   }
 
-  void _showPhoneNumberBottomSheet(BuildContext context) {
-    final phoneController = TextEditingController();
-    final formKey = GlobalKey<FormState>();
+  Widget _buildDeliveryModeToggle() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Delivery Method',
+          style: CustomTextStyle.size16Weight600Text(AppColors.primaryColor),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _buildModeButton('delivery', 'Delivery'),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildModeButton('pickup', 'Pickup'),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (BuildContext context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: 24,
-            right: 24,
-            top: 24,
-            bottom:
-                MediaQuery.of(context).viewInsets.bottom + 24, // for keyboard
+  Widget _buildModeButton(String mode, String label) {
+    final isSelected = _deliveryMode == mode;
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _deliveryMode = mode;
+          if (mode == 'pickup') _deliveryType = null;
+          _updateDeliveryFee();
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primaryColor.withOpacity(0.1) : Colors.white,
+          border: Border.all(
+            color: isSelected ? AppColors.primaryColor : Colors.grey[300]!,
+            width: isSelected ? 2 : 1,
           ),
-          child: Form(
-            key: formKey,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: isSelected ? AppColors.primaryColor : Colors.grey[700],
+            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+            fontSize: 15,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPickupPointsSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 12),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: DropdownButtonFormField<String>(
+            value: _selectedPickupPoint.isEmpty ? null : _selectedPickupPoint,
+            items: [
+              const DropdownMenuItem(value: '', child: Text('-- Choose a pickup point --')),
+              ..._pickupPoints.map((p) => DropdownMenuItem<String>(
+                    value: p['id'] as String,
+                    child: Text('${p['name'] ?? p['id']} ${p['address'] != null ? '(${p['address']})' : ''}'),
+                  )),
+            ],
+            onChanged: (value) {
+              setState(() {
+                _selectedPickupPoint = value ?? '';
+              });
+            },
+            decoration: InputDecoration(
+              fillColor: AppColors().cardColor,
+              filled: true,
+              labelText: 'Select Pickup Point',
+              labelStyle: const TextStyle(color: AppColors.primaryColor),
+              enabledBorder: AppStyles().defaultEnabledBorder,
+              focusedBorder: AppStyles.defaultFocusedBorder(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDeliveryTypeSelector() {
+    final hasInside = _shopData!['insideDelivery']?['enabled'] == true;
+    final hasOutside = _shopData!['outsideDelivery']?['enabled'] == true;
+    final insideLocations = (_shopData!['insideDelivery']?['locations'] as List<dynamic>?) ?? [];
+    final outsideLocations = (_shopData!['outsideDelivery']?['locations'] as List<dynamic>?) ?? [];
+
+    List<dynamic> currentLocations = [];
+    if (_deliveryType == 'inside') currentLocations = insideLocations;
+    if (_deliveryType == 'outside') currentLocations = outsideLocations;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 16),
+        Text(
+          'Delivery Type',
+          style: CustomTextStyle.size16Weight600Text(AppColors.primaryColor),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            if (hasInside)
+              Expanded(
+                child: _buildTypeButton('inside', 'Inside Delivery'),
+              ),
+            if (hasInside && hasOutside)
+              const SizedBox(width: 12),
+            if (hasOutside)
+              Expanded(
+                child: _buildTypeButton('outside', 'Outside Delivery'),
+              ),
+          ],
+        ),
+        // Location selector
+        if (_deliveryType != null && currentLocations.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: DropdownButtonFormField<String>(
+              value: _deliveryLocation.isEmpty ? null : _deliveryLocation,
+              items: [
+                ...currentLocations.map((loc) {
+                  final name = loc is String ? loc : (loc['name'] ?? loc.toString());
+                  return DropdownMenuItem<String>(
+                    value: name as String,
+                    child: Text(name),
+                  );
+                }),
+                // Manual entry option for inside delivery (matches web)
+                if (_deliveryType == 'inside')
+                  const DropdownMenuItem<String>(
+                    value: 'manual_delivery_entry',
+                    child: Text('Add specific room/section details'),
+                  ),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  _deliveryLocation = value ?? '';
+                });
+              },
+              decoration: InputDecoration(
+                fillColor: AppColors().cardColor,
+                filled: true,
+                labelText: 'Select Location',
+                labelStyle: const TextStyle(color: AppColors.primaryColor),
+                enabledBorder: AppStyles().defaultEnabledBorder,
+                focusedBorder: AppStyles.defaultFocusedBorder(),
+              ),
+            ),
+          ),
+        ],
+        // Delivery notes
+        if (_deliveryType != null) ...[
+          const SizedBox(height: 12),
+          _buildTextField(
+            controller: _deliveryNotesController,
+            label: 'Delivery Notes',
+            hint: 'Add any special instructions...',
+            icon: Icons.note_outlined,
+          ),
+        ],
+        // Manual entry seat details for inside delivery (matches web)
+        if (_deliveryType == 'inside' && _deliveryLocation == 'manual_delivery_entry') ...[
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8FAFC),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+            ),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(
-                  Icons.phone_iphone,
-                  size: 50,
-                  color: AppColors.primaryColor,
-                ),
-                const SizedBox(height: 16),
                 Text(
-                  Translate.get('phoneNumberRequired'),
-                  style: CustomTextStyle.size18Weight600Text(),
+                  'Delivery Details',
+                  style: CustomTextStyle.size14Weight600Text(AppColors.primaryColor),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  Translate.get('phoneNumberPrompt'),
-                  textAlign: TextAlign.center,
-                  style: CustomTextStyle.size14Weight400Text(Colors.grey),
-                ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 12),
+                if (_showSections)
+                  _buildTextField(
+                    controller: _entranceController,
+                    label: Translate.get('sectionLabel'),
+                    hint: Translate.get('sectionHint'),
+                    icon: Icons.meeting_room_outlined,
+                  ),
+                if (_showSections) const SizedBox(height: 12),
+                if (_showFloors)
+                  _buildTextField(
+                    controller: _floorController,
+                    label: Translate.get('floorLabel'),
+                    hint: Translate.get('floorHint'),
+                    icon: Icons.layers_outlined,
+                    keyboardType: TextInputType.number,
+                  ),
+                if (_showFloors) const SizedBox(height: 12),
+                if (_showRooms)
+                  _buildTextField(
+                    controller: _roomController,
+                    label: Translate.get('roomLabel'),
+                    hint: Translate.get('roomHint'),
+                    icon: Icons.meeting_room_outlined,
+                  ),
+                if (_showRooms) const SizedBox(height: 12),
                 _buildTextField(
-                  controller: phoneController,
-                  label: Translate.get('phoneNumber'),
-                  hint: Translate.get('phoneNumber'),
-                  icon: Icons.view_week_outlined,
-                  keyboardType: TextInputType.phone,
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: PrimaryButton(
-                          verticalPadding: 16,
-                          text: Translate.get('save'),
-                          onTap: () async {
-                            if (formKey.currentState!.validate()) {
-                              try {
-                                await ProfileRepository().updateUserPhone(
-                                    phoneController.text.trim());
-                                if (context.mounted) {
-                                  Navigator.pop(context);
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                          Translate.get('phoneNumberSaved')),
-                                      backgroundColor: Colors.green,
-                                    ),
-                                  );
-                                }
-                              } catch (e) {
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                          '${Translate.get('phoneNumberSaveFailed')}: ${e.toString()}'),
-                                      backgroundColor: Colors.red,
-                                    ),
-                                  );
-                                }
-                              }
-                            }
-                          }),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: PrimaryButton(
-                          verticalPadding: 16,
-                          bgColor: Colors.red,
-                          text: Translate.get('cancel'),
-                          onTap: () {
-                            Navigator.pop(context);
-                          }),
-                    ),
-                  ],
+                  controller: _areaController,
+                  label: Translate.get('areaLabel'),
+                  hint: Translate.get('areaHint'),
+                  icon: Icons.map_outlined,
                 ),
               ],
             ),
           ),
-        );
+        ],
+      ],
+    );
+  }
+
+  bool _isDeliveryOpen(String type) {
+    final delivery = type == 'inside'
+        ? _shopData!['insideDelivery'] as Map<String, dynamic>?
+        : _shopData!['outsideDelivery'] as Map<String, dynamic>?;
+    if (delivery == null || delivery['enabled'] != true) return false;
+    final openTime = delivery['openTime'] as String? ?? '00:00';
+    final closeTime = delivery['closeTime'] as String? ?? '23:59';
+    if (openTime == closeTime) return true;
+    final now = DateTime.now();
+    final currentTime = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+    if (openTime.compareTo(closeTime) < 0) {
+      return currentTime.compareTo(openTime) >= 0 && currentTime.compareTo(closeTime) <= 0;
+    } else {
+      return currentTime.compareTo(openTime) >= 0 || currentTime.compareTo(closeTime) <= 0;
+    }
+  }
+
+  Widget _buildTypeButton(String type, String label) {
+    final isSelected = _deliveryType == type;
+    final isOpen = _shopData != null ? _isDeliveryOpen(type) : true;
+    return InkWell(
+      onTap: () {
+        // Check $50 minimum for outside delivery (matches web)
+        if (type == 'outside') {
+          final subtotal = OrderRepository.subtotal;
+          final cartCurrency = OrderRepository.cart.isNotEmpty
+              ? OrderRepository.cart[0].currency.toUpperCase()
+              : 'ILS';
+          // Approximate conversion: ILS->USD divide by ~3.7 (simplified)
+          final rate = cartCurrency == 'ILS' ? 3.7 : 1.0;
+          final subtotalInUSD = subtotal / rate;
+          if (subtotalInUSD < 50) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Outside delivery requires a minimum order of \$50.'),
+                backgroundColor: Colors.orange,
+              ),
+            );
+            return;
+          }
+        }
+        // Show closed warning but still allow selection (matches web)
+        if (!isOpen) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('$label is currently closed.'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+        setState(() {
+          _deliveryType = isSelected ? null : type;
+          _deliveryLocation = '';
+          _updateDeliveryFee();
+        });
       },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.primaryColor.withOpacity(0.1)
+              : (!isOpen ? Colors.grey[100] : Colors.white),
+          border: Border.all(
+            color: isSelected ? AppColors.primaryColor : Colors.grey[300]!,
+            width: isSelected ? 2 : 1,
+          ),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: isSelected
+                    ? AppColors.primaryColor
+                    : (!isOpen ? Colors.grey[500] : Colors.grey[700]),
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                fontSize: 14,
+              ),
+            ),
+            if (!isOpen)
+              Text(
+                'Offline',
+                style: TextStyle(
+                  color: Colors.grey[500],
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -418,186 +762,6 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     };
   }
 
-  // Show dialog to prompt user to login or register
-  void _showAuthDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Image.asset(
-                  'assets/png/logo.png',
-                  height: 80,
-                  width: 80,
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  Translate.get('accountRequired'),
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  Translate.get('loginOrRegister'),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context); // Close dialog
-                      // Navigate to login without removing previous screens
-                      Navigator.pushNamed(
-                        context,
-                        '/login',
-                        arguments: '/order-confirm',
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: Text(
-                      Translate.get('login'),
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      Navigator.pop(context); // Close auth dialog
-                      
-
-
-                      try {
-                        final userCredential = await FirebaseAuth.instance.signInAnonymously();
-                        final uid = userCredential.user!.uid;
-
-                        // Create anonymous user data
-                        final randomNum = Random().nextInt(100);
-                        final userData = {
-                          'id': uid,
-                          'firstName': 'FanMunch',
-                          'lastName': 'User $randomNum',
-                          'displayName': 'FanMunch User $randomNum',
-                          'email': null,
-                          'phone': null,
-                          'avatar': null,
-                          'isAnonymous': true,
-                          'createdAt': DateTime.now(),
-                        };
-
-                        // Save to Firestore
-                        await FirestoreDatabase().addUserDocument('anonymous_users', uid, userData);
-
-                        // Save ID to Hive
-                        var box = Hive.box('myBox');
-                        box.put('id', uid);
-
-                        if (context.mounted) {
-                          Navigator.pop(context); // Close loading
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(Translate.get('guestLoginSuccess') ?? 'Logged in as guest'),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-                        }
-                      } catch (e) {
-                        if (context.mounted) {
-                          Navigator.pop(context); // Close loading
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Guest login failed: $e'),
-                              backgroundColor: AppColors.errorColor,
-                            ),
-                          );
-                        }
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: Text(
-                      Translate.get('loginAsGuest'),
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Close dialog
-                    // Navigate to register without removing previous screens
-                    Navigator.pushNamed(context, '/register');
-                  },
-                  child: Text(
-                    Translate.get('createAccount'),
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.primaryColor,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Close dialog
-                  },
-                  child: Text(
-                    Translate.get('cancel'),
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocListener<OrderBloc, OrderState>(
@@ -605,6 +769,10 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
         if (state is OrderCreated) {
           // remove loading
           Navigator.of(context).pop();
+          // Save phone to customer profile if missing (matches web)
+          _saveCustomerPhoneIfMissing();
+          // Clear tip (matches web localStorage.removeItem('selectedTip'))
+          OrderRepository.tip = 0;
           // show success message
           showDialog(
             context: context,
@@ -737,7 +905,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                           ),
                         ),
                         const SizedBox(height: 24),
-                        Column(
+                        _showTicketUpload ? Column(
                           children: [
                             Text(
                               Translate.get('uploadTicketTitle'),
@@ -970,7 +1138,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                         ],
                                       ),
                           ],
-                        ),
+                        ) : SizedBox.shrink(),
                       ],
                     ),
                   ),
@@ -978,7 +1146,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
               ),
 
               Container(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
                 child: Form(
                     key: _formKey,
                     child: Column(
@@ -999,235 +1167,246 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                             const Expanded(child: Divider(thickness: 1)),
                           ],
                         ),
-                        // const SizedBox(height: 20),
-                        //
-                        // ElevatedButton.icon(
-                        //   onPressed: () async {
-                        //
-                        //
-                        //     final result = await Navigator.push(
-                        //       context,
-                        //       MaterialPageRoute(builder: (_) => const QRScanScreen()),
-                        //     );
-                        //
-                        //     if (result != null && context.mounted) {
-                        //       if (result is String) {
-                        //         _handleQrScanResult(result);
-                        //       }
-                        //     }
-                        //     //  _showCompleteOrderBottomSheet(context);
-                        //   },
-                        //   style: ElevatedButton.styleFrom(
-                        //     backgroundColor: AppColors.primaryColor,
-                        //     padding: const EdgeInsets.symmetric(vertical: 15,horizontal: 10),
-                        //     shape: RoundedRectangleBorder(
-                        //       borderRadius: BorderRadius.circular(12),
-                        //     ),
-                        //   ),
-                        //   icon: const Icon(Icons.qr_code_scanner, color: Colors.white),
-                        //   label: Text(
-                        //     Translate.get('Scan Seat Qr'),
-                        //     style: CustomTextStyle.size16Weight600Text().copyWith(
-                        //       color: Colors.white,
-                        //     ),
-                        //   ),
-                        // ),
-                        const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.05),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 5),
-                                    ),
-                                  ],
-                                ),
-                                child: FormField<String>(
-                                  validator: (_) {
-                                    if (_standController.text.isEmpty) {
-                                      return '${Translate.get('standLabel').toLowerCase()}';
-                                    }
-                                    return null;
-                                  },
-                                  builder: (formState) {
-                                    final gallery =
-                                        Translate.get('standOptionGallery');
-                                    final main =
-                                        Translate.get('standOptionMain');
-                                    return DropdownButtonFormField<String>(
-                                      value: _standController.text.isEmpty
-                                          ? null
-                                          : _standController.text,
-                                      items: <String>[gallery, main]
-                                          .map((value) =>
-                                              DropdownMenuItem<String>(
-                                                value: value,
-                                                child: Text(value),
-                                              ))
-                                          .toList(),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _standController.text = value ?? '';
-                                          formState
-                                              .didChange(_standController.text);
-                                        });
-                                      },
-                                      decoration: InputDecoration(
-                                        fillColor: AppColors().cardColor,
-                                        filled: true,
-                                        labelText: Translate.get('standLabel'),
-                                        hintText: Translate.get('selectStand'),
-                                        labelStyle: const TextStyle(
-                                          color: AppColors.primaryColor,
-                                        ),
-                                        hintStyle:
-                                            CustomTextStyle.size14Weight400Text(
-                                          AppColors().secondaryTextColor,
-                                        ),
-                                        enabledBorder:
-                                            AppStyles().defaultEnabledBorder,
-                                        focusedBorder:
-                                            AppStyles.defaultFocusedBorder(),
-                                        errorText: formState.errorText,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.05),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 5),
-                                    ),
-                                  ],
-                                ),
-                                child: FormField<String>(
-                                  validator: (_) {
-                                    if (_entranceController.text.isEmpty) {
-                                      return '${Translate.get('entranceLabel').toLowerCase()}';
-                                    }
-                                    return null;
-                                  },
-                                  builder: (formState) {
-                                    return BlocBuilder<StadiumBloc,
-                                        StadiumState>(
-                                      builder: (context, state) {
-                                        if (state is SectionsLoading) {
-                                          return SizedBox();
-                                        }
+                        // Delivery mode toggle (matches web)
+                        if (_showDeliveryToggle)
+                          _buildDeliveryModeToggle(),
+                        const SizedBox(height: 16),
 
-                                        List<Section> sections = [];
-                                        if (state is SectionsLoaded) {
-                                          sections = state.sections;
-                                        }
+                        // Pickup points dropdown (if pickup mode)
+                        if (_showDeliveryToggle && _deliveryMode == 'pickup')
+                          _buildPickupPointsSelector(),
 
-                                        return DropdownButtonFormField<String>(
-                                          value:
-                                              _entranceController.text.isEmpty
-                                                  ? null
-                                                  : _entranceController.text,
-                                          items: sections
-                                              .map(
-                                                (s) => DropdownMenuItem<String>(
-                                                  value: s.sectionName,
-                                                  child: Text(s.sectionName),
-                                                ),
-                                              )
-                                              .toList(),
-                                          onChanged: (value) {
-                                            setState(() {
-                                              _entranceController.text = value ?? '';
+                        // Inside/Outside delivery selector
+                        if (_deliveryMode == 'delivery' && _shopData != null &&
+                            ((_shopData!['insideDelivery']?['enabled'] == true) ||
+                             (_shopData!['outsideDelivery']?['enabled'] == true)))
+                          _buildDeliveryTypeSelector(),
 
-                                              formState.didChange(_entranceController.text);
-
-
-
-                                              final sel = sections.firstWhere(
-                                                    (s) => s.sectionName == value,
-                                                orElse: () => Section(
-                                                  id: '',
-                                                  sectionId: '',
-                                                  sectionName: '',
-                                                  sectionNo: 0,
-                                                  rows: 0,
-                                                  column: 0,
-                                                  isActive: true,
-                                                  shops: const [],
-                                                  createdAt: DateTime.fromMillisecondsSinceEpoch(0),
-                                                  updatedAt: DateTime.fromMillisecondsSinceEpoch(0),
+                        // General seat form (only when NOT using inside/outside delivery)
+                        if ((_deliveryMode == 'delivery' || !_showDeliveryToggle) &&
+                            !(_deliveryType == 'inside' || _deliveryType == 'outside'))
+                          Column(
+                            children: [
+                              // Stand + Section
+                              if (_showStands || _showSections)
+                                Row(
+                                  children: [
+                                    if (_showStands)
+                                      Expanded(
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(12),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withOpacity(0.05),
+                                                blurRadius: 10,
+                                                offset: const Offset(0, 5),
+                                              ),
+                                            ],
+                                          ),
+                                          child: FormField<String>(
+                                            validator: (_) {
+                                              if (_showStands && _standController.text.isEmpty) {
+                                                return '${Translate.get('standLabel').toLowerCase()}';
+                                              }
+                                              return null;
+                                            },
+                                            builder: (formState) {
+                                              final gallery = Translate.get('standOptionGallery');
+                                              final main = Translate.get('standOptionMain');
+                                              return DropdownButtonFormField<String>(
+                                                value: _standController.text.isEmpty
+                                                    ? null
+                                                    : _standController.text,
+                                                items: <String>[gallery, main]
+                                                    .map((value) => DropdownMenuItem<String>(
+                                                          value: value,
+                                                          child: Text(value),
+                                                        ))
+                                                    .toList(),
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    _standController.text = value ?? '';
+                                                    formState.didChange(_standController.text);
+                                                  });
+                                                },
+                                                decoration: InputDecoration(
+                                                  fillColor: AppColors().cardColor,
+                                                  filled: true,
+                                                  labelText: Translate.get('standLabel'),
+                                                  hintText: Translate.get('selectStand'),
+                                                  labelStyle: const TextStyle(color: AppColors.primaryColor),
+                                                  hintStyle: CustomTextStyle.size14Weight400Text(
+                                                    AppColors().secondaryTextColor,
+                                                  ),
+                                                  enabledBorder: AppStyles().defaultEnabledBorder,
+                                                  focusedBorder: AppStyles.defaultFocusedBorder(),
+                                                  errorText: formState.errorText,
                                                 ),
                                               );
-
-                                              OrderRepository.selectedDeliveryUerId = '';
-                                              OrderRepository.selectedShopId = sel.shops.first;
-                                              sectionId = sel.sectionId;
-                                              OrderRepository.customerLocation =
-                                                  GeoPoint(0, 0);
-                                              print('shopsIds.........: ${sel.shops}');
-
-                                            });
-                                          },
-                                          decoration: InputDecoration(
-                                            fillColor: AppColors().cardColor,
-                                            filled: true,
-                                            labelText: Translate.get('sectionLabel'),
-                                            hintText: Translate.get('selectSection'),
-                                            labelStyle: const TextStyle(
-                                              color: AppColors.primaryColor,
-                                            ),
-                                            hintStyle: CustomTextStyle
-                                                .size14Weight400Text(
-                                              AppColors().secondaryTextColor,
-                                            ),
-                                            enabledBorder: AppStyles()
-                                                .defaultEnabledBorder,
-                                            focusedBorder: AppStyles
-                                                .defaultFocusedBorder(),
-                                            errorText: formState.errorText,
+                                            },
                                           ),
-                                        );
-                                      },
-                                    );
-                                  },
+                                        ),
+                                      ),
+                                    if (_showStands && _showSections)
+                                      const SizedBox(width: 16),
+                                    if (_showSections)
+                                      Expanded(
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(12),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withOpacity(0.05),
+                                                blurRadius: 10,
+                                                offset: const Offset(0, 5),
+                                              ),
+                                            ],
+                                          ),
+                                          child: FormField<String>(
+                                            validator: (_) {
+                                              if (_showSections && _entranceController.text.isEmpty) {
+                                                return '${Translate.get('entranceLabel').toLowerCase()}';
+                                              }
+                                              return null;
+                                            },
+                                            builder: (formState) {
+                                              return BlocBuilder<StadiumBloc, StadiumState>(
+                                                builder: (context, state) {
+                                                  if (state is SectionsLoading) {
+                                                    return const SizedBox();
+                                                  }
+                                                  List<Section> sections = [];
+                                                  if (state is SectionsLoaded) {
+                                                    sections = state.sections;
+                                                  }
+                                                  return DropdownButtonFormField<String>(
+                                                    value: _entranceController.text.isEmpty
+                                                        ? null
+                                                        : _entranceController.text,
+                                                    items: sections
+                                                        .map((s) => DropdownMenuItem<String>(
+                                                              value: s.sectionName,
+                                                              child: Text(s.sectionName),
+                                                            ))
+                                                        .toList(),
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        _entranceController.text = value ?? '';
+                                                        formState.didChange(_entranceController.text);
+                                                        final sel = sections.firstWhere(
+                                                          (s) => s.sectionName == value,
+                                                          orElse: () => Section(
+                                                            id: '',
+                                                            sectionId: '',
+                                                            sectionName: '',
+                                                            sectionNo: 0,
+                                                            rows: 0,
+                                                            column: 0,
+                                                            isActive: true,
+                                                            shops: const [],
+                                                            createdAt: DateTime.fromMillisecondsSinceEpoch(0),
+                                                            updatedAt: DateTime.fromMillisecondsSinceEpoch(0),
+                                                          ),
+                                                        );
+                                                        OrderRepository.selectedDeliveryUerId = '';
+                                                        OrderRepository.selectedShopId = sel.shops.first;
+                                                        sectionId = sel.sectionId;
+                                                        OrderRepository.customerLocation = const GeoPoint(0, 0);
+                                                      });
+                                                    },
+                                                    decoration: InputDecoration(
+                                                      fillColor: AppColors().cardColor,
+                                                      filled: true,
+                                                      labelText: Translate.get('sectionLabel'),
+                                                      hintText: Translate.get('selectSection'),
+                                                      labelStyle: const TextStyle(color: AppColors.primaryColor),
+                                                      hintStyle: CustomTextStyle.size14Weight400Text(
+                                                        AppColors().secondaryTextColor,
+                                                      ),
+                                                      enabledBorder: AppStyles().defaultEnabledBorder,
+                                                      focusedBorder: AppStyles.defaultFocusedBorder(),
+                                                      errorText: formState.errorText,
+                                                    ),
+                                                  );
+                                                },
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                  ],
                                 ),
+                              if (_showStands || _showSections)
+                                const SizedBox(height: 16),
+                              // Row
+                              if (_showSeats)
+                                _buildTextField(
+                                  controller: _rowController,
+                                  label: Translate.get('rowLabel'),
+                                  hint: Translate.get('rowHint'),
+                                  icon: Icons.view_week_outlined,
+                                ),
+                              if (_showSeats)
+                                const SizedBox(height: 16),
+                              // Seat
+                              if (_showSeats)
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _buildTextField(
+                                        controller: _seatNoController,
+                                        label: Translate.get('seatLabel'),
+                                        hint: Translate.get('seatHint'),
+                                        icon: Icons.chair_outlined,
+                                        keyboardType: TextInputType.number,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              if (_showSeats)
+                                const SizedBox(height: 16),
+                              // Floor
+                              if (_showFloors && _floorsCount > 0)
+                                _buildTextField(
+                                  controller: _floorController,
+                                  label: Translate.get('floorLabel'),
+                                  hint: Translate.get('floorHint'),
+                                  icon: Icons.layers_outlined,
+                                  keyboardType: TextInputType.number,
+                                ),
+                              if (_showFloors && _floorsCount > 0)
+                                const SizedBox(height: 16),
+                              // Room
+                              if (_showRooms)
+                                _buildTextField(
+                                  controller: _roomController,
+                                  label: Translate.get('roomLabel'),
+                                  hint: Translate.get('roomHint'),
+                                  icon: Icons.meeting_room_outlined,
+                                ),
+                              if (_showRooms)
+                                const SizedBox(height: 16),
+                              // Area
+                              _buildTextField(
+                                controller: _areaController,
+                                label: Translate.get('areaLabel'),
+                                hint: Translate.get('areaHint'),
+                                icon: Icons.map_outlined,
                               ),
-                            ),
-                          ],
-                        ),
+                              const SizedBox(height: 16),
+                            ],
+                          ),
                         const SizedBox(height: 16),
+                        // Phone number (required, editable, pre-filled from profile)
                         _buildTextField(
-                          controller: _rowController,
-                          label: Translate.get('rowLabel'),
-                          hint: Translate.get('rowHint'),
-                          icon: Icons.view_week_outlined,
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _buildTextField(
-                                controller: _seatNoController,
-                                label: Translate.get('seatLabel'),
-                                hint: Translate.get('seatHint'),
-                                icon: Icons.chair_outlined,
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                          ],
+                          controller: _phoneController,
+                          label: Translate.get('phoneNumber'),
+                          hint: Translate.get('phoneNumber'),
+                          icon: Icons.phone_outlined,
+                          keyboardType: TextInputType.phone,
                         ),
                         const SizedBox(height: 20),
                         BlocBuilder<OrderBloc, OrderState>(
@@ -1255,20 +1434,17 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                         return;
                                       }
 
-                                      // Check if user is logged in
-                                      final currentUser = FirebaseAuth.instance.currentUser;
-                                      if (currentUser == null) {
-                                        // Show login/signup dialog
-                                        _showAuthDialog(context);
-                                      } else {
-                                        // Check if image is selected
-
-                                        var phone =
-                                            ProfileRepository().getUserPhone();
-                                        if (phone.isEmpty) {
-                                          _showPhoneNumberBottomSheet(context);
+                                        // Validate phone
+                                        if (!_validatePhone(_phoneController.text)) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text(Translate.get('phoneNumberRequired')),
+                                              backgroundColor: AppColors.errorColor,
+                                            ),
+                                          );
                                           return;
                                         }
+                                        Hive.box('myBox').put('phone', _phoneController.text.trim());
                                         if (_image != null) {
                                           // Show loading
                                           showDialog(
@@ -1290,19 +1466,9 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                             // Hide loading
                                             Navigator.of(context).pop();
 
-                                            // Create seat info with uploaded image URL
-                                            final seatInfo = {
-                                              'ticketImage': uploadedImageUrl,
-                                              'row': _rowController.text,
-                                              'seatNo': _seatNoController.text,
-                                              'section':
-                                                  _entranceController.text,
-                                              'stand': _standController.text,
-                                              'sectionId': sectionId,
-                                            };
+                                            final seatInfo = _buildSeatInfo(ticketImage: uploadedImageUrl);
 
-                                            makePayment(OrderRepository.total,
-                                                seatInfo);
+                                            makePayment(OrderRepository.total, seatInfo);
                                           } catch (e) {
                                             // Hide loading
                                             Navigator.of(context).pop();
@@ -1321,20 +1487,10 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                         // If no image, validate and use text fields
                                         else if (_formKey.currentState!
                                             .validate()) {
-                                          final seatInfo = {
-                                            'ticketImage': '',
-                                            'row': _rowController.text,
-                                            'seatNo': _seatNoController.text,
-                                            'section':
-                                                _entranceController.text,
-                                            'stand': _standController.text,
-                                            'sectionId': sectionId,
-                                          };
+                                          final seatInfo = _buildSeatInfo();
 
-                                          makePayment(
-                                              OrderRepository.total, seatInfo);
+                                          makePayment(OrderRepository.total, seatInfo);
                                         }
-                                      }
                                     }),
                               ),
                               const SizedBox(height: 12),
@@ -1362,18 +1518,16 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                                 return;
                                               }
 
-                                              final currentUser = FirebaseAuth
-                                                  .instance.currentUser;
-                                              if (currentUser == null) {
-                                                _showAuthDialog(context);
-                                              } else {
-                                                var phone = ProfileRepository()
-                                                    .getUserPhone();
-                                                if (phone.isEmpty) {
-                                                  _showPhoneNumberBottomSheet(
-                                                      context);
+                                                if (!_validatePhone(_phoneController.text)) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(Translate.get('phoneNumberRequired')),
+                                                      backgroundColor: AppColors.errorColor,
+                                                    ),
+                                                  );
                                                   return;
                                                 }
+                                                Hive.box('myBox').put('phone', _phoneController.text.trim());
                                                 if (_image != null) {
                                                   showDialog(
                                                     context: context,
@@ -1389,21 +1543,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                                       File(_image!.path),
                                                     );
                                                     Navigator.of(context).pop();
-                                                    final seatInfo = {
-                                                      'ticketImage':
-                                                          uploadedImageUrl,
-                                                      'row':
-                                                          _rowController.text,
-                                                      'seatNo':
-                                                          _seatNoController
-                                                              .text,
-                                                      'section':
-                                                          _entranceController
-                                                              .text,
-                                                      'stand':
-                                                          _standController.text,
-                                                      'sectionId': sectionId,
-                                                    };
+                                                    final seatInfo = _buildSeatInfo(ticketImage: uploadedImageUrl);
                                                     await makeApplePayment(
                                                         OrderRepository.total,
                                                         seatInfo);
@@ -1424,23 +1564,11 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                                 } else if (_formKey
                                                     .currentState!
                                                     .validate()) {
-                                                  final seatInfo = {
-                                                    'ticketImage': '',
-                                                    'row': _rowController.text,
-                                                    'seatNo':
-                                                        _seatNoController.text,
-                                                    'section':
-                                                        _entranceController
-                                                            .text,
-                                                    'stand':
-                                                        _standController.text,
-                                                    'sectionId': sectionId,
-                                                  };
+                                                  final seatInfo = _buildSeatInfo();
                                                   await makeApplePayment(
                                                       OrderRepository.total,
                                                       seatInfo);
                                                 }
-                                              }
                                             },
                                           )
                                         : SizedBox(),
@@ -1473,19 +1601,16 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                                   return;
                                                 }
 
-                                                final currentUser = FirebaseAuth
-                                                    .instance.currentUser;
-                                                if (currentUser == null) {
-                                                  _showAuthDialog(context);
-                                                } else {
-                                                  var phone =
-                                                      ProfileRepository()
-                                                          .getUserPhone();
-                                                  if (phone.isEmpty) {
-                                                    _showPhoneNumberBottomSheet(
-                                                        context);
+                                                  if (!_validatePhone(_phoneController.text)) {
+                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                      SnackBar(
+                                                        content: Text(Translate.get('phoneNumberRequired')),
+                                                        backgroundColor: AppColors.errorColor,
+                                                      ),
+                                                    );
                                                     return;
                                                   }
+                                                  Hive.box('myBox').put('phone', _phoneController.text.trim());
 
                                                   if (_image != null) {
                                                     showDialog(
@@ -1503,23 +1628,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                                       );
                                                       Navigator.of(context)
                                                           .pop();
-                                                      final seatInfo = {
-                                                        'ticketImage':
-                                                            uploadedImageUrl,
-                                                        'row':
-                                                            _rowController.text,
-                                                        'seatNo':
-                                                            _seatNoController
-                                                                .text,
-                                                        'section':
-                                                            _entranceController
-                                                                .text,
-                                                        'stand':
-                                                            _standController
-                                                                .text,
-
-                                                        'sectionId': sectionId,
-                                                      };
+                                                      final seatInfo = _buildSeatInfo(ticketImage: uploadedImageUrl);
                                                       await makeGooglePayment(
                                                           OrderRepository.total,
                                                           seatInfo);
@@ -1542,26 +1651,11 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                                   } else if (_formKey
                                                       .currentState!
                                                       .validate()) {
-                                                    final seatInfo = {
-                                                      'ticketImage': '',
-                                                      'row':
-                                                          _rowController.text,
-                                                      'seatNo':
-                                                          _seatNoController
-                                                              .text,
-                                                      'section':
-                                                          _entranceController
-                                                              .text,
-                                                      'stand':
-                                                          _standController.text,
-
-                                                      'sectionId': sectionId,
-                                                    };
+                                                    final seatInfo = _buildSeatInfo();
                                                     await makeGooglePayment(
                                                         OrderRepository.total,
                                                         seatInfo);
                                                   }
-                                                }
                                               } else {
                                                 if (context.mounted) {
                                                   scaffoldMessenger
@@ -1595,8 +1689,63 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     );
   }
 
-  Future<void> makePayment(double total, Map<String, String> seatInfo) async {
+  Map<String, dynamic> _buildSeatInfo({String ticketImage = ''}) {
+    return {
+      'ticketImage': ticketImage,
+      'row': _rowController.text,
+      'seatNo': _seatNoController.text,
+      'section': _entranceController.text,
+      'sectionId': sectionId,
+      'stand': _standController.text,
+      'floor': _floorController.text,
+      'room': _roomController.text,
+      'area': _areaController.text,
+      'seatDetails': _deliveryNotesController.text,
+    };
+  }
+
+  Map<String, dynamic>? _buildInsideDelivery() {
+    if (_deliveryType != 'inside' || _shopData == null) return null;
+    final data = _shopData!['insideDelivery'] as Map<String, dynamic>?;
+    if (data == null) return null;
+
+    // Handle manual entry location (matches web app)
+    String finalLocation = _deliveryLocation;
+    if (_deliveryLocation == 'manual_delivery_entry') {
+      final parts = <String>[];
+      if (_roomController.text.isNotEmpty) parts.add('Room: ${_roomController.text}');
+      if (_floorController.text.isNotEmpty) parts.add('Floor: ${_floorController.text}');
+      if (_entranceController.text.isNotEmpty) parts.add('Section: ${_entranceController.text}');
+      finalLocation = parts.isNotEmpty ? parts.join(', ') : 'Manual Entry';
+    }
+
+    return {
+      'fee': data['fee'],
+      'currency': data['currency'] ?? 'ILS',
+      'location': finalLocation,
+      'notes': _deliveryNotesController.text,
+    };
+  }
+
+  Map<String, dynamic>? _buildOutsideDelivery() {
+    if (_deliveryType != 'outside' || _shopData == null) return null;
+    final data = _shopData!['outsideDelivery'] as Map<String, dynamic>?;
+    if (data == null) return null;
+    return {
+      'fee': data['fee'],
+      'currency': data['currency'] ?? 'ILS',
+      'location': _deliveryLocation,
+      'notes': _deliveryNotesController.text,
+    };
+  }
+
+  Future<void> makePayment(double total, Map<String, dynamic> seatInfo) async {
     try {
+      // Resolve shop ID before payment (matches web's placeOrderAfterPayment)
+      final resolvedShopId = await _resolveShopId();
+      if (resolvedShopId != null) {
+        OrderRepository.selectedShopId = resolvedShopId;
+      }
       // STEP 1: Create Payment Intent
       paymentIntent = await createPaymentIntent(
         total.toString(),
@@ -1622,8 +1771,13 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
   }
 
   Future<void> makeGooglePayment(
-      double total, Map<String, String> seatInfo) async {
+      double total, Map<String, dynamic> seatInfo) async {
     try {
+      // Resolve shop ID before payment (matches web's placeOrderAfterPayment)
+      final resolvedShopId = await _resolveShopId();
+      if (resolvedShopId != null) {
+        OrderRepository.selectedShopId = resolvedShopId;
+      }
       // STEP 1: Create Payment Intent
       paymentIntent = await createPaymentIntent(
         total.toString(),
@@ -1645,6 +1799,13 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       BlocProvider.of<OrderBloc>(context).add(
         CreateOrder(
           seatInfo: seatInfo,
+          deliveryMethod: _deliveryMode,
+          pickupPointId: _selectedPickupPoint.isEmpty ? null : _selectedPickupPoint,
+          deliveryType: _deliveryType,
+          deliveryLocation: _deliveryLocation.isEmpty ? null : _deliveryLocation,
+          deliveryNotes: _deliveryNotesController.text.isEmpty ? null : _deliveryNotesController.text,
+          insideDelivery: _buildInsideDelivery(),
+          outsideDelivery: _buildOutsideDelivery(),
         ),
       );
       paymentIntent = null;
@@ -1654,8 +1815,13 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
   }
 
   Future<void> makeApplePayment(
-      double total, Map<String, String> seatInfo) async {
+      double total, Map<String, dynamic> seatInfo) async {
     try {
+      // Resolve shop ID before payment (matches web's placeOrderAfterPayment)
+      final resolvedShopId = await _resolveShopId();
+      if (resolvedShopId != null) {
+        OrderRepository.selectedShopId = resolvedShopId;
+      }
       // Check if Apple Pay is available first
       final isApplePaySupported =
           await Stripe.instance.isPlatformPaySupported();
@@ -1708,6 +1874,13 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       BlocProvider.of<OrderBloc>(context).add(
         CreateOrder(
           seatInfo: seatInfo,
+          deliveryMethod: _deliveryMode,
+          pickupPointId: _selectedPickupPoint.isEmpty ? null : _selectedPickupPoint,
+          deliveryType: _deliveryType,
+          deliveryLocation: _deliveryLocation.isEmpty ? null : _deliveryLocation,
+          deliveryNotes: _deliveryNotesController.text.isEmpty ? null : _deliveryNotesController.text,
+          insideDelivery: _buildInsideDelivery(),
+          outsideDelivery: _buildOutsideDelivery(),
         ),
       );
       paymentIntent = null;
@@ -1743,6 +1916,121 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     }
   }
 
+  // Shop resolution matching web's resolveShopFromSection + cart fallback
+  Future<String?> _resolveShopId() async {
+    final cartItems = OrderRepository.cart;
+    if (cartItems.isEmpty) return null;
+
+    // Collect all unique shop IDs from cart
+    final allShopIds = <String>{};
+    for (final item in cartItems) {
+      if (item.shopIds.isNotEmpty) allShopIds.add(item.shopIds.first);
+    }
+    final uniqueShopIds = allShopIds.toList();
+
+    // If inside/outside delivery, use cart shop (shop-specific options)
+    if (_deliveryType == 'inside' || _deliveryType == 'outside') {
+      if (uniqueShopIds.isNotEmpty) return uniqueShopIds.first;
+    }
+    // If exactly one shop in cart, use it
+    if (uniqueShopIds.length == 1) return uniqueShopIds.first;
+
+    // Fallback: resolve from section with availability check
+    try {
+      final box = Hive.box('myBox');
+      final sel = box.get('selectedStadium') as Map<dynamic, dynamic>?;
+      final stadiumId = sel?['id'] as String?;
+      if (stadiumId != null && sectionId.isNotEmpty) {
+        final secDoc = await FirebaseFirestore.instance
+            .collection('stadiums')
+            .doc(stadiumId)
+            .collection('sections')
+            .doc(sectionId)
+            .get();
+        if (secDoc.exists) {
+          final secData = secDoc.data() as Map<String, dynamic>;
+          final shops = (secData['shops'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [];
+          final availableShops = <String>[];
+          for (final shopId in shops) {
+            final shopDoc = await FirebaseFirestore.instance.collection('shops').doc(shopId).get();
+            if (shopDoc.exists) {
+              final shopData = shopDoc.data() as Map<String, dynamic>;
+              if (shopData['shopAvailability'] == true) {
+                availableShops.add(shopId);
+              }
+            }
+          }
+          if (availableShops.isNotEmpty) {
+            // Gallery stand -> last shop, Main -> first shop
+            final stand = _standController.text.toLowerCase();
+            if (stand.contains('gallery')) {
+              final lastOriginal = shops.isNotEmpty ? shops.last : '';
+              if (availableShops.contains(lastOriginal)) return lastOriginal;
+              return availableShops.first;
+            }
+            return availableShops.first;
+          }
+        }
+      }
+    } catch (_) {}
+
+    // Final fallback
+    if (uniqueShopIds.isNotEmpty) return uniqueShopIds.first;
+    return null;
+  }
+
+  // Phone helpers (match web app phoneHelper.js)
+  String _normalizePhone(String raw) {
+    if (raw.isEmpty) return '';
+    String s = raw.trim();
+    final hasPlus = s.startsWith('+');
+    s = s.replaceAll(RegExp(r'[^0-9]'), '');
+    return hasPlus ? '+$s' : s;
+  }
+
+  bool _validatePhone(String phone) {
+    final s = _normalizePhone(phone);
+    if (s.isEmpty) return false;
+    final digits = s.startsWith('+') ? s.substring(1) : s;
+    final len = digits.replaceAll(RegExp(r'\D'), '').length;
+    return len >= 6 && len <= 16;
+  }
+
+  Future<void> _fetchCustomerPhone() async {
+    try {
+      final box = Hive.box('myBox');
+      final userId = box.get('id') as String?;
+      if (userId == null || userId.isEmpty) return;
+      final doc = await FirebaseFirestore.instance.collection('customers').doc(userId).get();
+      if (!doc.exists) return;
+      final data = doc.data() as Map<String, dynamic>;
+      final phone = _normalizePhone(data['phone'] ?? data['userPhoneNo'] ?? '');
+      if (phone.isNotEmpty) {
+        setState(() {
+          _phoneController.text = phone;
+        });
+      }
+    } catch (_) {}
+  }
+
+  Future<bool> _saveCustomerPhoneIfMissing() async {
+    try {
+      final box = Hive.box('myBox');
+      final userId = box.get('id') as String?;
+      if (userId == null || userId.isEmpty) return false;
+      final normalized = _normalizePhone(_phoneController.text);
+      final doc = await FirebaseFirestore.instance.collection('customers').doc(userId).get();
+      if (!doc.exists) return false;
+      final data = doc.data() as Map<String, dynamic>;
+      final existing = _normalizePhone(data['phone'] ?? data['userPhoneNo'] ?? '');
+      if (existing.isNotEmpty) return false;
+      await FirebaseFirestore.instance.collection('customers').doc(userId).update({'phone': normalized});
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future createPaymentIntent(String amount, String currency) async {
     try {
       // Match web app's server contract: amount in major units + fee breakdown
@@ -1754,6 +2042,35 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
         OrderRepository.deliveryFee,
         OrderRepository.tip,
       );
+
+      // Build cart items with COG (matches web app's cartItemsWithCOG)
+      final cartItems = OrderRepository.cart.map((food) {
+        return <String, dynamic>{
+          'id': food.id,
+          'name': food.name,
+          'price': food.price,
+          'quantity': food.quantity,
+          'costOfGoods': food.costOfGoods,
+          'hasCOG': food.hasCOG,
+          'currency': food.currency.toUpperCase(),
+        };
+      }).toList();
+
+      // Build shopConfig matching web app's paymentShopConfig
+      final Map<String, dynamic>? shopConfig = _shopData != null
+          ? <String, dynamic>{
+              'payment-options': _shopData!['payment-options'] ?? <String, dynamic>{
+                'model': '2-way',
+                'platform-fee': 0,
+                'vendor-fee': 1.0,
+                'delivery-destination': 'platform',
+                'tip-destination': 'platform',
+                'vendor-id': _shopData!['stripeConnectedAccountId'] ?? _vendorAccountId ?? null,
+                'hotel-id': null,
+              }
+            }
+          : null;
+
       // Print client-side split for debugging
       // ignore: avoid_print
       print('[PAYMENT] Client-side split: ' + jsonEncode(split));
@@ -1765,8 +2082,8 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
         body: jsonEncode({
           'amount': amountMajor,
           'currency': currency,
-          'automaticPaymentMethods': true,
-          'vendorConnectedAccountId': StripeConfig.connectedAccountId,
+          'shopConfig': shopConfig,
+          'cartItems': cartItems,
           'deliveryFee': OrderRepository.deliveryFee,
           'tipAmount': OrderRepository.tip,
           // Client-side computed breakdown (server may ignore; useful for debugging/analytics)
@@ -1811,13 +2128,20 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     return intAmount.toString();
   }
 
-  Future<void> displayPaymentSheet(Map<String, String> seatInfo) async {
+  Future<void> displayPaymentSheet(Map<String, dynamic> seatInfo) async {
     try {
       await Stripe.instance.presentPaymentSheet().then((value) {
         // Create order after successful payment
         BlocProvider.of<OrderBloc>(context).add(
           CreateOrder(
             seatInfo: seatInfo,
+            deliveryMethod: _deliveryMode,
+            pickupPointId: _selectedPickupPoint.isEmpty ? null : _selectedPickupPoint,
+            deliveryType: _deliveryType,
+            deliveryLocation: _deliveryLocation.isEmpty ? null : _deliveryLocation,
+            deliveryNotes: _deliveryNotesController.text.isEmpty ? null : _deliveryNotesController.text,
+            insideDelivery: _buildInsideDelivery(),
+            outsideDelivery: _buildOutsideDelivery(),
           ),
         );
 

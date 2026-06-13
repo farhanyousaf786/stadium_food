@@ -64,7 +64,7 @@ class _CartScreenState extends State<CartScreen> {
   void initState() {
     super.initState();
 
-    CurrencyService.refreshRates();
+    CurrencyService.initializeRates();
   }
 
   Future<String?> _loadNearbyData() async {

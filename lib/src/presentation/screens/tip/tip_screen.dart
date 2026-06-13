@@ -1,13 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:stadium_food/src/core/constants/colors.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
+import 'package:stadium_food/src/data/services/currency_service.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
 import 'package:stadium_food/src/services/tip_service.dart';
 import 'package:stadium_food/src/data/repositories/order_repository.dart';
-import 'package:stadium_food/src/data/services/currency_service.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/back_button.dart';
 import 'package:stadium_food/src/presentation/widgets/formatted_price_text.dart';
 
@@ -26,16 +25,15 @@ class TipScreen extends StatefulWidget {
 }
 
 class _TipScreenState extends State<TipScreen> {
-  late double _selectedTipPercentage;
-  late double _tipAmount;
+  double _selectedTipAmount = 0;
+  double _tipAmount = 0;
   double _orderTotal = 0.0;
   final TextEditingController _customTipController = TextEditingController();
-  final String tipSymbol = '₪';
+  final List<double> _tipAmounts = [2, 4, 6, 8];
 
   @override
   void initState() {
     super.initState();
-    _selectedTipPercentage = 10; // Default to 10%
     _initializeTotal();
   }
 
@@ -43,19 +41,13 @@ class _TipScreenState extends State<TipScreen> {
     _orderTotal = widget.orderId != null
         ? await OrderRepository.getOrderTotal(widget.orderId!)
         : OrderRepository.total;
-    _calculateTip();
     if (mounted) setState(() {});
   }
 
-  void _calculateTip() {
-    _tipAmount = (_orderTotal * _selectedTipPercentage / 100).roundToDouble();
-
-  }
-
-  void _updateTip(double percentage) {
+  void _updateTip(double amount) {
     setState(() {
-      _selectedTipPercentage = percentage;
-      _calculateTip();
+      _selectedTipAmount = amount;
+      _tipAmount = amount;
     });
   }
 
@@ -162,15 +154,15 @@ class _TipScreenState extends State<TipScreen> {
                         ),
                         const SizedBox(height: 16),
         
-                        // Tip percentage buttons
+                        // Tip amount buttons
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _buildTipButton(6, _selectedTipPercentage == 6),
-                            _buildTipButton(10, _selectedTipPercentage == 10),
-                            _buildTipButton(20, _selectedTipPercentage == 20),
-                            _buildTipButton(25, _selectedTipPercentage == 25),
-                          ],
+                          children: _tipAmounts.map((amount) {
+                            return _buildTipButton(
+                              amount,
+                              _selectedTipAmount == amount,
+                            );
+                          }).toList(),
                         ),
         
                         const SizedBox(height: 24),
@@ -235,7 +227,7 @@ class _TipScreenState extends State<TipScreen> {
                           );
                         }
                       },
-                      text: Translate.get('tipButton'),
+                      text: '${Translate.get('tipButton')} (${CurrencyService.formatPrice(_tipAmount)})',
                     ),
                   ),
         
@@ -290,11 +282,11 @@ class _TipScreenState extends State<TipScreen> {
     );
   }
 
-  Widget _buildTipButton(int percentage, bool isSelected) {
+  Widget _buildTipButton(double amount, bool isSelected) {
     return GestureDetector(
-      onTap: () => _updateTip(percentage.toDouble()),
+      onTap: () => _updateTip(amount),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primaryColor : Colors.grey[100],
           borderRadius: BorderRadius.circular(50),
@@ -305,10 +297,10 @@ class _TipScreenState extends State<TipScreen> {
         ),
         child: Center(
           child: Text(
-            '$percentage%',
+            CurrencyService.formatPrice(amount),
             style: TextStyle(
               color: isSelected ? Colors.white : Colors.black87,
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -413,11 +405,7 @@ class _TipScreenState extends State<TipScreen> {
                       if (customAmount >= 0) {
                         setState(() {
                           _tipAmount = customAmount;
-                          if (_orderTotal > 0) {
-                            _selectedTipPercentage =
-                                (customAmount / _orderTotal * 100)
-                                    .roundToDouble();
-                          }
+                          _selectedTipAmount = customAmount;
                         });
                         Navigator.pop(context);
                       } else {

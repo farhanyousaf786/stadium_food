@@ -23,3 +23,9 @@ class FilterMenuBySearch extends MenuEvent {
 
   FilterMenuBySearch({required this.query});
 }
+
+class FilterMenuByShop extends MenuEvent {
+  final String? shopId;
+
+  FilterMenuByShop({this.shopId});
+}

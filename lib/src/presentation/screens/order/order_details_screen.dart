@@ -392,16 +392,18 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                       children: [
                                         Row(
                                           children: [
-                                            Text(
-                                              localizedName,
-                                              style: const TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
+                                            Expanded(
+                                              child: Text(
+                                                localizedName,
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
                                               ),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
                                             ),
-                                            Spacer(),
+                                            const SizedBox(width: 8),
                                             Text(
                                               "${Translate.get(
                                                   'quantity')} ${item

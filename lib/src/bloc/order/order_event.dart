@@ -32,9 +32,24 @@ class RemoveCompletelyFromCart extends OrderEvent {
 
 class CreateOrder extends OrderEvent {
   final Map<String, dynamic> seatInfo;
+  final String deliveryMethod;
+  final String? pickupPointId;
+  final String? deliveryType;
+  final String? deliveryLocation;
+  final String? deliveryNotes;
+  final Map<String, dynamic>? insideDelivery;
+  final Map<String, dynamic>? outsideDelivery;
 
-
-  CreateOrder({required this.seatInfo});
+  CreateOrder({
+    required this.seatInfo,
+    this.deliveryMethod = 'delivery',
+    this.pickupPointId,
+    this.deliveryType,
+    this.deliveryLocation,
+    this.deliveryNotes,
+    this.insideDelivery,
+    this.outsideDelivery,
+  });
 }
 
 class FetchOrders extends OrderEvent {

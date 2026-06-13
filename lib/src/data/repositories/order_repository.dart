@@ -122,13 +122,17 @@ class OrderRepository {
     return total;
   }
 
-  // delivery fee
-  static double get deliveryFee {
+  // delivery fee (settable so screen can override based on delivery type)
+  static double _deliveryFee = 0;
+  static double get deliveryFee => _deliveryFee;
+  static set deliveryFee(double value) => _deliveryFee = value;
+
+  static void calculateDefaultDeliveryFee() {
     int totalQuantity = 0;
     for (var food in cart) {
       totalQuantity += food.quantity;
     }
-    return totalQuantity * 2;
+    _deliveryFee = totalQuantity * 2;
   }
 
   // discount
@@ -141,7 +145,16 @@ class OrderRepository {
     return subtotal + deliveryFee + tip - discount;
   }
 
-  Future<model.Order> createOrder(Map<String, dynamic> seatInfo) async {
+  Future<model.Order> createOrder({
+    required Map<String, dynamic> seatInfo,
+    String deliveryMethod = 'delivery',
+    String? pickupPointId,
+    String? deliveryType,
+    String? deliveryLocation,
+    String? deliveryNotes,
+    Map<String, dynamic>? insideDelivery,
+    Map<String, dynamic>? outsideDelivery,
+  }) async {
     // Pre-generate a document ID so we can use it as the Order.id
     final docRef = _firestore.collection('orders').doc();
     final generatedId = docRef.id;
@@ -172,6 +185,11 @@ class OrderRepository {
       },
       seatInfo: seatInfo,
       id: generatedId,
+      deliveryMethod: deliveryMethod,
+      pickupPointId: pickupPointId,
+      deliveryType: deliveryType ?? '',
+      insideDelivery: insideDelivery,
+      outsideDelivery: outsideDelivery,
     );
 
     // Save order to Firestore using the pre-generated ID

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
+import '../../../data/services/guest_auth_service.dart';
 import '../../../services/location_service.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
@@ -118,6 +120,166 @@ class _NewCartScreenState extends State<NewCartScreen> {
         content: Text(Translate.get(messageKey)),
         backgroundColor: AppColors.errorColor,
       ),
+    );
+  }
+
+  void _showAuthDialog(BuildContext outerContext) {
+    showDialog(
+      context: outerContext,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(
+                  'assets/png/logo.png',
+                  height: 80,
+                  width: 80,
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  Translate.get('accountRequired'),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  Translate.get('loginOrRegister'),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(dialogContext);
+                      Navigator.pushNamed(
+                        outerContext,
+                        '/login',
+                        arguments: '/tip',
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text(
+                      Translate.get('login'),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      Navigator.pop(dialogContext);
+                      showDialog(
+                        context: outerContext,
+                        barrierDismissible: false,
+                        builder: (_) => const LoadingIndicator(),
+                      );
+                      try {
+                        await GuestAuthService.ensureGuestUser();
+                        if (!outerContext.mounted) return;
+                        Navigator.pop(outerContext);
+                        final prefs = await SharedPreferences.getInstance();
+                        final hasStadium = prefs.getString('selected_stadium_id') != null;
+                        if (hasStadium) {
+                          Navigator.pushNamed(outerContext, '/tip');
+                        } else {
+                          Navigator.pushNamedAndRemoveUntil(
+                            outerContext,
+                            '/select-stadium',
+                            (route) => false,
+                          );
+                        }
+                      } catch (e) {
+                        if (outerContext.mounted) {
+                          Navigator.pop(outerContext);
+                          ScaffoldMessenger.of(outerContext).showSnackBar(
+                            SnackBar(
+                              content: Text('Guest login failed: $e'),
+                              backgroundColor: AppColors.errorColor,
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text(
+                      Translate.get('loginAsGuest'),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(dialogContext);
+                    Navigator.pushNamed(outerContext, '/register');
+                  },
+                  child: Text(
+                    Translate.get('createAccount'),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(dialogContext);
+                  },
+                  child: Text(
+                    Translate.get('cancel'),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -417,28 +579,19 @@ class _NewCartScreenState extends State<NewCartScreen> {
                                 text: Translate.get('goToCheckout'),
                                 onTap: () async {
                                   if (OrderRepository.cart.isEmpty) {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(
+                                    ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text(
-                                            Translate.get('cartEmpty')),
-                                        backgroundColor:
-                                        AppColors.errorColor,
+                                        content: Text(Translate.get('cartEmpty')),
+                                        backgroundColor: AppColors.errorColor,
                                       ),
                                     );
                                     return;
                                   }
-                                  Navigator.pushNamed(context, "/tip");
-                                  // Find nearest shop before proceeding
-                                  // try {
-                                  //   await _findNearestShopAndNavigate(
-                                  //       context);
-                                  // } catch (e) {
-                                  //   Navigator.of(context)
-                                  //       .pop();
-                                  //   await _handleLocationError(context, e);
-                                  //
-                                  // }
+                                  if (!GuestAuthService.isLoggedIn) {
+                                    _showAuthDialog(context);
+                                    return;
+                                  }
+                                  Navigator.pushNamed(context, '/tip');
                                 })
                                 : SizedBox(),
                           ),

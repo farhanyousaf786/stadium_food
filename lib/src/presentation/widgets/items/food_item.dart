@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:stadium_food/src/data/models/food.dart';
+import 'package:stadium_food/src/data/services/currency_service.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 
@@ -95,7 +96,7 @@ class FoodItem extends StatelessWidget {
 
                     // Price
                     Text(
-                      '${food.price.toStringAsFixed(2)} \$',
+                      CurrencyService.formatPrice(food.price),
                       style: CustomTextStyle.size18Weight600Text(
                         AppColors.primaryColor,
                       ),

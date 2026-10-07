@@ -111,7 +111,7 @@ class _StadiumScreenState extends State<StadiumScreen> with SingleTickerProvider
                         decoration: InputDecoration(
                           hintText: 'Search by name or location...',
                           hintStyle: TextStyle(color: Colors.grey[400]),
-                          prefixIcon: const Icon(Icons.search, color: AppColors.primaryColor),
+                          prefixIcon: Icon(Icons.search, color: AppColors.primaryColor),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15),
                             borderSide: BorderSide.none,
@@ -140,7 +140,7 @@ class _StadiumScreenState extends State<StadiumScreen> with SingleTickerProvider
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const CircularProgressIndicator(color: AppColors.primaryColor),
+                          CircularProgressIndicator(color: AppColors.primaryColor),
                           const SizedBox(height: 16),
                           Text(
                             'Loading stadiums...',
@@ -296,7 +296,7 @@ class _StadiumCardState extends State<_StadiumCard> with SingleTickerProviderSta
                                   return Container(
                                     height: 200,
                                     color: Colors.grey[300],
-                                    child: const Icon(Icons.stadium, size: 64, color: AppColors.primaryColor),
+                                    child: Icon(Icons.stadium, size: 64, color: AppColors.primaryColor),
                                   );
                                 },
                               ),
@@ -314,7 +314,7 @@ class _StadiumCardState extends State<_StadiumCard> with SingleTickerProviderSta
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(Icons.people, color: AppColors.primaryColor, size: 16),
+                                    Icon(Icons.people, color: AppColors.primaryColor, size: 16),
                                     const SizedBox(width: 4),
                                     Text(
                                       '${widget.stadium.capacity}',
@@ -350,7 +350,7 @@ class _StadiumCardState extends State<_StadiumCard> with SingleTickerProviderSta
                                       color: AppColors.primaryColor.withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
-                                    child: const Icon(Icons.location_on, color: AppColors.primaryColor, size: 16),
+                                    child: Icon(Icons.location_on, color: AppColors.primaryColor, size: 16),
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(

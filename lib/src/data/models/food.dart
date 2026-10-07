@@ -181,23 +181,95 @@ class Food extends Equatable {
     return favorites.contains(ref);
   }
 
-  // Localization helpers
-  String nameFor(String languageCode) {
-    final value = nameMap[languageCode];
-    // if (value != null && value.trim().isNotEmpty) return value;
-    return value ??'';
+  // Localization helpers (matches web getLocalizedName / getLocalizedText)
+  String nameFor(String languageCode) =>
+      _localized(nameMap, languageCode, name);
+
+  String descriptionFor(String languageCode) =>
+      _localized(descriptionMap, languageCode, description);
+
+  String categoryFor(String languageCode) =>
+      _localized(categoryMap, languageCode, category);
+
+  static String _localized(
+    Map<String, String> map,
+    String languageCode,
+    String fallback,
+  ) {
+    final primary = map[languageCode];
+    if (primary != null && primary.trim().isNotEmpty) return primary.trim();
+    final en = map['en'];
+    if (en != null && en.trim().isNotEmpty) return en.trim();
+    final he = map['he'];
+    if (he != null && he.trim().isNotEmpty) return he.trim();
+    for (final value in map.values) {
+      if (value.trim().isNotEmpty) return value.trim();
+    }
+    return fallback;
   }
 
-  String descriptionFor(String languageCode) {
-    final value = descriptionMap[languageCode];
-    // if (value != null && value.trim().isNotEmpty) return value;
-    return value ??'';
-  }
-
-  String categoryFor(String languageCode) {
-    final value = categoryMap[languageCode];
-    // if (value != null && value.trim().isNotEmpty) return value;
-    return value??'';
+  Food copyWith({
+    String? id,
+    List<String>? allergens,
+    String? category,
+    Map<String, String>? categoryMap,
+    DateTime? createdAt,
+    Map<String, dynamic>? customization,
+    String? description,
+    Map<String, String>? descriptionMap,
+    List<Map<String, dynamic>>? extras,
+    List<String>? images,
+    bool? isAvailable,
+    bool? isCombo,
+    List<String>? comboItemIds,
+    String? name,
+    Map<String, String>? nameMap,
+    Map<String, dynamic>? nutritionalInfo,
+    int? preparationTime,
+    double? price,
+    double? costOfGoods,
+    bool? hasCOG,
+    String? currency,
+    List<Map<String, dynamic>>? sauces,
+    List<String>? shopIds,
+    String? stadiumId,
+    List<Map<String, dynamic>>? sizes,
+    List<Map<String, dynamic>>? toppings,
+    DateTime? updatedAt,
+    Map<String, bool>? foodType,
+    int? quantity,
+  }) {
+    return Food(
+      id: id ?? this.id,
+      allergens: allergens ?? this.allergens,
+      category: category ?? this.category,
+      categoryMap: categoryMap ?? this.categoryMap,
+      createdAt: createdAt ?? this.createdAt,
+      customization: customization ?? this.customization,
+      description: description ?? this.description,
+      descriptionMap: descriptionMap ?? this.descriptionMap,
+      extras: extras ?? this.extras,
+      images: images ?? this.images,
+      isAvailable: isAvailable ?? this.isAvailable,
+      isCombo: isCombo ?? this.isCombo,
+      comboItemIds: comboItemIds ?? this.comboItemIds,
+      name: name ?? this.name,
+      nameMap: nameMap ?? this.nameMap,
+      nutritionalInfo: nutritionalInfo ?? this.nutritionalInfo,
+      preparationTime: preparationTime ?? this.preparationTime,
+      price: price ?? this.price,
+      costOfGoods: costOfGoods ?? this.costOfGoods,
+      hasCOG: hasCOG ?? this.hasCOG,
+      currency: currency ?? this.currency,
+      sauces: sauces ?? this.sauces,
+      shopIds: shopIds ?? this.shopIds,
+      stadiumId: stadiumId ?? this.stadiumId,
+      sizes: sizes ?? this.sizes,
+      toppings: toppings ?? this.toppings,
+      updatedAt: updatedAt ?? this.updatedAt,
+      foodType: foodType ?? this.foodType,
+      quantity: quantity ?? this.quantity,
+    );
   }
 
   @override

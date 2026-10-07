@@ -127,7 +127,7 @@ class _StadiumDetailScreenState extends State<StadiumDetailScreen> {
                           ),
                           child: Text(
                 widget.stadium.name,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 24,
@@ -144,7 +144,7 @@ class _StadiumDetailScreenState extends State<StadiumDetailScreen> {
                     color: AppColors.primaryColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.location_on, color: AppColors.primaryColor),
+                  child: Icon(Icons.location_on, color: AppColors.primaryColor),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -162,11 +162,11 @@ class _StadiumDetailScreenState extends State<StadiumDetailScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.people, color: AppColors.primaryColor, size: 16),
+                      Icon(Icons.people, color: AppColors.primaryColor, size: 16),
                       const SizedBox(width: 4),
                       Text(
                         '${widget.stadium.capacity}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.primaryColor,
                           fontWeight: FontWeight.bold,
                         ),
@@ -206,7 +206,7 @@ class _StadiumDetailScreenState extends State<StadiumDetailScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const CircularProgressIndicator(color: AppColors.primaryColor),
+                  CircularProgressIndicator(color: AppColors.primaryColor),
                   const SizedBox(height: 16),
                   Text(
                     'Loading shops...',
@@ -361,7 +361,7 @@ class _ShopCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       shop.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -375,7 +375,7 @@ class _ShopCard extends StatelessWidget {
                     ),
                     child: Text(
                       'Floor ${shop.floor}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.primaryColor,
                         fontWeight: FontWeight.bold,
                       ),
@@ -393,7 +393,7 @@ class _ShopCard extends StatelessWidget {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  const Icon(Icons.location_on, size: 16, color: AppColors.primaryColor),
+                  Icon(Icons.location_on, size: 16, color: AppColors.primaryColor),
                   const SizedBox(width: 4),
                   Text(
                     'Gate ${shop.gate} - ${shop.location}',

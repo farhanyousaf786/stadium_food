@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:stadium_food/src/presentation/utils/app_colors.dart' as theme;
 
+/// Tip / misc screens — mirrors venue-aware brand colors.
 class AppColors {
-  static const primaryColor = Color(0xFF3C67E3);  // Blue
-  static const primaryDarkColor = Color(0xFF3C67E3);  // Blue
-  static const bgColor = Color(0xFFF5F5F5);      // Light grey background
-  static const textColor = Color(0xFF333333);     // Dark text
-  static const accentColor = Color(0xFFFFA726);   // Orange accent
-  static const errorColor = Color(0xFFE53935);    // Red for errors
-  static const successColor = Color(0xFF43A047);  // Green for success
+  static Color get primaryColor => theme.AppColors.primaryColor;
+  static Color get primaryDarkColor => theme.AppColors.primaryDarkColor;
+  static Color get bgColor => theme.AppColors.bgColor;
+  static const textColor = Color(0xFF333333);
+  static const accentColor = Color(0xFFFFA726);
+  static const errorColor = Color(0xFFE53935);
+  static const successColor = Color(0xFF43A047);
 }

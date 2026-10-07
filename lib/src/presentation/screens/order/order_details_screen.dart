@@ -266,11 +266,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                             version: QrVersions.auto,
                             size: 160,
                             backgroundColor: Colors.transparent,
-                            eyeStyle: const QrEyeStyle(
+                            eyeStyle: QrEyeStyle(
                               color: AppColors.primaryDarkColor,
                               eyeShape: QrEyeShape.square,
                             ),
-                            dataModuleStyle: const QrDataModuleStyle(
+                            dataModuleStyle: QrDataModuleStyle(
                               color: AppColors.primaryDarkColor,
                               dataModuleShape: QrDataModuleShape.square,
                             ),
@@ -395,7 +395,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                             Expanded(
                                               child: Text(
                                                 localizedName,
-                                                style: const TextStyle(
+                                                style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.bold,
                                                 ),

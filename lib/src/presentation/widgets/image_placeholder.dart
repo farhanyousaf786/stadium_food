@@ -19,20 +19,22 @@ class ImagePlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: width,
-      height: height,
-
+      width: width ?? double.infinity,
+      height: height ?? double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(50),
         gradient: LinearGradient(
-          colors: AppColors.primaryGradient,
+          colors: [
+            AppColors.primaryLightColor,
+            AppColors.primaryColor,
+            AppColors.primaryDarkColor,
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
       ),
       child: Icon(
         iconData,
-        color: AppColors.bgColor,
+        color: Colors.white.withOpacity(0.92),
         size: iconSize,
       ),
     );

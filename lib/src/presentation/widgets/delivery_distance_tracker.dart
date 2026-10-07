@@ -46,7 +46,7 @@ class DeliveryDistanceTracker extends StatelessWidget {
                       isDelivered 
                           ? Translate.get('delivered')
                           : Translate.get('onTheWay'),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),

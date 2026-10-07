@@ -285,7 +285,7 @@ class _MenuListState extends State<MenuList> {
                                                 color: const Color(0xFFD39A75),
                                                 borderRadius: BorderRadius.circular(8),
                                               ),
-                                              child: const Text(
+                                              child: Text(
                                                 'COMBO',
                                                 style: TextStyle(
                                                   color: Colors.white,

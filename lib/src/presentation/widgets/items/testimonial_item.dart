@@ -73,7 +73,7 @@ class _TestimonialItemState extends State<TestimonialItem> {
                     color: AppColors.primaryColor.withOpacity(0.1),
                     borderRadius: AppStyles.largeBorderRadius,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.person,
                     color: AppColors.primaryColor,
                     size: 40,

@@ -47,8 +47,9 @@ class AppStyles {
 
   // default focused border is same as enabled border but with different color as parameter
   static OutlineInputBorder defaultFocusedBorder({
-    Color color = AppColors.primaryColor,
+    Color? color,
   }) {
+    color ??= AppColors.primaryColor;
     return OutlineInputBorder(
       borderRadius: defaultBorderRadius,
       borderSide: BorderSide(

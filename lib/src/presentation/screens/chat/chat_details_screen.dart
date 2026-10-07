@@ -59,7 +59,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const CustomBackButton(color: AppColors.primaryDarkColor,),
+                    CustomBackButton(color: AppColors.primaryDarkColor,),
                     const SizedBox(height: 20),
                     Text(
                       "Chat",

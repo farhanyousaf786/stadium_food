@@ -26,14 +26,14 @@ class VouchersScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const CustomBackButton(color: AppColors.primaryDarkColor,),
+                    CustomBackButton(color: AppColors.primaryDarkColor,),
                     const SizedBox(height: 20),
                     Text(
                       "Vouchers",
                       style: CustomTextStyle.size25Weight600Text(),
                     ),
                     const SizedBox(height: 20),
-                    const VoucherItem(
+                    VoucherItem(
                       content: "Special deal for this month",
                       backgroundColor: AppColors.primaryColor,
                       textColor: Colors.white,

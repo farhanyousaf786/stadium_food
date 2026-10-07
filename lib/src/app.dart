@@ -6,6 +6,7 @@ import 'package:hive/hive.dart';
 import 'package:stadium_food/src/bloc/language/language_bloc.dart';
 import 'package:stadium_food/src/bloc/theme/theme_bloc.dart';
 
+import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/app_router.dart';
 import 'package:stadium_food/src/presentation/utils/app_theme.dart';
 
@@ -18,17 +19,15 @@ class MyApp extends StatelessWidget {
       builder: (context, languageState) {
         return BlocBuilder<ThemeBloc, ThemeState>(
           builder: (context, themeState) {
-            ThemeData themeData =
-                Hive.box('myBox').get('isDarkMode', defaultValue: false)
-                    ? AppTheme().lightThemeData
-                    : AppTheme().lightThemeData;
-            if (themeState is ThemeChanged) {
-              themeData = themeState.themeData;
-            }
+            // Always rebuild from current venue AppColors so all screens
+            // pick up stadium theme (buttons, tabs, nav, etc.)
+            ThemeData themeData = themeState is ThemeChanged
+                ? themeState.themeData
+                : AppTheme.buildLightTheme();
 
             return MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: "Fans Food",
+        title: AppColors.brandName,
         theme: themeData,
         onGenerateRoute: AppRouter.onGenerateRoute,
         locale: languageState.locale,

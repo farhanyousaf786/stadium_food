@@ -89,6 +89,56 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
     if (mounted) setState(() => _comboLoading = false);
   }
 
+  Future<void> _handleAddToCart() async {
+    // Mixed-shop: prompt to replace cart (matches web)
+    if (OrderRepository.isDifferentShop(widget.food)) {
+      final replace = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Replace cart?'),
+          content: const Text(
+            'Your cart has items from another shop. '
+            'Clear the cart and add this item instead?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Replace'),
+            ),
+          ],
+        ),
+      );
+      if (replace != true) return;
+      OrderRepository().clearCart();
+    }
+
+    // Fold selected extras into unit price (matches web cart pricing)
+    final extrasTotal = _selectedExtras.fold<double>(
+      0,
+      (sum, e) => sum + ((e['price'] as num?)?.toDouble() ?? 0),
+    );
+    final foodForCart = widget.food.copyWith(
+      price: widget.food.price + extrasTotal,
+      extras: [
+        ...widget.food.extras,
+        ..._selectedExtras,
+      ],
+      quantity: 0,
+      customization: {
+        ...widget.food.customization,
+        'selectedOptions': _selectedExtras,
+      },
+    );
+
+    if (!mounted) return;
+    BlocProvider.of<OrderBloc>(context).add(AddToCartQty(foodForCart, qty));
+    Navigator.pushReplacementNamed(context, '/cart');
+  }
+
   @override
   Widget build(BuildContext context) {
     final lang = LanguageService.getCurrentLanguage();
@@ -118,19 +168,14 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
           child: SizedBox(
             height: 54,
             child: ElevatedButton(
-              onPressed: () {
-                BlocProvider.of<OrderBloc>(context).add(
-                  AddToCartQty(widget.food, qty),
-                );
-                Navigator.pushReplacementNamed(context, '/cart');
-              },
+              onPressed: () => _handleAddToCart(),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryColor,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
-                textStyle: const TextStyle(
+                textStyle: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w700,
                 ),
@@ -142,135 +187,128 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
         body: SafeArea(
           child: CustomScrollView(
             slivers: [
+              // Hero stays under the floating back/like chips
               SliverAppBar(
-                backgroundColor: AppColors.bgColor,
-                leading: SizedBox.shrink(),
-                expandedHeight: MediaQuery.of(context).size.height * 0.30,
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                pinned: false,
+                floating: false,
+                leading: const SizedBox.shrink(),
+                actions: const [SizedBox.shrink()],
+                expandedHeight: MediaQuery.of(context).size.height * 0.32,
                 flexibleSpace: FlexibleSpaceBar(
-                  background: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      widget.food.images.isNotEmpty
-                          ? Container(
-                              color: AppColors.bgColor,
-                              padding: const EdgeInsets.symmetric(vertical: 10),
-                              child:
-                              (widget.food.isCombo &&
-                                  widget. food.images.length >= 2)
+                  background: Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(28),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          widget.food.images.isNotEmpty
+                              ? (widget.food.isCombo &&
+                                      widget.food.images.length >= 2)
                                   ? Row(
-                                children: [
-                                  Expanded(
-                                    child: Image.network(
-                                      widget.food.images[0],
-                                      width: double.infinity,
-                                      height: double.infinity,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (context, error,
-                                          stackTrace) =>
-                                          ImagePlaceholder(
-                                            iconData: Icons.fastfood,
-                                            iconSize: 100,
+                                      children: [
+                                        Expanded(
+                                          child: Image.network(
+                                            widget.food.images[0],
+                                            width: double.infinity,
+                                            height: double.infinity,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (context, error,
+                                                    stackTrace) =>
+                                                ImagePlaceholder(
+                                              iconData: Icons.fastfood,
+                                              iconSize: 100,
+                                            ),
                                           ),
-                                    ),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.symmetric(
-                                        horizontal: 5),
-                                    height: double.infinity,
-                                    width: 3,
-                                    color: AppColors.primaryColor,
-                                  ),
-                                  Expanded(
-                                    child: Image.network(
-                                      widget.food.images[1],
-                                      width: double.infinity,
-                                      height: double.infinity,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (context, error,
-                                          stackTrace) =>
-                                          ImagePlaceholder(
-                                            iconData: Icons.fastfood,
-                                            iconSize: 100,
+                                        ),
+                                        Container(
+                                          width: 3,
+                                          color: AppColors.primaryColor,
+                                        ),
+                                        Expanded(
+                                          child: Image.network(
+                                            widget.food.images[1],
+                                            width: double.infinity,
+                                            height: double.infinity,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (context, error,
+                                                    stackTrace) =>
+                                                ImagePlaceholder(
+                                              iconData: Icons.fastfood,
+                                              iconSize: 100,
+                                            ),
                                           ),
-                                    ),
-                                  ),
-                                ],
-                              )
-                                  :Image.network(
-                                widget.food.images.first,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error,
-                                    stackTrace) =>
-                                    ImagePlaceholder(
-                                      iconData: Icons.fastfood,
-                                      iconSize: 100,
-                                    ),
-                              )
-
-                              // Image.network(
-                              //   widget.food.images.first,
-                              //   fit: BoxFit.cover,
-                              //   errorBuilder: (context, error, stackTrace) =>
-                              //       ImagePlaceholder(
-                              //     iconData: Icons.fastfood,
-                              //     iconSize: 100,
-                              //   ),
-                              // ),
-                            )
-                          : ImagePlaceholder(
-                              iconData: Icons.fastfood,
-                              iconSize: 100,
+                                        ),
+                                      ],
+                                    )
+                                  : Image.network(
+                                      widget.food.images.first,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              ImagePlaceholder(
+                                        iconData: Icons.fastfood,
+                                        iconSize: 100,
+                                      ),
+                                    )
+                              : ImagePlaceholder(
+                                  iconData: Icons.fastfood,
+                                  iconSize: 100,
+                                ),
+                          // Soft top scrim so chips stay readable on busy photos
+                          Positioned(
+                            left: 0,
+                            right: 0,
+                            top: 0,
+                            height: 88,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.black.withOpacity(0.28),
+                                    Colors.transparent,
+                                  ],
+                                ),
+                              ),
                             ),
-                      // bottom gradient fade
-                      // Align(
-                      //   alignment: Alignment.bottomCenter,
-                      //   child:
-                      //
-                      //   Container(
-                      //     height: 120,
-                      //     decoration:  BoxDecoration(
-                      //       gradient: LinearGradient(
-                      //         begin: Alignment.topCenter,
-                      //         end: Alignment.bottomCenter,
-                      //         colors: [
-                      //           Colors.transparent,
-                      //           Colors.black12.withOpacity(0.1),
-                      //           Colors.black26.withOpacity(0.1),
-                      //         ],
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
-                      // top-right like button
-                      Positioned(
-                        left: 16,
-                        top: 16,
-                        child: CustomBackButton(
-                          color: AppColors.primaryDarkColor,
-                        ),
-                      ),
-                      Positioned(
-                        right: 16,
-                        top: 16,
-                        child: BlocBuilder<ProfileBloc, ProfileState>(
-                          builder: (context, state) {
-                            return LikeButton(
-                              isLiked: widget.food.isFavorite,
-                              onTap: () {
-                                BlocProvider.of<ProfileBloc>(context).add(
-                                  ToggleFavoriteFood(
-                                    foodId: widget.food.id,
-                                    shopId: widget.food.shopIds.first,
-                                    stadiumId: widget.food.stadiumId,
-                                  ),
+                          ),
+                          Positioned(
+                            left: 12,
+                            top: 12,
+                            child: CustomBackButton(
+                              color: Colors.black87,
+                              backgroundColor: Colors.white,
+                            ),
+                          ),
+                          Positioned(
+                            right: 12,
+                            top: 12,
+                            child: BlocBuilder<ProfileBloc, ProfileState>(
+                              builder: (context, state) {
+                                return LikeButton(
+                                  isLiked: widget.food.isFavorite,
+                                  backgroundColor: Colors.white,
+                                  onTap: () {
+                                    BlocProvider.of<ProfileBloc>(context).add(
+                                      ToggleFavoriteFood(
+                                        foodId: widget.food.id,
+                                        shopId: widget.food.shopIds.first,
+                                        stadiumId: widget.food.stadiumId,
+                                      ),
+                                    );
+                                  },
                                 );
                               },
-                            );
-                          },
-                        ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -453,7 +491,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                       BlocBuilder<TestimonialBloc, TestimonialState>(
                         builder: (context, state) {
                           if (state is TestimonialLoading) {
-                            return const Center(
+                            return Center(
                               child: CircularProgressIndicator(
                                   color: AppColors.primaryColor),
                             );
@@ -700,7 +738,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                     children: [
                       Text(
                         item.name,
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),

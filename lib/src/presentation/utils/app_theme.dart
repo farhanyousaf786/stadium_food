@@ -2,77 +2,81 @@ import 'package:flutter/material.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 
 class AppTheme {
-  ThemeData lightThemeData = ThemeData(
-    useMaterial3: true,
-    primaryColor: AppColors.primaryColor,
-    navigationBarTheme: NavigationBarThemeData(
-      backgroundColor: AppColors().backgroundColor,
-      indicatorColor: AppColors.primaryColor.withOpacity(0.1),
-      surfaceTintColor: Colors.transparent,
-    ),
-    // change text button style
-    textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(
-        foregroundColor: AppColors.secondaryDarkColor,
-      ),
-    ),
-    // change checkbox style
-    checkboxTheme: CheckboxThemeData(
-      fillColor: MaterialStateProperty.all(
-        AppColors.secondaryLightColor.withOpacity(0.1),
-      ),
-      checkColor: MaterialStateProperty.all(
-        AppColors.secondaryDarkColor,
-      ),
-    ),
-    // change app bar surface tint color
-    appBarTheme: const AppBarTheme(
-      surfaceTintColor: Colors.transparent,
-    ),
-    // change cursor color
-    textSelectionTheme: const TextSelectionThemeData(
-      cursorColor: AppColors.primaryColor,
-    ),
-    // change dialog surface tint color
-    dialogTheme: const DialogThemeData(
-      surfaceTintColor: Colors.transparent,
-    ),
-  );
+  /// Rebuilds ThemeData from current venue [AppColors] (call after stadium select).
+  ThemeData get lightThemeData => buildLightTheme();
 
-  ThemeData darkThemeData = ThemeData.dark().copyWith(
-    scaffoldBackgroundColor: AppColors().backgroundColor,
-    primaryColor: AppColors.primaryColor,
-    navigationBarTheme: NavigationBarThemeData(
-      backgroundColor: AppColors().backgroundColor,
-      indicatorColor: AppColors.primaryColor.withOpacity(0.1),
-      surfaceTintColor: Colors.transparent,
-    ),
-    // change text button style
-    textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(
-        foregroundColor: AppColors.secondaryDarkColor,
+  ThemeData get darkThemeData => buildLightTheme();
+
+  static ThemeData buildLightTheme() {
+    final primary = AppColors.primaryColor;
+    final dark = AppColors.primaryDarkColor;
+    final light = AppColors.primaryLightColor;
+
+    final scheme = ColorScheme.fromSeed(
+      seedColor: primary,
+      primary: primary,
+      secondary: dark,
+      brightness: Brightness.light,
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      primaryColor: primary,
+      colorScheme: scheme,
+      scaffoldBackgroundColor: AppColors.bgColor,
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: AppColors().backgroundColor,
+        indicatorColor: primary.withOpacity(0.14),
+        surfaceTintColor: Colors.transparent,
       ),
-    ),
-    // change checkbox style
-    checkboxTheme: CheckboxThemeData(
-      fillColor: MaterialStateProperty.all(
-        AppColors.secondaryLightColor.withOpacity(0.1),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: primary,
+          foregroundColor: Colors.white,
+        ),
       ),
-      checkColor: MaterialStateProperty.all(
-        AppColors.secondaryDarkColor,
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: primary,
+        foregroundColor: Colors.white,
       ),
-    ),
-    // change app bar surface tint color
-    appBarTheme: const AppBarTheme(
-      surfaceTintColor: Colors.transparent,
-    ),
-    // change cursor color
-    textSelectionTheme: const TextSelectionThemeData(
-      cursorColor: AppColors.primaryColor,
-    ),
-    // change dialog surface tint color
-    dialogTheme: const DialogThemeData(
-      surfaceTintColor: Colors.transparent,
-    ),
-  );
+      progressIndicatorTheme: ProgressIndicatorThemeData(color: primary),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith(
+          (s) => s.contains(WidgetState.selected) ? primary : null,
+        ),
+        trackColor: WidgetStateProperty.resolveWith(
+          (s) => s.contains(WidgetState.selected)
+              ? primary.withOpacity(0.4)
+              : null,
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(foregroundColor: dark),
+      ),
+      checkboxTheme: CheckboxThemeData(
+        fillColor: WidgetStateProperty.resolveWith(
+          (s) => s.contains(WidgetState.selected) ? primary : null,
+        ),
+        checkColor: WidgetStateProperty.all(Colors.white),
+      ),
+      tabBarTheme: TabBarThemeData(
+        indicatorColor: primary,
+        labelColor: Colors.white,
+        unselectedLabelColor: Colors.white70,
+      ),
+      appBarTheme: AppBarTheme(
+        surfaceTintColor: Colors.transparent,
+        backgroundColor: primary,
+        foregroundColor: Colors.white,
+      ),
+      textSelectionTheme: TextSelectionThemeData(cursorColor: primary),
+      dialogTheme: const DialogThemeData(
+        surfaceTintColor: Colors.transparent,
+      ),
+      chipTheme: ChipThemeData(
+        selectedColor: primary.withOpacity(0.15),
+        checkmarkColor: primary,
+      ),
+    );
+  }
 }

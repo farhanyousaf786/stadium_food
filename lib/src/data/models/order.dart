@@ -33,6 +33,8 @@ class Order extends Equatable {
   final Map<String, dynamic>? insideDelivery;
   final Map<String, dynamic>? outsideDelivery;
   final double tipPercentage;
+  final String? stripePaymentIntentId;
+  final String currency;
 
   Order({
     required this.cart,
@@ -62,6 +64,8 @@ class Order extends Equatable {
     this.insideDelivery,
     this.outsideDelivery,
     this.tipPercentage = 0,
+    this.stripePaymentIntentId,
+    this.currency = 'ILS',
   });
 
   factory Order.fromMap(String id, Map<String, dynamic> map) {
@@ -98,6 +102,8 @@ class Order extends Equatable {
       insideDelivery: map['insideDelivery'] as Map<String, dynamic>?,
       outsideDelivery: map['outsideDelivery'] as Map<String, dynamic>?,
       tipPercentage: (map['tipPercentage'] ?? 0).toDouble(),
+      stripePaymentIntentId: map['stripePaymentIntentId'] as String?,
+      currency: map['currency']?.toString() ?? 'ILS',
     );
   }
 
@@ -135,6 +141,9 @@ class Order extends Equatable {
       'insideDelivery': insideDelivery,
       'outsideDelivery': outsideDelivery,
       'tipPercentage': tipPercentage,
+      if (stripePaymentIntentId != null)
+        'stripePaymentIntentId': stripePaymentIntentId,
+      'currency': currency,
     };
   }
 

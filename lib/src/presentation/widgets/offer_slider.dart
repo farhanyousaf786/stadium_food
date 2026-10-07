@@ -124,7 +124,7 @@ class OfferSlider extends StatelessWidget {
                           children: [
                             Text(
                               offer.name,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,

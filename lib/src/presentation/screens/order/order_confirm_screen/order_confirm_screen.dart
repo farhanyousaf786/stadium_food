@@ -18,7 +18,11 @@ import 'package:stadium_food/src/presentation/widgets/price_info_widget.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
 import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
+import 'package:stadium_food/src/core/config/app_config.dart';
+import 'package:stadium_food/src/core/config/seat_storage.dart';
+import 'package:stadium_food/src/core/config/stadium_sync.dart';
 import 'package:stadium_food/src/core/config/stripe_config.dart';
+import 'package:stadium_food/src/core/config/test_mode_defaults.dart';
 import 'package:hive/hive.dart';
 import 'package:stadium_food/src/bloc/stadium/stadium_bloc.dart';
 import 'package:stadium_food/src/data/models/section.dart';
@@ -27,6 +31,7 @@ import '../../../../data/repositories/order_repository.dart';
 import '../../../../data/services/firebase_storage.dart';
 import '../../../utils/app_styles.dart';
 import '../../../widgets/buttons/primary_button.dart';
+import 'qr_scan_screen.dart';
 import 'widgets/apple_pay_button.dart';
 import 'widgets/google_pay_button.dart';
 
@@ -71,7 +76,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
           filled: true,
           hintText: hint,
           labelText: label,
-          labelStyle: const TextStyle(color: AppColors.primaryColor),
+          labelStyle: TextStyle(color: AppColors.primaryColor),
           hintStyle: CustomTextStyle.size14Weight400Text(
             AppColors().secondaryTextColor,
           ),
@@ -114,7 +119,8 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
   String? _vendorAccountId;
 
   // Stadium config flags
-  bool _showTicketUpload = true;
+  // Ticket upload hidden (product decision) — web also gates on availableTickets.
+  bool _showTicketUpload = false;
   bool _showDeliveryToggle = false;
   bool _showSeats = true;
   bool _showSections = true;
@@ -122,6 +128,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
   bool _showRooms = false;
   bool _showStands = true;
   int _floorsCount = 0;
+  bool _testDefaultsApplied = false;
 
   // pick image from gallery
   Future<void> _pickImageFromGallery() async {
@@ -155,25 +162,143 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       _standController.text = Translate.get('standOptionGallery');
     }
 
-    _loadStadiumConfig();
-    _fetchShopData();
+    _bootstrapConfirmScreen();
+  }
+
+  Future<void> _bootstrapConfirmScreen() async {
+    // Keep Stripe mode in sync with admin /api/config (web AppConfigContext)
+    try {
+      if (!AppConfig.loaded) await AppConfig.load();
+    } catch (_) {}
+
+    await StadiumSync.refreshSelectedStadiumFromFirestore();
+    await _loadStadiumConfig();
+    _applySavedSeatPrefill();
+    await _fetchShopData();
     _fetchPickupPoints();
 
-    // Fetch sections for currently selected stadium
     try {
       final box = Hive.box('myBox');
       final sel = box.get('selectedStadium');
       final String? stadiumId = sel != null ? sel['id'] as String? : null;
-      if (stadiumId != null && context.mounted) {
+      if (stadiumId != null && mounted) {
         context.read<StadiumBloc>().add(FetchSections(stadiumId));
       }
     } catch (_) {}
 
-    // Initialize default delivery fee
     OrderRepository.calculateDefaultDeliveryFee();
+    await _fetchCustomerPhone();
+    _applyTestModeDefaults();
+  }
 
-    // Pre-fill phone from Firestore customers collection (matches web)
-    _fetchCustomerPhone();
+  void _applySavedSeatPrefill() {
+    final pending = SeatStorage.takePendingSeatData();
+    final saved = SeatStorage.getSeatInfo();
+    final data = {...saved, ...pending};
+    if (data.isEmpty) return;
+
+    void apply(TextEditingController c, String key) {
+      final v = data[key]?.toString();
+      if (v != null && v.trim().isNotEmpty) c.text = v.trim();
+    }
+
+    setState(() {
+      apply(_rowController, 'row');
+      apply(_seatNoController, 'seatNo');
+      apply(_standController, 'stand');
+      // Match web: floor/room are NOT restored — enter fresh each checkout
+      apply(_entranceController, 'entrance');
+      apply(_areaController, 'area');
+      final sectionIdVal = data['sectionId']?.toString();
+      if (sectionIdVal != null && sectionIdVal.isNotEmpty) {
+        sectionId = sectionIdVal;
+      }
+    });
+  }
+
+  /// Match web OrderConfirmScreen test-mode autofill.
+  void _applyTestModeDefaults() {
+    if (!AppConfig.useTestApis || _testDefaultsApplied || !mounted) return;
+    _testDefaultsApplied = true;
+
+    setState(() {
+      if (_phoneController.text.trim().isEmpty) {
+        _phoneController.text = TestModeDefaults.phone;
+      }
+      if (_seatNoController.text.trim().isEmpty) {
+        _seatNoController.text = TestModeDefaults.seatNo;
+      }
+      if (_rowController.text.trim().isEmpty) {
+        _rowController.text = TestModeDefaults.row;
+      }
+      // Prefer Main in test mode (overrides Gallery default)
+      _standController.text = Translate.get('standOptionMain');
+      if (_floorController.text.trim().isEmpty) {
+        _floorController.text = TestModeDefaults.floor;
+      }
+      if (_roomController.text.trim().isEmpty) {
+        _roomController.text = TestModeDefaults.room;
+      }
+      if (_entranceController.text.trim().isEmpty) {
+        _entranceController.text = TestModeDefaults.entrance;
+      }
+      if (_areaController.text.trim().isEmpty) {
+        _areaController.text = TestModeDefaults.seatDetails;
+      }
+      if (_deliveryNotesController.text.trim().isEmpty) {
+        _deliveryNotesController.text = TestModeDefaults.deliveryNotes;
+      }
+    });
+
+    _applyTestDeliveryDefaults();
+    _applyTestSectionDefault();
+  }
+
+  void _applyTestDeliveryDefaults() {
+    if (!AppConfig.useTestApis || _shopData == null || !mounted) return;
+
+    final hasInside = _shopData!['insideDelivery']?['enabled'] == true;
+    final hasOutside = _shopData!['outsideDelivery']?['enabled'] == true;
+
+    setState(() {
+      if (hasInside) {
+        _deliveryType = 'inside';
+        final locations =
+            (_shopData!['insideDelivery']?['locations'] as List<dynamic>?) ??
+                [];
+        if (locations.isNotEmpty) {
+          final first = locations.first;
+          _deliveryLocation =
+              first is String ? first : (first['name']?.toString() ?? '');
+        } else {
+          _deliveryLocation = TestModeDefaults.manualLocationKey;
+        }
+      } else if (hasOutside) {
+        _deliveryType = 'outside';
+        final locations =
+            (_shopData!['outsideDelivery']?['locations'] as List<dynamic>?) ??
+                [];
+        if (locations.isNotEmpty) {
+          final first = locations.first;
+          _deliveryLocation =
+              first is String ? first : (first['name']?.toString() ?? '');
+        }
+      }
+    });
+    _updateDeliveryFee();
+  }
+
+  void _applyTestSectionDefault() {
+    if (!AppConfig.useTestApis || sectionId.isNotEmpty || !mounted) return;
+    final state = context.read<StadiumBloc>().state;
+    if (state is! SectionsLoaded || state.sections.isEmpty) return;
+    final first = state.sections.first;
+    setState(() {
+      sectionId = first.sectionId;
+      if (_entranceController.text.trim().isEmpty) {
+        _entranceController.text = first.sectionName;
+      }
+    });
   }
 
   Future<void> _loadStadiumConfig() async {
@@ -181,8 +306,10 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       final box = Hive.box('myBox');
       final sel = box.get('selectedStadium') as Map<dynamic, dynamic>?;
       if (sel == null) return;
+      if (!mounted) return;
       setState(() {
-        _showTicketUpload = sel['availableTickets'] == true;
+        // Always hide ticket upload section on this screen.
+        _showTicketUpload = false;
         _showDeliveryToggle = sel['availablePickupPoints'] == true;
         _showSeats = sel['availableSeats'] == true;
         _showSections = sel['availableSections'] != false;
@@ -203,10 +330,12 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       final doc = await FirebaseFirestore.instance.collection('shops').doc(shopId).get();
       if (doc.exists) {
         final data = doc.data() as Map<String, dynamic>;
+        if (!mounted) return;
         setState(() {
           _shopData = data;
           _vendorAccountId = data['stripeConnectedAccountId'] as String?;
         });
+        _applyTestDeliveryDefaults();
       }
     } catch (_) {}
   }
@@ -254,37 +383,27 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
 
   // Parse QR scan result URL and populate fields: row, seat, section/sectionId
   void _handleQrScanResult(String result) {
-    Uri? uri;
-    try {
-      uri = Uri.tryParse(result);
-    } catch (_) {
-      uri = null;
-    }
+    final parsed = SeatStorage.parseSeatUrl(result);
+    if (parsed.isEmpty) return;
 
-    if (uri == null) {
-      // Not a valid URI; try to parse as query only (fallback)
-      try {
-        uri = Uri.parse('$result');
-      } catch (_) {
+    SeatStorage.setSeatInfo(parsed);
+    SeatStorage.setPendingSeatData(parsed);
 
-      }
-    }
-
-    if (uri == null) return;
-
-    final qp = uri.queryParameters;
-    final row = qp['row'] ?? qp['Row'] ?? qp['r'];
-    final seat = qp['seat'] ?? qp['Seat'] ?? qp['s'];
-    final sectionNameParam = qp['section'] ?? qp['Section'];
-    final sectionIdParam = qp['sectionId'] ?? qp['SectionId'] ?? qp['sid'];
+    final row = parsed['row'];
+    final seat = parsed['seatNo'];
+    final sectionNameParam = parsed['section'];
+    final sectionIdParam = parsed['sectionId'];
 
     setState(() {
-      if (row != null && row.toString().isNotEmpty) {
-        _rowController.text = row.trim();
+      if (row != null && row.isNotEmpty) {
+        _rowController.text = row;
       }
-      if (seat != null && seat.toString().isNotEmpty) {
-        _seatNoController.text = seat.trim();
+      if (seat != null && seat.isNotEmpty) {
+        _seatNoController.text = seat;
       }
+      if (parsed['stand'] != null) _standController.text = parsed['stand']!;
+      if (parsed['floor'] != null) _floorController.text = parsed['floor']!;
+      if (parsed['room'] != null) _roomController.text = parsed['room']!;
     });
 
     // Try to select the section from StadiumBloc state
@@ -445,7 +564,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
               fillColor: AppColors().cardColor,
               filled: true,
               labelText: 'Select Pickup Point',
-              labelStyle: const TextStyle(color: AppColors.primaryColor),
+              labelStyle: TextStyle(color: AppColors.primaryColor),
               enabledBorder: AppStyles().defaultEnabledBorder,
               focusedBorder: AppStyles.defaultFocusedBorder(),
             ),
@@ -529,7 +648,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                 fillColor: AppColors().cardColor,
                 filled: true,
                 labelText: 'Select Location',
-                labelStyle: const TextStyle(color: AppColors.primaryColor),
+                labelStyle: TextStyle(color: AppColors.primaryColor),
                 enabledBorder: AppStyles().defaultEnabledBorder,
                 focusedBorder: AppStyles.defaultFocusedBorder(),
               ),
@@ -764,8 +883,17 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<OrderBloc, OrderState>(
-      listener: (context, state) {
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<StadiumBloc, StadiumState>(
+          listener: (context, state) {
+            if (state is SectionsLoaded) {
+              _applyTestSectionDefault();
+            }
+          },
+        ),
+        BlocListener<OrderBloc, OrderState>(
+          listener: (context, state) {
         if (state is OrderCreated) {
           // remove loading
           Navigator.of(context).pop();
@@ -839,7 +967,9 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
             },
           );
         }
-      },
+          },
+        ),
+      ],
       child: Scaffold(
         backgroundColor: AppColors.bgColor,
         body: SingleChildScrollView(
@@ -861,8 +991,9 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                       children: [
                         Row(
                           children: [
-                            const CustomBackButton(
-                              color: Colors.white,
+                            CustomBackButton(
+                              color: Colors.black87,
+                              backgroundColor: Colors.white,
                             ),
                             Expanded(
                               child: Text(
@@ -873,29 +1004,47 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                 ),
                               ),
                             ),
-                            // Stripe Mode Status Dot
+                            // Stripe mode (admin /api/config)
                             Container(
-                              width: 12,
-                              height: 12,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
                                 color: StripeConfig.isLiveMode
-                                    ? Colors.green
-                                    : Colors.red,
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: (StripeConfig.isLiveMode
-                                            ? Colors.green
-                                            : Colors.red)
-                                        .withOpacity(0.5),
-                                    blurRadius: 4,
-                                    spreadRadius: 1,
-                                  ),
-                                ],
+                                    ? Colors.green.withOpacity(0.9)
+                                    : Colors.orange.withOpacity(0.95),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                StripeConfig.isLiveMode ? 'LIVE' : 'TEST',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w800,
+                                ),
                               ),
                             ),
                           ],
                         ),
+                        if (AppConfig.useTestApis || !StripeConfig.isLiveMode) ...[
+                          const SizedBox(height: 12),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFFBEB),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: const Color(0xFFFDE68A)),
+                            ),
+                            child: const Text(
+                              'Test mode: payment will auto-confirm with 4242 / pm_card_visa (admin dashboard).',
+                              style: TextStyle(
+                                color: Color(0xFF92400E),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
                         const SizedBox(height: 24),
                         Text(
                           textAlign: TextAlign.center,
@@ -1151,22 +1300,25 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        Row(
-                          children: [
-                            const Expanded(child: Divider(thickness: 1)),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                              child: Text(
-                                Translate.get('or'),
-                                style: CustomTextStyle.size14Weight600Text(
-                                  AppColors().secondaryTextColor,
+                        if (_showTicketUpload) ...[
+                          Row(
+                            children: [
+                              const Expanded(child: Divider(thickness: 1)),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                child: Text(
+                                  Translate.get('or'),
+                                  style: CustomTextStyle.size14Weight600Text(
+                                    AppColors().secondaryTextColor,
+                                  ),
                                 ),
                               ),
-                            ),
-                            const Expanded(child: Divider(thickness: 1)),
-                          ],
-                        ),
+                              const Expanded(child: Divider(thickness: 1)),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                        ],
                         // Delivery mode toggle (matches web)
                         if (_showDeliveryToggle)
                           _buildDeliveryModeToggle(),
@@ -1187,6 +1339,31 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                             !(_deliveryType == 'inside' || _deliveryType == 'outside'))
                           Column(
                             children: [
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton.icon(
+                                  onPressed: () async {
+                                    final result = await Navigator.push<String>(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => const QRScanScreen(),
+                                      ),
+                                    );
+                                    if (result != null && result.isNotEmpty) {
+                                      _handleQrScanResult(result);
+                                    }
+                                  },
+                                  icon: Icon(Icons.qr_code_scanner,
+                                      color: AppColors.primaryColor),
+                                  label: Text(
+                                    'Scan seat QR',
+                                    style: TextStyle(
+                                      color: AppColors.primaryColor,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
                               // Stand + Section
                               if (_showStands || _showSections)
                                 Row(
@@ -1236,7 +1413,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                                   filled: true,
                                                   labelText: Translate.get('standLabel'),
                                                   hintText: Translate.get('selectStand'),
-                                                  labelStyle: const TextStyle(color: AppColors.primaryColor),
+                                                  labelStyle: TextStyle(color: AppColors.primaryColor),
                                                   hintStyle: CustomTextStyle.size14Weight400Text(
                                                     AppColors().secondaryTextColor,
                                                   ),
@@ -1322,7 +1499,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
                                                       filled: true,
                                                       labelText: Translate.get('sectionLabel'),
                                                       hintText: Translate.get('selectSection'),
-                                                      labelStyle: const TextStyle(color: AppColors.primaryColor),
+                                                      labelStyle: TextStyle(color: AppColors.primaryColor),
                                                       hintStyle: CustomTextStyle.size14Weight400Text(
                                                         AppColors().secondaryTextColor,
                                                       ),
@@ -1739,6 +1916,41 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     };
   }
 
+  String? _paymentIntentIdFromResponse(dynamic data) {
+    if (data is! Map) return null;
+    return (data['paymentIntentId'] ??
+            data['id'] ??
+            data['payment_intent']?['id'])
+        ?.toString();
+  }
+
+  String _cartCurrency() {
+    if (OrderRepository.cart.isEmpty) return 'ils';
+    return OrderRepository.cart.first.currency.toLowerCase();
+  }
+
+  void _createOrderAfterPayment(Map<String, dynamic> seatInfo) {
+    BlocProvider.of<OrderBloc>(context).add(
+      CreateOrder(
+        seatInfo: seatInfo,
+        deliveryMethod: _deliveryMode,
+        pickupPointId:
+            _selectedPickupPoint.isEmpty ? null : _selectedPickupPoint,
+        deliveryType: _deliveryType,
+        deliveryLocation:
+            _deliveryLocation.isEmpty ? null : _deliveryLocation,
+        deliveryNotes: _deliveryNotesController.text.isEmpty
+            ? null
+            : _deliveryNotesController.text,
+        insideDelivery: _buildInsideDelivery(),
+        outsideDelivery: _buildOutsideDelivery(),
+        stripePaymentIntentId: _paymentIntentIdFromResponse(paymentIntent),
+        currency: _cartCurrency().toUpperCase(),
+      ),
+    );
+    paymentIntent = null;
+  }
+
   Future<void> makePayment(double total, Map<String, dynamic> seatInfo) async {
     try {
       // Resolve shop ID before payment (matches web's placeOrderAfterPayment)
@@ -1746,22 +1958,48 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       if (resolvedShopId != null) {
         OrderRepository.selectedShopId = resolvedShopId;
       }
+      final currency = _cartCurrency();
       // STEP 1: Create Payment Intent
       paymentIntent = await createPaymentIntent(
         total.toString(),
-        'ils',
+        currency,
       );
 
-      await Stripe.instance
-          .initPaymentSheet(
-            paymentSheetParameters: SetupPaymentSheetParameters(
-              paymentIntentClientSecret: (paymentIntent?['clientSecret'] ??
-                  paymentIntent?['client_secret']) as String,
-              style: ThemeMode.dark,
-              merchantDisplayName: 'Fan Munch',
+      final clientSecret = (paymentIntent?['clientSecret'] ??
+          paymentIntent?['client_secret']) as String?;
+
+      if (clientSecret == null || clientSecret.isEmpty) {
+        throw Exception('Missing payment intent client secret');
+      }
+
+      // Admin test mode: auto-confirm with Stripe test PM (web: pm_card_visa / 4242)
+      if (AppConfig.useTestApis || !StripeConfig.isLiveMode) {
+        await Stripe.instance.confirmPayment(
+          paymentIntentClientSecret: clientSecret,
+          data: PaymentMethodParams.cardFromMethodId(
+            paymentMethodData: PaymentMethodDataCardFromMethod(
+              paymentMethodId: AppConfig.testPaymentMethodId,
             ),
-          )
-          .then((value) {});
+          ),
+        );
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Test payment succeeded (4242 / pm_card_visa)'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        _createOrderAfterPayment(seatInfo);
+        return;
+      }
+
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: clientSecret,
+          style: ThemeMode.dark,
+          merchantDisplayName: AppColors.brandName,
+        ),
+      );
 
       // STEP 3: Display Payment sheet
       displayPaymentSheet(seatInfo);
@@ -1778,10 +2016,11 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       if (resolvedShopId != null) {
         OrderRepository.selectedShopId = resolvedShopId;
       }
+      final currency = _cartCurrency();
       // STEP 1: Create Payment Intent
       paymentIntent = await createPaymentIntent(
         total.toString(),
-        'ils',
+        currency,
       );
 
       await Stripe.instance.confirmPlatformPayPaymentIntent(
@@ -1789,26 +2028,15 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
               paymentIntent?['client_secret']) as String,
           confirmParams: PlatformPayConfirmParams.googlePay(
             googlePay: GooglePayParams(
-              testEnv: true,
-              merchantName: 'Fan Munch',
+              // Match Stripe mode from admin dashboard (web wallet pay)
+              testEnv: AppConfig.useTestApis || !StripeConfig.isLiveMode,
+              merchantName: AppColors.brandName,
               merchantCountryCode: 'US',
-              currencyCode: 'ils',
+              currencyCode: currency.toUpperCase(),
             ),
           ));
 
-      BlocProvider.of<OrderBloc>(context).add(
-        CreateOrder(
-          seatInfo: seatInfo,
-          deliveryMethod: _deliveryMode,
-          pickupPointId: _selectedPickupPoint.isEmpty ? null : _selectedPickupPoint,
-          deliveryType: _deliveryType,
-          deliveryLocation: _deliveryLocation.isEmpty ? null : _deliveryLocation,
-          deliveryNotes: _deliveryNotesController.text.isEmpty ? null : _deliveryNotesController.text,
-          insideDelivery: _buildInsideDelivery(),
-          outsideDelivery: _buildOutsideDelivery(),
-        ),
-      );
-      paymentIntent = null;
+      _createOrderAfterPayment(seatInfo);
     } catch (err) {
       throw Exception(err);
     }
@@ -1840,10 +2068,11 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
         return;
       }
 
+      final currency = _cartCurrency();
       // STEP 1: Create Payment Intent
       paymentIntent = await createPaymentIntent(
         total.toString(),
-        'ils',
+        currency,
       );
 
       // ignore: avoid_print
@@ -1856,11 +2085,11 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
         confirmParams: PlatformPayConfirmParams.applePay(
           applePay: ApplePayParams(
             merchantCountryCode: 'IL',
-            currencyCode: 'ILS',
+            currencyCode: currency.toUpperCase(),
             cartItems: [
               ApplePayCartSummaryItem.immediate(
-                label: 'Fan Munch Order',
-                amount: total.toString(),
+                label: '${AppColors.brandName} Order',
+                amount: total.toStringAsFixed(2),
               )
             ],
           ),
@@ -1871,18 +2100,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       print('[APPLE PAY] Payment confirmation result: $result');
 
       // Create order after successful payment
-      BlocProvider.of<OrderBloc>(context).add(
-        CreateOrder(
-          seatInfo: seatInfo,
-          deliveryMethod: _deliveryMode,
-          pickupPointId: _selectedPickupPoint.isEmpty ? null : _selectedPickupPoint,
-          deliveryType: _deliveryType,
-          deliveryLocation: _deliveryLocation.isEmpty ? null : _deliveryLocation,
-          deliveryNotes: _deliveryNotesController.text.isEmpty ? null : _deliveryNotesController.text,
-          insideDelivery: _buildInsideDelivery(),
-          outsideDelivery: _buildOutsideDelivery(),
-        ),
-      );
+      _createOrderAfterPayment(seatInfo);
       paymentIntent = null;
     } catch (err) {
       // ignore: avoid_print
@@ -2076,8 +2294,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
       print('[PAYMENT] Client-side split: ' + jsonEncode(split));
 
       final response = await http.post(
-        Uri.parse(
-            'https://fans-munch-app-2-22c94417114b.herokuapp.com/api/stripe/create-intent'),
+        Uri.parse('${AppConfig.apiBase}/api/stripe/create-intent'),
         headers: const {'Content-Type': 'application/json'},
         body: jsonEncode({
           'amount': amountMajor,
@@ -2132,20 +2349,7 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
     try {
       await Stripe.instance.presentPaymentSheet().then((value) {
         // Create order after successful payment
-        BlocProvider.of<OrderBloc>(context).add(
-          CreateOrder(
-            seatInfo: seatInfo,
-            deliveryMethod: _deliveryMode,
-            pickupPointId: _selectedPickupPoint.isEmpty ? null : _selectedPickupPoint,
-            deliveryType: _deliveryType,
-            deliveryLocation: _deliveryLocation.isEmpty ? null : _deliveryLocation,
-            deliveryNotes: _deliveryNotesController.text.isEmpty ? null : _deliveryNotesController.text,
-            insideDelivery: _buildInsideDelivery(),
-            outsideDelivery: _buildOutsideDelivery(),
-          ),
-        );
-
-        paymentIntent = null;
+        _createOrderAfterPayment(seatInfo);
       });
     } catch (e) {
       print('Error in payment: $e');

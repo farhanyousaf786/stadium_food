@@ -35,7 +35,7 @@ class SearchFilterWidget extends StatelessWidget {
         onChanged: onChanged,
         decoration: InputDecoration(
           hintText: Translate.get('searchForFood'),
-          prefixIcon: const Icon(Icons.search,
+          prefixIcon: Icon(Icons.search,
               color: AppColors.primaryColor),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15),

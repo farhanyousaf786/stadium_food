@@ -45,87 +45,138 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   bool get _isLoggedIn => _user != null && _user!.id.isNotEmpty;
 
-  Widget _buildSettingsSection(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // If guest, show login/register card first
-        if (!_isLoggedIn)
+  Widget _buildGuestAuthCard(BuildContext context) {
+    final primary = Theme.of(context).primaryColor;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(20, 22, 20, 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: primary.withOpacity(0.12),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
           Container(
-            width: double.maxFinite,
-            padding: const EdgeInsets.all(16),
+            width: 72,
+            height: 72,
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Theme.of(context).primaryColor.withOpacity(0.1),
-                width: 1,
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  primary.withOpacity(0.15),
+                  primary.withOpacity(0.35),
+                ],
               ),
+              border: Border.all(color: Colors.white, width: 3),
               boxShadow: [
                 BoxShadow(
-                  color: Theme.of(context).shadowColor.withOpacity(0.1),
-                  blurRadius: 10,
+                  color: primary.withOpacity(0.2),
+                  blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
               ],
             ),
-            child: Column(
-              children: [
-                Text(
-                  Translate.get('guestUser'),
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/login');
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    ),
-                    child: Text(Translate.get('login')),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/register');
-                    },
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Theme.of(context).primaryColor,
-                      side: BorderSide(color: Theme.of(context).primaryColor),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    ),
-                    child: Text(Translate.get('register')),
-                  ),
-                ),
-              ],
+            child: Icon(Icons.person_outline_rounded, size: 36, color: primary),
+          ),
+          const SizedBox(height: 14),
+          Text(
+            Translate.get('guestUser'),
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: Colors.black87,
             ),
           ),
-        if (!_isLoggedIn) const SizedBox(height: 16),
-        // Settings section for ALL users (guests get settings minus delete account)
-        SettingsSection(
-          user: _isLoggedIn ? _user : null,
-          settingsBloc: BlocProvider.of<SettingsBloc>(context),
-          isDarkMode: Theme.of(context).brightness == Brightness.dark,
-          onLogout: _isLoggedIn ? () {
-            BlocProvider.of<SettingsBloc>(context).add(Logout());
-          } : null,
-          onDeleteAccount: _isLoggedIn ? () {
-            BlocProvider.of<SettingsBloc>(context).add(DeleteAccount());
-          } : null,
-        ),
-      ],
+          const SizedBox(height: 6),
+          Text(
+            Translate.get('signInPrompt'),
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[600],
+              height: 1.35,
+            ),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton(
+              onPressed: () async {
+                await Navigator.pushNamed(context, '/login');
+                if (!mounted) return;
+                try {
+                  setState(() => _user = User.fromHive());
+                } catch (_) {}
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primary,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: Text(
+                Translate.get('login'),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: OutlinedButton(
+              onPressed: () => Navigator.pushNamed(context, '/register'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: primary,
+                side: BorderSide(color: primary, width: 1.5),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: Text(
+                Translate.get('register'),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSettingsSection(BuildContext context) {
+    return SettingsSection(
+      user: _isLoggedIn ? _user : null,
+      settingsBloc: BlocProvider.of<SettingsBloc>(context),
+      isDarkMode: Theme.of(context).brightness == Brightness.dark,
+      onLogout: _isLoggedIn
+          ? () {
+              BlocProvider.of<SettingsBloc>(context).add(Logout());
+            }
+          : null,
+      onDeleteAccount: _isLoggedIn
+          ? () {
+              BlocProvider.of<SettingsBloc>(context).add(DeleteAccount());
+            }
+          : null,
     );
   }
 
@@ -185,23 +236,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   final headerHeight = size.height * 0.28;
                   return Stack(
                     children: [
-                      // Header background image
-                      SizedBox(
+                      // Venue-themed header
+                      Container(
                         height: headerHeight,
                         width: double.infinity,
-                        child: Image.asset(
-                          'assets/png/profile_bg.png',
-                          fit: BoxFit.cover,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Theme.of(context).colorScheme.primary,
+                              Theme.of(context).primaryColor,
+                              Theme.of(context).colorScheme.secondary,
+                            ],
+                          ),
                         ),
                       ),
 
                       // Content card
                       Container(
-                        margin: EdgeInsets.only(top: headerHeight - 40),
-                        padding: const EdgeInsets.fromLTRB(16, 56, 16, 16),
-                        decoration: const BoxDecoration(
+                        margin: EdgeInsets.only(
+                          top: _isLoggedIn ? headerHeight - 40 : headerHeight - 28,
+                        ),
+                        padding: EdgeInsets.fromLTRB(
+                          16,
+                          _isLoggedIn ? 56 : 24,
+                          16,
+                          16,
+                        ),
+                        decoration: BoxDecoration(
                           color: AppColors.bgColor,
-                          borderRadius: BorderRadius.only(
+                          borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(24),
                             topRight: Radius.circular(24),
                           ),
@@ -209,69 +274,73 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Name + email + Logout button row
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                // Spacing for avatar overlap
-                                const SizedBox(width: 88),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        _isLoggedIn
-                                            ? _user!.fullName
-                                            : Translate.get('guestUser'),
-                                        style: CustomTextStyle.size18Weight600Text(
-                                          Colors.black87,
+                            if (_isLoggedIn) ...[
+                              // Name + email + Logout button row
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const SizedBox(width: 88),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          _user!.fullName,
+                                          style: CustomTextStyle
+                                              .size18Weight600Text(
+                                            Colors.black87,
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        _isLoggedIn
-                                            ? _user!.email
-                                            : Translate.get('signInPrompt'),
-                                        style: CustomTextStyle.size14Weight400Text(
-                                          Colors.blueGrey,
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          _user!.email,
+                                          style: CustomTextStyle
+                                              .size14Weight400Text(
+                                            Colors.blueGrey,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 12),
-                                if (_isLoggedIn)
+                                  const SizedBox(width: 12),
                                   ElevatedButton.icon(
                                     onPressed: () {
                                       showDialog(
                                         context: context,
                                         builder: (context) => AlertDialog(
-                                          title:  Text(Translate.get('logout')),
-                                          content:  Text(Translate.get('confirmLogout')),
+                                          title: Text(Translate.get('logout')),
+                                          content:
+                                              Text(Translate.get('confirmLogout')),
                                           actions: [
                                             TextButton(
-                                              onPressed: () => Navigator.pop(context),
-                                              child:  Text(Translate.get('cancel')),
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                              child:
+                                                  Text(Translate.get('cancel')),
                                             ),
                                             TextButton(
                                               onPressed: () {
                                                 Navigator.pop(context);
-                                                BlocProvider.of<SettingsBloc>(context).add(Logout());
+                                                BlocProvider.of<SettingsBloc>(
+                                                        context)
+                                                    .add(Logout());
                                               },
-                                              child:  Text(
+                                              child: Text(
                                                 Translate.get('logout'),
-                                                style: TextStyle(color: Colors.red),
+                                                style: const TextStyle(
+                                                    color: Colors.red),
                                               ),
                                             ),
                                           ],
                                         ),
                                       );
-
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.red,
                                       foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 10),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(10),
                                       ),
@@ -279,13 +348,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     icon: const Icon(Icons.logout, size: 18),
                                     label: Text(Translate.get('logout')),
                                   ),
-                              ],
-                            ),
-
-                            const SizedBox(height: 16),
-
-                            // Stats - only show for logged in users
-                            if (_isLoggedIn)
+                                ],
+                              ),
+                              const SizedBox(height: 16),
                               Container(
                                 decoration: BoxDecoration(
                                   color: Colors.white,
@@ -299,31 +364,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ],
                                 ),
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 16),
                                   child: BlocBuilder<OrderBloc, OrderState>(
                                     builder: (context, stateOrder) {
                                       String active = '...';
                                       String completed = '...';
                                       if (stateOrder is OrdersFetched) {
-                                        active = filterOrders(stateOrder.orders, 'activeOrders');
-                                        completed = filterOrders(stateOrder.orders, 'completedOrders');
+                                        active = filterOrders(
+                                            stateOrder.orders, 'activeOrders');
+                                        completed = filterOrders(
+                                            stateOrder.orders,
+                                            'completedOrders');
                                       }
                                       return Row(
                                         children: [
                                           Expanded(
                                             child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
                                               children: [
                                                 Text(
                                                   active.padLeft(2, '0'),
-                                                  style: CustomTextStyle.size27Weight600Text(
+                                                  style: CustomTextStyle
+                                                      .size27Weight600Text(
                                                     Colors.black87,
                                                   ),
                                                 ),
                                                 const SizedBox(width: 4),
                                                 Text(
                                                   Translate.get('activeOrders'),
-                                                  style: CustomTextStyle.size16Weight400Text(
+                                                  style: CustomTextStyle
+                                                      .size16Weight400Text(
                                                     Colors.blueGrey,
                                                   ),
                                                 ),
@@ -337,18 +409,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           ),
                                           Expanded(
                                             child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
                                               children: [
                                                 Text(
                                                   completed.padLeft(2, '0'),
-                                                  style: CustomTextStyle.size27Weight600Text(
+                                                  style: CustomTextStyle
+                                                      .size27Weight600Text(
                                                     Colors.green,
                                                   ),
                                                 ),
                                                 const SizedBox(width: 4),
                                                 Text(
-                                                  Translate.get('completedOrders'),
-                                                  style: CustomTextStyle.size16Weight400Text(
+                                                  Translate.get(
+                                                      'completedOrders'),
+                                                  style: CustomTextStyle
+                                                      .size16Weight400Text(
                                                     Colors.blueGrey,
                                                   ),
                                                 ),
@@ -361,9 +437,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                               ),
-                            if (_isLoggedIn) const SizedBox(height: 24),
-
-                            const SizedBox(height: 24),
+                              const SizedBox(height: 24),
+                            ] else ...[
+                              // Guest: polished auth card (no awkward avatar gap)
+                              const SizedBox(height: 8),
+                              _buildGuestAuthCard(context),
+                              const SizedBox(height: 24),
+                            ],
 
                             // Settings Section
                             Text(
@@ -375,108 +455,117 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             const SizedBox(height: 12),
                             _buildSettingsSection(context),
 
-                            const SizedBox(height: 24),
-
-                            // Favorite Foods Section
-                            Text(
-                              Translate.get('favoritesFoods'),
-                              style: CustomTextStyle.size18Weight600Text(
-                                Theme.of(context).primaryColor,
+                            if (_isLoggedIn) ...[
+                              const SizedBox(height: 24),
+                              Text(
+                                Translate.get('favoritesFoods'),
+                                style: CustomTextStyle.size18Weight600Text(
+                                  Theme.of(context).primaryColor,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 16),
-                            BlocBuilder<ProfileBloc, ProfileState>(
-                              builder: (context, state) {
-                                if (state is FetchingFavorites) {
-                                  return Container(
-                                    height: 220,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    child: const Center(child: LoadingIndicator()),
-                                  );
-                                } else if (state is FavoritesFetched) {
-                                  if (state.favoriteFoods.isEmpty) {
-                                    return Container(
+                              const SizedBox(height: 16),
+                              BlocBuilder<ProfileBloc, ProfileState>(
+                                builder: (context, state) {
+                                  if (state is FetchingFavorites) {
+                                    return const SizedBox(
                                       height: 220,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
-                                      child: Center(
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.favorite_border,
-                                              size: 48,
-                                              color: Theme.of(context)
-                                                  .primaryColor
-                                                  .withOpacity(0.5),
-                                            ),
-                                            const SizedBox(height: 12),
-                                            Text(
-                                              Translate.get('noFavorites'),
-                                              style: CustomTextStyle.size16Weight400Text(
-                                                Theme.of(context)
-                                                    .textTheme
-                                                    .bodyMedium
-                                                    ?.color
-                                                    ?.withOpacity(0.7),
+                                      child: Center(child: LoadingIndicator()),
+                                    );
+                                  } else if (state is FavoritesFetched) {
+                                    if (state.favoriteFoods.isEmpty) {
+                                      return SizedBox(
+                                        height: 160,
+                                        child: Center(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.favorite_border,
+                                                size: 48,
+                                                color: Theme.of(context)
+                                                    .primaryColor
+                                                    .withOpacity(0.5),
                                               ),
-                                            ),
-                                          ],
+                                              const SizedBox(height: 12),
+                                              Text(
+                                                Translate.get('noFavorites'),
+                                                style: CustomTextStyle
+                                                    .size16Weight400Text(
+                                                  Colors.blueGrey,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
+                                      );
+                                    }
+
+                                    return SizedBox(
+                                      height: 280,
+                                      child: ListView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: state.favoriteFoods.length,
+                                        itemBuilder: (context, index) {
+                                          return FoodItem(
+                                            food: state.favoriteFoods[index],
+                                            onTap: () {
+                                              Navigator.pushNamed(
+                                                context,
+                                                '/foods/detail',
+                                                arguments:
+                                                    state.favoriteFoods[index],
+                                              );
+                                            },
+                                          );
+                                        },
                                       ),
                                     );
                                   }
-
-                                  return SizedBox(
-                                    height: 280,
-                                    child: ListView.builder(
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount: state.favoriteFoods.length,
-                                      itemBuilder: (context, index) {
-                                        return FoodItem(
-                                          food: state.favoriteFoods[index],
-                                          onTap: () {
-                                            Navigator.pushNamed(
-                                              context,
-                                              '/foods/detail',
-                                              arguments: state.favoriteFoods[index],
-                                            );
-                                          },
-                                        );
-                                      },
-                                    ),
-                                  );
-                                }
-                                return const SizedBox();
-                              },
-                            ),
+                                  return const SizedBox();
+                                },
+                              ),
+                            ],
                             const SizedBox(height: 24),
                           ],
                         ),
                       ),
 
-                      // Avatar overlapping
-                      Positioned(
-                        top: headerHeight - 80,
-                        left: 24,
-                        child: CircleAvatar(
-                          radius: 40,
-                          backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
-                          backgroundImage: _user?.photoUrl != null
-                              ? NetworkImage(_user!.photoUrl)
-                              : null,
-                          child: _user?.photoUrl != null
-                              ? null
-                              : Icon(
-                                  Icons.person,
-                                  size: 40,
-                                  color: Theme.of(context).primaryColor,
+                      // Avatar overlapping — logged-in only
+                      if (_isLoggedIn)
+                        Positioned(
+                          top: headerHeight - 80,
+                          left: 24,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 4),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.12),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
                                 ),
+                              ],
+                            ),
+                            child: CircleAvatar(
+                              radius: 40,
+                              backgroundColor: Theme.of(context)
+                                  .primaryColor
+                                  .withOpacity(0.2),
+                              backgroundImage: _user?.photoUrl != null
+                                  ? NetworkImage(_user!.photoUrl)
+                                  : null,
+                              child: _user?.photoUrl != null
+                                  ? null
+                                  : Icon(
+                                      Icons.person,
+                                      size: 40,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                            ),
+                          ),
                         ),
-                      ),
                     ],
                   );
                 },

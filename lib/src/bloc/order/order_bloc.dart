@@ -53,6 +53,8 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
           deliveryNotes: event.deliveryNotes,
           insideDelivery: event.insideDelivery,
           outsideDelivery: event.outsideDelivery,
+          stripePaymentIntentId: event.stripePaymentIntentId,
+          currency: event.currency,
         );
         emit(OrderCreated(order));
       } catch (e, s) {

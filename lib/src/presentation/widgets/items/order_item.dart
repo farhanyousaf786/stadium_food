@@ -164,7 +164,7 @@ class OrderItem extends StatelessWidget {
 
                   Text(
                     "$symbol${order.total.toStringAsFixed(2)}",
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       color: AppColors.primaryColor,
                       fontWeight: FontWeight.w600,

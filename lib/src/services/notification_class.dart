@@ -16,9 +16,10 @@ import '../presentation/screens/server.dart';
 
 // @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp();
+  }
   log('_firebaseMessagingBackgroundHandler');
-
 }
 
 @pragma('vm:entry-point')
@@ -228,19 +229,11 @@ Future<void> initFCM() async {
     try {
     var notification=  PushNotificationModel(title: title, body: notifyBody);
     final accessToken = await GetServerKey().getServerKeyToken();
+    if (accessToken == null || accessToken.isEmpty) {
+      print('⚠️ Skipping push: FCM access token unavailable (check service account key)');
+      return;
+    }
 
-    // final body = {
-      //   "to": token,
-      //   "notification": {
-      //     "title": title,
-      //     "body": notifyBody,
-      //   },
-      //   // "data": {
-      //   //   "username": username,
-      //   //   "url": url,
-      //   //   "click_action": "FLUTTER_NOTIFICATION_CLICK",
-      //   // },
-      // };
       final url = Uri.parse('https://fcm.googleapis.com/v1/projects/fans-food-stf/messages:send');
 
       final response = await http.post(

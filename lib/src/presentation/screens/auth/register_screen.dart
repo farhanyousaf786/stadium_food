@@ -135,7 +135,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
-                                prefixIcon: const Icon(
+                                prefixIcon: Icon(
                                   Icons.mail_rounded,
                                   color: AppColors.primaryDarkColor,
                                 ),
@@ -183,7 +183,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               controller: _passwordController,
                               obscureText: hidePassword,
                               decoration: InputDecoration(
-                                prefixIcon: const Icon(
+                                prefixIcon: Icon(
                                   Icons.lock_rounded,
                                   color: AppColors.primaryDarkColor,
                                 ),

@@ -39,6 +39,8 @@ class CreateOrder extends OrderEvent {
   final String? deliveryNotes;
   final Map<String, dynamic>? insideDelivery;
   final Map<String, dynamic>? outsideDelivery;
+  final String? stripePaymentIntentId;
+  final String? currency;
 
   CreateOrder({
     required this.seatInfo,
@@ -49,6 +51,8 @@ class CreateOrder extends OrderEvent {
     this.deliveryNotes,
     this.insideDelivery,
     this.outsideDelivery,
+    this.stripePaymentIntentId,
+    this.currency,
   });
 }
 

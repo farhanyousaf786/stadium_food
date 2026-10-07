@@ -169,7 +169,7 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
                                     return null;
                                   },
                                   decoration: InputDecoration(
-                                    prefixIcon: const Icon(
+                                    prefixIcon: Icon(
                                       Icons.person_outline,
                                       color: AppColors.primaryDarkColor,
                                     ),
@@ -226,7 +226,7 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
                                     return null;
                                   },
                                   decoration: InputDecoration(
-                                    prefixIcon: const Icon(
+                                    prefixIcon: Icon(
                                       Icons.person_outline,
                                       color: AppColors.primaryDarkColor,
                                     ),
@@ -287,7 +287,7 @@ class _RegisterProcessScreenState extends State<RegisterProcessScreen> {
                                   keyboardType: TextInputType.phone,
 
                                   decoration: InputDecoration(
-                                    prefixIcon: const Icon(
+                                    prefixIcon: Icon(
                                       Icons.phone_rounded,
                                       color: AppColors.primaryDarkColor,
                                     ),

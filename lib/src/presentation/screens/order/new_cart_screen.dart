@@ -18,6 +18,7 @@ import 'package:stadium_food/src/presentation/utils/custom_text_style.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../widgets/loading_indicator.dart';
+import '../../widgets/dialogs/auth_required_dialog.dart';
 
 
 class NewCartScreen extends StatefulWidget {
@@ -32,10 +33,143 @@ class NewCartScreen extends StatefulWidget {
 class _NewCartScreenState extends State<NewCartScreen> {
   final LocationService _locationService = LocationService();
 
-
   @override
   void initState() {
     super.initState();
+  }
+
+  /// Match web CartScreen.checkShopAvailability before tip/checkout.
+  Future<bool> _checkShopAvailability() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final stadiumId = prefs.getString('selected_stadium_id') ?? '';
+      Query query = FirebaseFirestore.instance
+          .collection('shops')
+          .where('shopAvailability', isEqualTo: true);
+      if (stadiumId.isNotEmpty) {
+        query = query.where('stadiumId', isEqualTo: stadiumId);
+      }
+      var snap = await query.get();
+      if (snap.docs.isEmpty && stadiumId.isNotEmpty) {
+        // Fallback: any open shop (web behavior)
+        snap = await FirebaseFirestore.instance
+            .collection('shops')
+            .where('shopAvailability', isEqualTo: true)
+            .get();
+      }
+      if (snap.docs.isEmpty) {
+        if (!mounted) return false;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              Translate.get('noShopAvailable').isNotEmpty
+                  ? Translate.get('noShopAvailable')
+                  : 'No shops are open right now. Please try again later.',
+            ),
+            backgroundColor: AppColors.errorColor,
+          ),
+        );
+        return false;
+      }
+      return true;
+    } catch (_) {
+      if (!mounted) return false;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Unable to check shop availability. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return false;
+    }
+  }
+
+  Future<void> _proceedToCheckout() async {
+    if (OrderRepository.cart.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(Translate.get('cartEmpty')),
+          backgroundColor: AppColors.errorColor,
+        ),
+      );
+      return;
+    }
+    if (!GuestAuthService.isLoggedIn) {
+      await AuthRequiredDialog.show(
+        context,
+        onSignIn: () {
+          Navigator.pushNamed(context, '/login', arguments: '/tip');
+        },
+        onRegister: () {
+          Navigator.pushNamed(context, '/register');
+        },
+        onContinueAsGuest: () => _continueAsGuestAndCheckout(),
+      );
+      return;
+    }
+    final open = await _checkShopAvailability();
+    if (!open || !mounted) return;
+    Navigator.pushNamed(context, '/tip');
+  }
+
+  Future<void> _continueAsGuestAndCheckout() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const LoadingIndicator(),
+    );
+    try {
+      await GuestAuthService.ensureGuestUser();
+      if (!mounted) return;
+      Navigator.pop(context); // loading
+      final prefs = await SharedPreferences.getInstance();
+      final hasStadium = prefs.getString('selected_stadium_id') != null;
+      if (!hasStadium) {
+        if (!mounted) return;
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/select-stadium',
+          (route) => false,
+        );
+        return;
+      }
+      final open = await _checkShopAvailability();
+      if (!open || !mounted) return;
+      Navigator.pushNamed(context, '/tip');
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.pop(context); // loading
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Guest login failed: $e'),
+          backgroundColor: AppColors.errorColor,
+        ),
+      );
+    }
+  }
+
+  Future<void> _confirmClearCart() async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Clear cart?'),
+        content: const Text('Remove all items from your cart?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Clear'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+    OrderRepository().clearCart();
+    context.read<OrderBloc>().add(UpdateUI());
+    setState(() {});
   }
 
   Future<String?> _loadNearbyData() async {
@@ -123,166 +257,6 @@ class _NewCartScreenState extends State<NewCartScreen> {
     );
   }
 
-  void _showAuthDialog(BuildContext outerContext) {
-    showDialog(
-      context: outerContext,
-      barrierDismissible: false,
-      builder: (BuildContext dialogContext) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Image.asset(
-                  'assets/png/logo.png',
-                  height: 80,
-                  width: 80,
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  Translate.get('accountRequired'),
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  Translate.get('loginOrRegister'),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(dialogContext);
-                      Navigator.pushNamed(
-                        outerContext,
-                        '/login',
-                        arguments: '/tip',
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: Text(
-                      Translate.get('login'),
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      Navigator.pop(dialogContext);
-                      showDialog(
-                        context: outerContext,
-                        barrierDismissible: false,
-                        builder: (_) => const LoadingIndicator(),
-                      );
-                      try {
-                        await GuestAuthService.ensureGuestUser();
-                        if (!outerContext.mounted) return;
-                        Navigator.pop(outerContext);
-                        final prefs = await SharedPreferences.getInstance();
-                        final hasStadium = prefs.getString('selected_stadium_id') != null;
-                        if (hasStadium) {
-                          Navigator.pushNamed(outerContext, '/tip');
-                        } else {
-                          Navigator.pushNamedAndRemoveUntil(
-                            outerContext,
-                            '/select-stadium',
-                            (route) => false,
-                          );
-                        }
-                      } catch (e) {
-                        if (outerContext.mounted) {
-                          Navigator.pop(outerContext);
-                          ScaffoldMessenger.of(outerContext).showSnackBar(
-                            SnackBar(
-                              content: Text('Guest login failed: $e'),
-                              backgroundColor: AppColors.errorColor,
-                            ),
-                          );
-                        }
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: Text(
-                      Translate.get('loginAsGuest'),
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(dialogContext);
-                    Navigator.pushNamed(outerContext, '/register');
-                  },
-                  child: Text(
-                    Translate.get('createAccount'),
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.primaryColor,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(dialogContext);
-                  },
-                  child: Text(
-                    Translate.get('cancel'),
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   Widget _buildScreen(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bgColor,
@@ -293,39 +267,146 @@ class _NewCartScreenState extends State<NewCartScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Header with background image and overlay
-                  SizedBox(
-                    height: 16,
-                  ),
-                  Text(
-                    Translate.get('Cart'),
-                    style: CustomTextStyle.size22Weight600Text(
-                        AppColors().textColor),
+                  const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            Translate.get('Cart'),
+                            style: CustomTextStyle.size22Weight600Text(
+                                AppColors().textColor),
+                          ),
+                        ),
+                        if (OrderRepository.cart.isNotEmpty)
+                          TextButton(
+                            onPressed: _confirmClearCart,
+                            child: Text(
+                              'Clear',
+                              style: TextStyle(
+                                color: AppColors.errorColor,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
 
-                  // Empty state
+                  // Empty state — themed card + CTA
                   if (OrderRepository.cart.isEmpty)
-                    Container(
-                      height: MediaQuery.of(context).size.height * 0.7,
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            "assets/png/empty_img.png",
-                            height: 100,
-                            width: 100,
+                    Builder(
+                      builder: (context) {
+                        final primary = AppColors.primaryColor;
+                        final dark = AppColors.primaryDarkColor;
+                        return Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+                          child: Container(
+                            width: double.infinity,
+                            constraints: BoxConstraints(
+                              minHeight:
+                                  MediaQuery.of(context).size.height * 0.55,
+                            ),
+                            padding: const EdgeInsets.fromLTRB(24, 40, 24, 32),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  primary.withOpacity(0.08),
+                                  primary.withOpacity(0.02),
+                                  Colors.white,
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(
+                                color: primary.withOpacity(0.12),
+                              ),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  width: 104,
+                                  height: 104,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        primary.withOpacity(0.14),
+                                        dark.withOpacity(0.28),
+                                      ],
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: primary.withOpacity(0.18),
+                                        blurRadius: 20,
+                                        offset: const Offset(0, 8),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Icon(
+                                    Icons.shopping_bag_outlined,
+                                    size: 46,
+                                    color: primary,
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+                                Text(
+                                  'Your cart is empty',
+                                  textAlign: TextAlign.center,
+                                  style: CustomTextStyle.size22Weight600Text(
+                                    Colors.black87,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  'Browse the menu and add something tasty to get started.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    height: 1.45,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                                const SizedBox(height: 28),
+                                SizedBox(
+                                  width: double.infinity,
+                                  height: 52,
+                                  child: ElevatedButton.icon(
+                                    onPressed: () {
+                                      Navigator.pushNamedAndRemoveUntil(
+                                        context,
+                                        '/home',
+                                        (route) => false,
+                                      );
+                                    },
+                                    icon: const Icon(Icons.restaurant_menu),
+                                    label: Text(
+                                      Translate.get('continueShopping'),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: primary,
+                                      foregroundColor: Colors.white,
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          const SizedBox(height: 16),
-                          Text(
-                            Translate.get('cartEmpty'),
-                            style: CustomTextStyle.size22Weight600Text(
-                                AppColors().secondaryTextColor),
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
 
                   // Cart items list
@@ -577,22 +658,7 @@ class _NewCartScreenState extends State<NewCartScreen> {
                                 bgColor: Colors.white,
                                 textColor: AppColors().textColor,
                                 text: Translate.get('goToCheckout'),
-                                onTap: () async {
-                                  if (OrderRepository.cart.isEmpty) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(Translate.get('cartEmpty')),
-                                        backgroundColor: AppColors.errorColor,
-                                      ),
-                                    );
-                                    return;
-                                  }
-                                  if (!GuestAuthService.isLoggedIn) {
-                                    _showAuthDialog(context);
-                                    return;
-                                  }
-                                  Navigator.pushNamed(context, '/tip');
-                                })
+                                onTap: _proceedToCheckout)
                                 : SizedBox(),
                           ),
                           const SizedBox(height: 40),

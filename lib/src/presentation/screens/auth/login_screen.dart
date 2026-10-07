@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stadium_food/src/bloc/login/login_bloc.dart';
 import 'package:stadium_food/src/core/translations/translate.dart';
 import 'package:stadium_food/src/presentation/screens/auth/privacy_policy_screen.dart';
+import 'package:stadium_food/src/data/services/guest_auth_service.dart';
+import 'package:stadium_food/src/presentation/widgets/buttons/back_button.dart';
 import 'package:stadium_food/src/presentation/widgets/buttons/primary_button.dart';
 import 'package:stadium_food/src/presentation/widgets/loading_indicator.dart';
 import 'package:stadium_food/src/presentation/utils/app_colors.dart';
@@ -44,14 +47,40 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           children: [
             SizedBox(
-              height: 350,
+              height: 300,
               width: double.infinity,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
                   Image.asset(
                     'assets/png/login_img.png',
-                    fit: BoxFit.fill,
+                    fit: BoxFit.cover,
+                  ),
+                  // Venue color wash so login matches stadium branding
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          AppColors.primaryDarkColor.withOpacity(0.55),
+                          AppColors.primaryColor.withOpacity(0.35),
+                          Colors.black.withOpacity(0.45),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                      child: Align(
+                        alignment: Alignment.topLeft,
+                        child: CustomBackButton(
+                          color: Colors.black87,
+                          backgroundColor: Colors.white,
+                        ),
+                      ),
+                    ),
                   ),
                   Center(
                     child: Column(
@@ -67,17 +96,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 12),
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.5),
+                            color: Colors.white.withOpacity(0.55),
                             shape: BoxShape.circle,
-                            // borderRadius: BorderRadius.all(Radius.circular(10)),
                             border: Border.all(
-                                color: Colors.white.withOpacity(0.6)),
+                                color: Colors.white.withOpacity(0.7)),
                             boxShadow: [AppStyles.boxShadow7],
                           ),
                           child: Image.asset(
                             'assets/png/logo.png',
-                            width: 120,
-                            height: 120,
+                            width: 110,
+                            height: 110,
                           ),
                         ),
                       ],
@@ -87,20 +115,38 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             BlocListener<LoginBloc, LoginState>(
-              listener: (context, state) {
+              listener: (context, state) async {
                 if (state is LoginSuccess) {
-                  Navigator.pop(context);
+                  Navigator.pop(context); // loading
                   if (widget.returnRoute != null) {
-                    Navigator.pop(context);
+                    // Match web postLoginNext — continue checkout after sign-in
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      widget.returnRoute!,
+                      (route) =>
+                          route.settings.name == '/home' || route.isFirst,
+                    );
                   } else {
-                    // Default flow: show stadium selection then home
-                    Navigator.pushNamed(context, '/select-stadium').then((_) {
+                    // Match web: go home if stadium already selected
+                    final prefs = await SharedPreferences.getInstance();
+                    final hasStadium =
+                        (prefs.getString('selected_stadium_id') ?? '').isNotEmpty;
+                    if (!context.mounted) return;
+                    if (hasStadium) {
                       Navigator.pushNamedAndRemoveUntil(
                         context,
                         '/home',
                         (route) => false,
                       );
-                    });
+                    } else {
+                      Navigator.pushNamed(context, '/select-stadium').then((_) {
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          '/home',
+                          (route) => false,
+                        );
+                      });
+                    }
                   }
                 }
 
@@ -156,7 +202,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     controller: _emailController,
                                     keyboardType: TextInputType.emailAddress,
                                     decoration: InputDecoration(
-                                      prefixIcon: const Icon(Icons.mail_rounded,
+                                      prefixIcon: Icon(Icons.mail_rounded,
                                           color: AppColors.primaryDarkColor),
                                       fillColor: AppColors().cardColor,
                                       filled: true,
@@ -174,8 +220,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderSide: const BorderSide(
-                                            color: Color(0xFF4169E1), width: 1),
+                                        borderSide: BorderSide(
+                                            color: AppColors.primaryColor,
+                                            width: 1.5),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                     ),
@@ -201,7 +248,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     controller: _passwordController,
                                     obscureText: hidePassword,
                                     decoration: InputDecoration(
-                                      prefixIcon: const Icon(Icons.lock_rounded,
+                                      prefixIcon: Icon(Icons.lock_rounded,
                                           color: AppColors.primaryDarkColor),
                                       fillColor: AppColors().cardColor,
                                       filled: true,
@@ -232,8 +279,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderSide: const BorderSide(
-                                            color: Color(0xFF4169E1), width: 1),
+                                        borderSide: BorderSide(
+                                            color: AppColors.primaryColor,
+                                            width: 1.5),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                     ),
@@ -297,21 +345,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const SizedBox(height: 30),
                           Padding(
-                            padding: const EdgeInsets.only(bottom: 20),
+                            padding: const EdgeInsets.only(bottom: 12),
                             child: PrimaryButton(
                               text: Translate.get('login_button'),
                               onTap: () async {
-                                String? apnsToken = await FirebaseMessaging
-                                    .instance
-                                    .getAPNSToken();
-                                print("APNS Token: $apnsToken");
-
-                                print("FCM Token>>>>>>>>");
-                                await Future.delayed(Duration(seconds: 1));
-                                String? token =
-                                    await FirebaseMessaging.instance.getToken();
-                                print("FCM Token: $token");
-
                                 if (_emailController.text.trim().isEmpty) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
@@ -342,8 +379,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                   );
                                   return;
                                 }
-                                debugPrint(_emailController.text.trim());
-                                debugPrint(_passwordController.text);
                                 BlocProvider.of<LoginBloc>(context).add(
                                   LoginSubmitted(
                                     email: _emailController.text.trim(),
@@ -354,7 +389,70 @@ class _LoginScreenState extends State<LoginScreen> {
                               },
                             ),
                           ),
-                          const SizedBox(height: 50),
+                          // Match web checkout auth: continue as guest
+                          if (widget.returnRoute != null) ...[
+                            Text(
+                              Translate.get('orContinueAsGuest'),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 52,
+                              child: OutlinedButton(
+                                onPressed: () async {
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (_) => const LoadingIndicator(),
+                                  );
+                                  try {
+                                    await GuestAuthService.ensureGuestUser();
+                                    if (!mounted) return;
+                                    Navigator.pop(context); // loading
+                                    Navigator.pushNamedAndRemoveUntil(
+                                      context,
+                                      widget.returnRoute!,
+                                      (route) =>
+                                          route.settings.name == '/home' ||
+                                          route.isFirst,
+                                    );
+                                  } catch (e) {
+                                    if (!mounted) return;
+                                    Navigator.pop(context);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Guest login failed: $e'),
+                                        backgroundColor: AppColors.errorColor,
+                                      ),
+                                    );
+                                  }
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: Colors.black87,
+                                  side: BorderSide(
+                                    color: AppColors.primaryColor
+                                        .withOpacity(0.35),
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                ),
+                                child: Text(
+                                  Translate.get('loginAsGuest'),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                          ],
+                          const SizedBox(height: 24),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -366,19 +464,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                 onTap: () {
                                   Navigator.pushNamed(context, '/register');
                                 },
-                                child: ShaderMask(
-                                  shaderCallback: (bounds) => LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: AppColors.primaryGradient,
-                                  ).createShader(bounds),
-                                  blendMode: BlendMode.srcIn,
-                                  child: Text(
-                                    Translate.get('login_register_now'),
-                                    style: CustomTextStyle.size16Weight400Text()
-                                        .copyWith(
-                                      decoration: TextDecoration.underline,
-                                    ),
+                                child: Text(
+                                  Translate.get('login_register_now'),
+                                  style: CustomTextStyle.size16Weight400Text()
+                                      .copyWith(
+                                    color: AppColors.primaryColor,
+                                    fontWeight: FontWeight.w700,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: AppColors.primaryColor,
                                   ),
                                 ),
                               ),

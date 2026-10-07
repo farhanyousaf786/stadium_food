@@ -301,11 +301,10 @@ class AppTranslations {
       'addTip': 'Add a tip',
 
       'tipDescription':
-
-      '100% of your tip goes to your courier. Tips are based on your order total of.',
-
+          '100% of your tip goes to your courier. Tips are based on your order total.',
+      'tipSupportsRunner':
+          '100% of your tip goes to your courier. Tips are based on your order total of',
       'beforeDiscounts': 'before any discounts or promotions.',
-
       'yourOrderTotalIs': 'Your order total is',
 
       'selectTipAmount': 'Select a tip amount',
@@ -344,8 +343,9 @@ class AppTranslations {
       'payWithGooglePay': 'Pay with Google Pay',
       'payWithApplePay': 'Pay with Apple Pay',
       'selectPayment': 'Select a payment method',
-      'accountRequired': 'Account Required',
-      'loginOrRegister': 'Please login or register to place your order',
+      'accountRequired': 'Sign in required',
+      'loginOrRegister': 'Please sign in to place your order, or continue as a guest.',
+      'orContinueAsGuest': 'Or continue as guest',
       'login': 'Login',
       'createAccount': 'Create Account',
       'cancel': 'Cancel',
@@ -994,11 +994,10 @@ class AppTranslations {
       'addTip': 'הוסף טיפ',
 
       'tipDescription':
-
-      '100% מהטיפ שלך מגיע לשליח שלך. הטיפים מבוססים על סך ההזמנה שלך.',
-
+          '100% מהטיפ שלך מגיע לשליח שלך. הטיפים מבוססים על סך ההזמנה שלך.',
+      'tipSupportsRunner':
+          '100% מהטיפ שלך מגיע לשליח שלך. הטיפים מבוססים על סך ההזמנה שלך של',
       'beforeDiscounts': 'לפני הנחות ומבצעים.',
-
       'yourOrderTotalIs': 'סכום ההזמנה שלך הוא',
 
       'selectTipAmount': 'בחר סכום טיפ',
@@ -1044,7 +1043,8 @@ class AppTranslations {
       'paymentFailed': 'התשלום נכשל',
       'selectPayment': 'בחר שיטת תשלום',
       'accountRequired': 'נדרשת התחברות',
-      'loginOrRegister': 'אנא התחבר או הירשם כדי לבצע הזמנה',
+      'loginOrRegister': 'אנא התחבר כדי לבצע הזמנה, או המשך כאורח.',
+      'orContinueAsGuest': 'או המשך כאורח',
       'login': 'התחבר',
       'createAccount': 'צור חשבון',
       'cancel': 'ביטול',

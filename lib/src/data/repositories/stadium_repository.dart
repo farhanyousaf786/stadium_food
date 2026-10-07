@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:translator/translator.dart';
 import '../models/stadium.dart';
 import '../models/section.dart';
 
@@ -11,6 +10,13 @@ class StadiumRepository {
     return querySnapshot.docs
         .map((doc) => Stadium.fromMap(doc.id, doc.data()))
         .toList();
+  }
+
+  Future<Stadium?> getStadiumById(String id) async {
+    if (id.isEmpty) return null;
+    final doc = await _firestore.collection('stadiums').doc(id).get();
+    if (!doc.exists || doc.data() == null) return null;
+    return Stadium.fromMap(doc.id, doc.data()!);
   }
 
   Future<List<Stadium>> searchStadiums(String query) async {

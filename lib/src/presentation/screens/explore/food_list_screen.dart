@@ -123,7 +123,7 @@ class _FoodListScreenState extends State<FoodListScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const CustomBackButton(color: AppColors.primaryDarkColor,),
+                  CustomBackButton(color: AppColors.primaryDarkColor,),
                   const SizedBox(height: 20),
                   Text(
                     widget.shop.name,
@@ -180,7 +180,7 @@ class _FoodListScreenState extends State<FoodListScreen> {
                       onChanged: _filterFoods,
                       decoration: InputDecoration(
                         hintText: Translate.get('searchFood'),
-                        prefixIcon: const Icon(Icons.search,
+                        prefixIcon: Icon(Icons.search,
                             color: AppColors.primaryColor),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),

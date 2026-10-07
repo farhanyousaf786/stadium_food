@@ -35,7 +35,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Scan your card to add it automatically</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs access to location when open to find the nearest shop and show your location.</string>
+	<string>We use your location to automatically select the nearest stadium/venue and show nearby shops.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>

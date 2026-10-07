@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hive/hive.dart';
 import 'package:stadium_food/src/bloc/order/order_bloc.dart';
 import 'package:stadium_food/src/bloc/theme/theme_bloc.dart';
 import 'package:stadium_food/src/data/models/food.dart';
@@ -38,8 +39,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Fetch orders to get active order count
-    BlocProvider.of<OrderBloc>(context).add(FetchOrders());
+    // Fetch orders for badge count only when a user id exists
+    try {
+      final id = Hive.box('myBox').get('id');
+      if (id != null && id.toString().isNotEmpty) {
+        BlocProvider.of<OrderBloc>(context).add(FetchOrders());
+      }
+    } catch (_) {}
   }
 
   @override
@@ -61,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               child: NavigationBar(
                 backgroundColor: Colors.transparent,
+                indicatorColor: AppColors.primaryColor.withOpacity(0.14),
                 labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
                 onDestinationSelected: (int index) {
                   setState(() {

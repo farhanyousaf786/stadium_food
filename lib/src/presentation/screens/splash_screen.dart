@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:stadium_food/src/bloc/theme/theme_bloc.dart';
+import 'package:stadium_food/src/core/config/stadium_sync.dart';
+import 'package:stadium_food/src/core/config/stadium_theme.dart';
 import 'package:stadium_food/src/presentation/screens/onboarding/onboarding_screen.dart';
 import 'package:stadium_food/src/presentation/screens/server.dart';
 import 'package:stadium_food/src/services/onboarding_service.dart';
@@ -21,7 +25,8 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    GetServerKey().getServerKeyToken();
+    // Prefetch FCM server token in background; never block / crash splash
+    GetServerKey().getServerKeyToken().catchError((_) => null);
     Future.delayed(const Duration(milliseconds: 500), () {
       setState(() {
         _visible = true;
@@ -63,12 +68,19 @@ class _SplashScreenState extends State<SplashScreen> {
         return;
       }
 
-      // Onboarding completed: check if a stadium is selected
+      // Onboarding completed: refresh venue branding from Firestore (admin theme),
+      // then go home if a stadium is saved — otherwise auto-select flow.
       final prefs = await SharedPreferences.getInstance();
       final selectedStadiumId = prefs.getString('selected_stadium_id');
       if (!mounted) return;
 
       if (selectedStadiumId != null && selectedStadiumId.isNotEmpty) {
+        final stadium = await StadiumSync.refreshSelectedStadiumFromFirestore();
+        if (mounted && stadium != null) {
+          final theme = StadiumTheme.fromStadium(stadium).apply();
+          context.read<ThemeBloc>().add(ChangeTheme(themeData: theme));
+        }
+        if (!mounted) return;
         Navigator.pushReplacementNamed(context, '/home');
       } else {
         Navigator.pushReplacementNamed(context, '/select-stadium');

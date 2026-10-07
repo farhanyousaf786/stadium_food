@@ -80,21 +80,38 @@ class OrderRepository {
     updateHive();
   }
 
-  void addToCartQty(Food food,qty) {
-
-  // Add new item
-  if (cart.contains(food)) {
-    final q = (qty is int) ? qty : int.tryParse(qty.toString()) ?? 0;
-    if (q <= 0) return;
-    cart[cart.indexOf(food)].quantity += q;
-  } else {
-    cart.add(food);
-    final q = (qty is int) ? qty : int.tryParse(qty.toString()) ?? 0;
-    if (q <= 0) return;
-    food.quantity += q;
+  void addToCartQty(Food food, qty) {
+    // Add new item
+    if (cart.contains(food)) {
+      final q = (qty is int) ? qty : int.tryParse(qty.toString()) ?? 0;
+      if (q <= 0) return;
+      cart[cart.indexOf(food)].quantity += q;
+    } else {
+      cart.add(food);
+      final q = (qty is int) ? qty : int.tryParse(qty.toString()) ?? 0;
+      if (q <= 0) return;
+      food.quantity += q;
+    }
+    updateHive();
   }
-  updateHive();
-}
+
+  /// Clear cart (used when replacing items from a different shop).
+  void clearCart() {
+    for (final item in cart) {
+      item.quantity = 0;
+    }
+    cart.clear();
+    updateHive();
+  }
+
+  /// True when [food] belongs to a different shop than current cart.
+  static bool isDifferentShop(Food food) {
+    if (cart.isEmpty) return false;
+    final current = cart[0].shopIds.isNotEmpty ? cart[0].shopIds.first : '';
+    final next = food.shopIds.isNotEmpty ? food.shopIds.first : '';
+    if (current.isEmpty || next.isEmpty) return false;
+    return current != next;
+  }
 
   void removeFromCart(Food food) {
     if (cart.contains(food)) {
@@ -154,10 +171,14 @@ class OrderRepository {
     String? deliveryNotes,
     Map<String, dynamic>? insideDelivery,
     Map<String, dynamic>? outsideDelivery,
+    String? stripePaymentIntentId,
+    String? currency,
   }) async {
     // Pre-generate a document ID so we can use it as the Order.id
     final docRef = _firestore.collection('orders').doc();
     final generatedId = docRef.id;
+    final orderCurrency = currency ??
+        (cart.isNotEmpty ? cart[0].currency : 'ILS');
 
     final model.Order order = model.Order(
       cart: [...cart],
@@ -190,6 +211,8 @@ class OrderRepository {
       deliveryType: deliveryType ?? '',
       insideDelivery: insideDelivery,
       outsideDelivery: outsideDelivery,
+      stripePaymentIntentId: stripePaymentIntentId,
+      currency: orderCurrency,
     );
 
     // Save order to Firestore using the pre-generated ID

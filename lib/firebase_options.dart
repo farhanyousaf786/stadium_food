@@ -38,29 +38,28 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDDtf654ha_rJ6_Ia4NFRPZCLl0pCfKa3o',
-    appId: '1:665208381476:web:2c0df0e7741a2bf58af8b1',
-    messagingSenderId: '665208381476',
-    projectId: 'food-ninja-f7b7c',
-    authDomain: 'food-ninja-f7b7c.firebaseapp.com',
-    storageBucket: 'food-ninja-f7b7c.appspot.com',
+    apiKey: 'AIzaSyCk0dB043MPcJDKDqq_Uf-jJUuQK2mjXiI',
+    appId: '1:267118373830:web:92f8d9bd8f965312fc60c7',
+    messagingSenderId: '267118373830',
+    projectId: 'fans-food-stf',
+    authDomain: 'fans-food-stf.firebaseapp.com',
+    storageBucket: 'fans-food-stf.firebasestorage.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCk0dB043MPcJDKDqq_Uf-jJUuQK2mjXiI',
     appId: '1:267118373830:android:92f8d9bd8f965312fc60c7',
-    messagingSenderId: '665208381476',
+    messagingSenderId: '267118373830',
     projectId: 'fans-food-stf',
     storageBucket: 'fans-food-stf.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDcvPXXbqn-E6J91XrecuWXK9eJn9r4_Q8',
-    appId: '1:267118373830:android:92f8d9bd8f965312fc60c7',
-    messagingSenderId: '665208381476',
+    appId: '1:267118373830:ios:63ef08f0702a7a63fc60c7',
+    messagingSenderId: '267118373830',
     projectId: 'fans-food-stf',
     storageBucket: 'fans-food-stf.firebasestorage.app',
-    iosClientId: '665208381476-eg3dt1phf02bk05bus035nmtg7qofbni.apps.googleusercontent.com',
     iosBundleId: 'com.fansfood',
   );
 }
